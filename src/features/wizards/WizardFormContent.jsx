@@ -194,28 +194,27 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <Label className="mb-3 block">Outcome</Label>
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             {[
-                                { id: 'collect', label: 'Collect Info', desc: 'Gather info & notify team', icon: ClipboardList, color: 'text-orange-500' },
-                                { id: 'transfer', label: 'Transfer', desc: 'Connect to staff member', icon: PhoneForwarded, color: 'text-blue-500' },
-                                { id: 'booking', label: 'Booking', desc: 'Schedule appointment', icon: Calendar, color: 'text-purple-500' },
-                                { id: 'send_info', label: 'Send Info', desc: 'SMS/Email details', icon: Mail, color: 'text-green-500' }
+                                { id: 'collect', label: 'Collect Info', icon: ClipboardList, color: 'text-orange-500' },
+                                { id: 'transfer', label: 'Transfer', icon: PhoneForwarded, color: 'text-blue-500' },
+                                { id: 'booking', label: 'Booking', icon: Calendar, color: 'text-purple-500' },
+                                { id: 'send_info', label: 'Send Info', icon: Mail, color: 'text-green-500' }
                             ].map(opt => (
                                 <div key={opt.id}
                                     onClick={() => onChange('serviceOutcome', opt.id)}
-                                    className={`cursor-pointer p-4 rounded-xl border-2 flex flex-col items-center text-center transition-all ${formData.serviceOutcome === opt.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                    className={`cursor-pointer h-24 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${formData.serviceOutcome === opt.id ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
-                                        <opt.icon className={`w-5 h-5 ${opt.color}`} />
+                                    <div className={`mb-2 ${formData.serviceOutcome === opt.id ? 'text-blue-600' : 'text-slate-400'}`}>
+                                        <opt.icon className={`w-6 h-6 ${formData.serviceOutcome === opt.id ? 'text-blue-600' : opt.color}`} />
                                     </div>
-                                    <div className={`font-bold text-sm ${formData.serviceOutcome === opt.id ? 'text-blue-700' : 'text-slate-900'}`}>{opt.label}</div>
-                                    <div className="text-xs text-slate-500 mt-1">{opt.desc}</div>
+                                    <div className={`font-semibold text-sm ${formData.serviceOutcome === opt.id ? 'text-blue-900' : 'text-slate-700'}`}>{opt.label}</div>
                                 </div>
                             ))}
                         </div>
 
                         {/* Conditional Configuration */}
-                        <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 animate-in fade-in">
+                        <div className="animate-in fade-in">
                             {formData.serviceOutcome === 'collect' && (
-                                <div className="space-y-4">
+                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     <div>
                                         <Label className="mb-1.5 block text-xs uppercase text-slate-500">Closing Script (Optional)</Label>
                                         <Textarea
@@ -240,7 +239,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             )}
 
                             {formData.serviceOutcome === 'transfer' && (
-                                <div className="space-y-4">
+                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     <div>
                                         <Label className="mb-1.5 block text-xs uppercase text-slate-500">Destination</Label>
                                         <TransferRoutingSelector
@@ -255,30 +254,73 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             )}
 
                             {formData.serviceOutcome === 'booking' && (
-                                <div className="space-y-4">
+                                <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                                        <Calendar className="w-6 h-6" />
+                                    </div>
                                     <div>
-                                        <Label className="mb-1.5 block text-xs uppercase text-slate-500">Booking Link / Calendar</Label>
-                                        <Input
-                                            placeholder="https://calendly.com/..."
-                                            value={formData.bookingLink}
-                                            onChange={(e) => onChange('bookingLink', e.target.value)}
-                                            className="bg-white"
-                                        />
+                                        <h4 className="font-bold text-purple-900 text-base">Calendar Active</h4>
+                                        <p className="text-sm text-purple-700">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
                                     </div>
                                 </div>
                             )}
 
                             {formData.serviceOutcome === 'send_info' && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <Label className="mb-1.5 block text-xs uppercase text-slate-500">Information to Send</Label>
-                                        <Input
-                                            placeholder="Select template or enter text..."
-                                            value={formData.infoSource}
-                                            onChange={(e) => onChange('infoSource', e.target.value)}
-                                            className="bg-white"
-                                        />
+                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+                                    <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Send Details To</Label>
+
+                                    <div className="flex p-1 bg-slate-200/50 rounded-lg">
+                                        <button
+                                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'team' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            onClick={() => onChange('serviceSendInfoType', 'team')}
+                                        >
+                                            Team Member
+                                        </button>
+                                        <button
+                                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'external' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            onClick={() => onChange('serviceSendInfoType', 'external')}
+                                        >
+                                            External Contact
+                                        </button>
                                     </div>
+
+                                    {formData.serviceSendInfoType === 'team' ? (
+                                        <div>
+                                            <Label className="mb-2 block text-sm font-medium text-slate-700">Select Staff</Label>
+                                            <TeamMemberSelector
+                                                value={formData.serviceSendInfoValue}
+                                                onChange={(val) => onChange('serviceSendInfoValue', val)}
+                                                onAddNew={() => console.log("Add new staff")}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4 animate-in fade-in">
+                                            <div>
+                                                <Label className="mb-2 block text-sm font-medium text-slate-700">Email Address</Label>
+                                                <div className="relative">
+                                                    <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                                                    <Input
+                                                        className="pl-9 bg-white"
+                                                        placeholder="recipient@example.com"
+                                                        value={formData.sendInfoEmail}
+                                                        onChange={(e) => onChange('sendInfoEmail', e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <Label className="mb-2 block text-sm font-medium text-slate-700">Mobile Number</Label>
+                                                <div className="relative">
+                                                    <PhoneForwarded className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                                                    <Input
+                                                        className="pl-9 bg-white"
+                                                        placeholder="+1..."
+                                                        value={formData.sendInfoPhone}
+                                                        onChange={(e) => onChange('sendInfoPhone', e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

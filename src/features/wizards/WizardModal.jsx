@@ -42,6 +42,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
         // Outcome: Send Info
         infoSource: '',
+        sendInfoEmail: '',
+        sendInfoPhone: '',
 
         // Legacy / Other Modes (Keep for now to avoid breaking other wizards)
         staffName: '',
