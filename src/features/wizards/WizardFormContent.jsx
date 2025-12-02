@@ -13,10 +13,29 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
     // --- SERVICE WIZARD ---
     if (mode === 'service') {
         if (step === 1) {
-            const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isAutoFilled;
+            const [isLoading, setIsLoading] = React.useState(false);
+            const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isContextActive;
+
+            const handleKnowledgeSelect = (type) => {
+                setIsLoading(true);
+                // Simulate analysis delay
+                setTimeout(() => {
+                    setIsLoading(false);
+                    onChange('isContextActive', true);
+                    onChange('contextFileName', 'SOP_Manual.pdf');
+                    // Auto-fill data
+                    onChange('description', "Professional heater diagnosis and repair. We check gas/electric connections, pilot lights, and thermostats.");
+                    onChange('price', "180.00");
+                    onChange('priceMode', 'hourly');
+                    onChange('questions', ["Is the area easily accessible?", "How old is the current unit?", "Is it gas or electric?"]);
+                    onChange('serviceOutcome', 'collect');
+                    onChange('serviceClosingScript', "e.g. I'll take your details and have someone from the team call you back shortly.");
+                }, 1500);
+            };
 
             return (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
+
 
                     {/* Knowledge Found Banner */}
                     {showAutoFillBanner && (
@@ -32,10 +51,14 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                         size="sm"
                                         className="bg-purple-600 hover:bg-purple-700 text-white h-8 shadow-sm"
                                         onClick={() => {
-                                            onChange('isAutoFilled', true);
+                                            onChange('isContextActive', true);
+                                            onChange('contextFileName', 'SOP_Manual.pdf');
                                             onChange('description', "Professional heater diagnosis and repair. We check gas/electric connections, pilot lights, and thermostats.");
                                             onChange('price', "180.00");
                                             onChange('priceMode', 'hourly');
+                                            onChange('questions', ["Is the area easily accessible?", "How old is the current unit?", "Is it gas or electric?"]);
+                                            onChange('serviceOutcome', 'collect');
+                                            onChange('serviceClosingScript', "e.g. I'll take your details and have someone from the team call you back shortly.");
                                         }}
                                     >
                                         Yes, Auto-fill
@@ -46,15 +69,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         </div>
                     )}
 
-                    {/* Active Context Banner (After Auto-fill) */}
-                    {formData.isAutoFilled && (
-                        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 flex items-center gap-3 animate-in fade-in">
-                            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-emerald-600 shadow-sm">
-                                <FileCheck className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-medium text-emerald-800">Using Context: <strong>SOP_Manual.pdf</strong></span>
-                        </div>
-                    )}
+
 
                     <div>
                         <Label className="mb-1.5 block">Service Name</Label>
@@ -63,52 +78,92 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             value={formData.serviceName}
                             onChange={(e) => onChange('serviceName', e.target.value)}
                             highlight={activeField === 'serviceName'}
-                            success={formData.isAutoFilled}
                             autoFocus
                         />
                     </div>
 
                     <div>
                         <Label className="mb-3 block">Knowledge Source</Label>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div
-                                onClick={() => onChange('knowledgeSourceType', 'upload')}
-                                className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.knowledgeSourceType === 'upload' ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}
-                            >
-                                <UploadCloud className={`w-8 h-8 mb-2 ${formData.knowledgeSourceType === 'upload' ? 'text-blue-500' : 'text-slate-400'}`} />
-                                <div className="font-semibold text-sm text-slate-900">Upload Doc</div>
-                                <div className="text-xs text-slate-500">PDF, DOCX</div>
+                        <div className="relative">
+                            {/* Cards */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div
+                                    onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
+                                    className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                                >
+                                    <UploadCloud className={`w-8 h-8 mb-2 text-blue-500 transition-colors ${formData.isContextActive ? 'text-slate-300' : 'group-hover:text-blue-600'}`} />
+                                    <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
+                                    <div className="text-xs text-slate-500">PDF, DOCX</div>
+                                </div>
+
+                                <div
+                                    onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
+                                    className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                                >
+                                    <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                        <Book className="w-5 h-5" />
+                                    </div>
+                                    <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Select from KB</div>
+                                    <div className="text-xs text-slate-500">Existing Files</div>
+                                </div>
                             </div>
 
-                            <div
-                                onClick={() => onChange('knowledgeSourceType', 'kb')}
-                                className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.knowledgeSourceType === 'kb' ? 'border-blue-500 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}
-                            >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg ${formData.knowledgeSourceType === 'kb' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
-                                    <Book className="w-5 h-5" />
+                            {/* Loading Overlay */}
+                            {isLoading && (
+                                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100">
+                                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+                                    <span className="text-sm font-medium text-blue-600 animate-pulse">Analyzing Document...</span>
                                 </div>
-                                <div className="font-semibold text-sm text-slate-900">Select from KB</div>
-                                <div className="text-xs text-slate-500">Existing Files</div>
-                            </div>
+                            )}
+
+                            {/* Context Active Banner Overlay */}
+                            {formData.isContextActive && (
+                                <div className="absolute inset-0 bg-emerald-50/95 backdrop-blur-sm z-20 flex items-center justify-between px-6 rounded-xl border border-emerald-100 animate-in fade-in zoom-in-95 duration-300">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-emerald-600 shadow-sm">
+                                            <FileCheck className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-bold text-emerald-900">Active Context</div>
+                                            <div className="text-xs text-emerald-700 font-medium">{formData.contextFileName}</div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onChange('isContextActive', false);
+                                            onChange('contextFileName', '');
+                                            onChange('description', '');
+                                            onChange('price', '');
+                                            onChange('questions', []);
+                                        }}
+                                        className="p-2 hover:bg-emerald-100 rounded-full text-emerald-600 transition-colors"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
                             <Label className="block">Description</Label>
-                            {formData.isAutoFilled && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
+                            {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
                         </div>
                         <div className="relative">
                             <Textarea
                                 placeholder="Describe what this service entails..."
-                                className={`h-32 resize-none ${formData.isAutoFilled ? 'border-emerald-400 ring-2 ring-emerald-100 bg-emerald-50/30' : ''}`}
+                                className={`h-32 resize-none transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
                                 value={formData.description}
                                 onChange={(e) => onChange('description', e.target.value)}
                                 highlight={activeField === 'description'}
                             />
-                            <button className="absolute bottom-3 right-3 p-1.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-blue-600 hover:border-blue-300 shadow-sm transition-all">
-                                <Sparkles className="w-3 h-3" />
-                            </button>
+                            {formData.isContextActive && (
+                                <div className="absolute bottom-3 right-3 p-1.5 bg-emerald-100 rounded-lg text-emerald-600 animate-in zoom-in">
+                                    <Sparkles className="w-3 h-3" />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -117,13 +172,24 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         if (step === 2) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    {formData.isContextActive && (
+                        <div className="-mx-8 -mt-8 mb-6 bg-emerald-50 border-b border-emerald-100 px-8 py-2 flex items-center gap-3 animate-in fade-in">
+                            <div className="w-6 h-6 bg-white rounded flex items-center justify-center text-emerald-600 shadow-sm">
+                                <FileCheck className="w-3 h-3" />
+                            </div>
+                            <span className="text-xs font-medium text-emerald-800">Using Context: <strong>{formData.contextFileName}</strong></span>
+                        </div>
+                    )}
                     <div>
-                        <Label className="mb-3 block">Pricing Mode</Label>
-                        <div className="flex gap-2 mb-4 overflow-x-auto pb-2 p-1 -mx-1">
+                        <div className="flex justify-between items-center mb-3">
+                            <Label className="block">Pricing Mode</Label>
+                            {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
+                        </div>
+                        <div className={`flex gap-2 mb-4 overflow-x-auto pb-2 p-1 -mx-1 ${formData.isContextActive ? 'bg-emerald-50/30 rounded-xl' : ''}`}>
                             {['fixed', 'hourly', 'range', 'na'].map(m => (
                                 <div key={m}
                                     onClick={() => onChange('priceMode', m)}
-                                    className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m ? 'bg-blue-50 border-blue-500 text-blue-700 font-medium ring-1 ring-blue-500' : 'hover:bg-slate-50 text-slate-600'}`}
+                                    className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m ? (formData.isContextActive ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium ring-1 ring-emerald-500' : 'bg-blue-50 border-blue-500 text-blue-700 font-medium ring-1 ring-blue-500') : 'hover:bg-slate-50 text-slate-600'}`}
                                 >
                                     {m === 'fixed' ? 'Fixed' : m === 'hourly' ? 'Hourly' : m === 'range' ? 'Range' : 'Not Applicable'}
                                 </div>
@@ -134,14 +200,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <div className="animate-in fade-in">
                                 <div className="relative">
                                     <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                                    <Input className="pl-7" placeholder="0.00" value={formData.price} onChange={(e) => onChange('price', e.target.value)} />
+                                    <Input
+                                        className={`pl-7 transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                        placeholder="0.00"
+                                        value={formData.price}
+                                        onChange={(e) => onChange('price', e.target.value)}
+                                    />
                                 </div>
                             </div>
                         )}
                     </div>
 
                     <div>
-                        <Label className="mb-1.5 block">Follow-up Questions</Label>
+                        <div className="flex justify-between items-center mb-1.5">
+                            <Label className="block">Follow-up Questions</Label>
+                            {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
+                        </div>
                         <div className="space-y-2 mb-3">
                             {formData.questions.map((q, i) => (
                                 <div key={i} className="flex gap-2 group">
@@ -152,7 +226,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             newQ[i] = e.target.value;
                                             onChange('questions', newQ);
                                         }}
-                                        className="bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                                        className={`transition-colors ${formData.isContextActive ? 'bg-emerald-50/20 border-emerald-200 text-emerald-900 focus:bg-white' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
                                     />
                                     <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => {
                                         const newQ = formData.questions.filter((_, idx) => idx !== i);
@@ -190,8 +264,18 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         if (step === 3) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    {formData.isContextActive && (
+                        <div className="-mx-8 -mt-8 mb-6 bg-emerald-50 border-b border-emerald-100 px-8 py-2 flex items-center gap-3 animate-in fade-in">
+                            <div className="w-6 h-6 bg-white rounded flex items-center justify-center text-emerald-600 shadow-sm">
+                                <FileCheck className="w-3 h-3" />
+                            </div>
+                            <span className="text-xs font-medium text-emerald-800">Using Context: <strong>{formData.contextFileName}</strong></span>
+                        </div>
+                    )}
                     <div>
-                        <Label className="mb-3 block">Outcome</Label>
+                        <div className="flex justify-between items-center mb-3">
+                            <Label className="block">Outcome</Label>
+                        </div>
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             {[
                                 { id: 'collect', label: 'Collect Info', icon: ClipboardList, color: 'text-orange-500' },
