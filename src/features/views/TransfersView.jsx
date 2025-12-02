@@ -10,16 +10,21 @@ export default function TransfersView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white border-b border-slate-100 px-8 py-5 flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Transfers Configuration</h1>
-                    <p className="text-slate-500 text-sm mt-1">Manage call transfer rules.</p>
+            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+                <div className="w-full md:w-auto flex justify-between items-start">
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Transfers Configuration</h1>
+                        <p className="text-slate-500 text-sm mt-1">Manage call transfer rules.</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={openSettings} className="md:hidden text-slate-400 hover:text-slate-600">
+                        <Settings className="w-5 h-5" />
+                    </Button>
                 </div>
-                <div className="flex gap-3">
-                    <Button variant="outline" onClick={openSettings}>
+                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                    <Button variant="outline" onClick={openSettings} className="hidden md:flex w-full md:w-auto">
                         <Settings className="w-4 h-4 mr-2" /> Global Settings
                     </Button>
-                    <Button onClick={() => openWizard('transfer')}>
+                    <Button onClick={() => openWizard('transfer')} className="w-full md:w-auto">
                         <Plus className="w-4 h-4 mr-2" /> Add Rule
                     </Button>
                 </div>
@@ -27,7 +32,7 @@ export default function TransfersView() {
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <button onClick={() => openWizard('transfer')}
-                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
+                        className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
                         <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>

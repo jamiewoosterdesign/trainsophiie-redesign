@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Headset, Mail, Users, Wrench, ListChecks, ArrowRightLeft,
-    Book, Settings, HelpCircle, Bot, ShieldAlert
+    Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown
 } from 'lucide-react';
 import { SophiieLogo } from '@/components/icons/SophiieLogo';
 import { Badge } from '@/components/ui/badge';
@@ -43,11 +43,76 @@ export default function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname.substring(1) || 'services';
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+    const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(true);
+
+    const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
     return (
         <>
-            {/* Tier 1 Sidebar */}
-            <aside className="w-[72px] bg-slate-950 flex flex-col items-center py-6 z-30 flex-shrink-0 shadow-xl text-white">
+            {/* Mobile Header */}
+            <div className="md:hidden h-16 bg-slate-950 flex items-center justify-between px-4 z-50 flex-shrink-0">
+                <div className="flex items-center gap-3 text-white">
+                    <SophiieLogo className="w-8 h-8" />
+                    <span className="font-bold text-lg tracking-tight">Sophiie</span>
+                </div>
+                <button onClick={toggleMobileMenu} className="text-white p-2">
+                    {isMobileMenuOpen ? <X /> : <Menu />}
+                </button>
+            </div>
+
+            {/* Mobile Navigation Drawer */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col animate-in slide-in-from-right-full duration-300">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                        {/* Train Sophiie Section */}
+                        <div>
+                            <button
+                                onClick={() => setIsSubMenuOpen(!isSubMenuOpen)}
+                                className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl mb-2"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white">
+                                        <Bot className="w-5 h-5" />
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-bold text-slate-900 text-sm">Train Sophiie</div>
+                                        <div className="text-xs text-slate-500">Knowledge & Behavior</div>
+                                    </div>
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isSubMenuOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {isSubMenuOpen && (
+                                <div className="pl-2 space-y-1 animate-in slide-in-from-top-2">
+                                    <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => { navigate('/services'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => { navigate('/knowledge'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<ShieldAlert />} label="Protocols" active={currentPath === 'scenarios'} onClick={() => { navigate('/scenarios'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Users />} label="Staff" active={currentPath === 'staff'} onClick={() => { navigate('/staff'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => { navigate('/transfers'); setIsMobileMenuOpen(false); }} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="h-px bg-slate-100 my-4" />
+
+                        {/* Main Navigation */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 text-slate-600 gap-2">
+                                <Mail className="w-6 h-6" />
+                                <span className="text-xs font-medium">Inbox</span>
+                            </button>
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 text-slate-600 gap-2">
+                                <Settings className="w-6 h-6" />
+                                <span className="text-xs font-medium">Settings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Tier 1 Sidebar (Desktop) */}
+            <aside className="hidden md:flex w-[72px] bg-slate-950 flex-col items-center py-6 z-30 flex-shrink-0 shadow-xl text-white">
                 <div className="mb-10 text-2xl opacity-90 hover:opacity-100 cursor-pointer text-white">
                     <SophiieLogo className="w-8 h-8" />
                 </div>

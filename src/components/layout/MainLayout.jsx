@@ -19,7 +19,7 @@ export default function MainLayout() {
     };
 
     return (
-        <div className="flex h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
+        <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
             <Sidebar />
             <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-white">
                 <Outlet context={{ openWizard, openSettings }} />

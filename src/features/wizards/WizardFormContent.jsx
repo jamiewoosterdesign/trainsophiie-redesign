@@ -86,7 +86,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <Label className="mb-3 block">Knowledge Source</Label>
                         <div className="relative">
                             {/* Cards */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div
                                     onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
                                     className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
@@ -173,7 +173,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     {formData.isContextActive && (
-                        <div className="-mx-8 -mt-8 mb-6 bg-emerald-50 border-b border-emerald-100 px-8 py-2 flex items-center gap-3 animate-in fade-in">
+                        <div className="-mx-4 -mt-4 mb-6 md:-mx-8 md:-mt-8 bg-emerald-50 border-b border-emerald-100 px-4 py-2 md:px-8 flex items-center gap-3 animate-in fade-in">
                             <div className="w-6 h-6 bg-white rounded flex items-center justify-center text-emerald-600 shadow-sm">
                                 <FileCheck className="w-3 h-3" />
                             </div>
@@ -181,7 +181,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         </div>
                     )}
                     <div>
-                        <div className="flex justify-between items-center mb-3">
+                        <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
                             <Label className="block">Pricing Mode</Label>
                             {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
                         </div>
@@ -212,7 +212,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     </div>
 
                     <div>
-                        <div className="flex justify-between items-center mb-1.5">
+                        <div className="flex flex-wrap justify-between items-center gap-2 mb-1.5">
                             <Label className="block">Follow-up Questions</Label>
                             {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
                         </div>
@@ -265,7 +265,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     {formData.isContextActive && (
-                        <div className="-mx-8 -mt-8 mb-6 bg-emerald-50 border-b border-emerald-100 px-8 py-2 flex items-center gap-3 animate-in fade-in">
+                        <div className="-mx-4 -mt-4 mb-6 md:-mx-8 md:-mt-8 bg-emerald-50 border-b border-emerald-100 px-4 py-2 md:px-8 flex items-center gap-3 animate-in fade-in">
                             <div className="w-6 h-6 bg-white rounded flex items-center justify-center text-emerald-600 shadow-sm">
                                 <FileCheck className="w-3 h-3" />
                             </div>

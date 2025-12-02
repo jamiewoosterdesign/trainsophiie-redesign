@@ -149,18 +149,23 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
             )}
 
-            <div className="bg-white w-[95vw] h-[90vh] max-w-6xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+            <div className="bg-white w-full h-full md:w-[95vw] md:h-[90vh] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
 
                 {/* LEFT PANEL: WIZARD FORM */}
-                <div className="w-full md:w-[55%] flex flex-col border-r border-slate-200 bg-white relative z-10">
+                <div className="w-full md:w-[55%] flex flex-col border-r border-slate-200 bg-white relative z-10 h-full">
 
                     {/* Header */}
-                    <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
-                        <div className="flex items-center gap-3">
+                    <div className="px-4 py-4 md:px-8 md:py-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center bg-white flex-shrink-0 gap-4 md:gap-0">
+                        <div className="flex items-center gap-3 w-full md:w-auto">
                             {/* Back Arrow Removed */}
-                            <div>
-                                <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
-                                <div className="flex items-center gap-3 mt-3">
+                            <div className="w-full md:w-auto">
+                                <div className="flex justify-between items-center w-full md:w-auto">
+                                    <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
+                                    <button onClick={handleClose} className="md:hidden p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-3 mt-3">
                                     {(
                                         {
                                             service: ['Identity & Knowledge', 'Business Logic', 'Outcome'],
@@ -173,21 +178,21 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                         <div key={idx} className="flex items-center gap-3">
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
-                                                <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'}`}>{label}</span>
+                                                <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
                                             </div>
-                                            {idx < 2 && <div className="w-8 h-[1px] bg-slate-200" />}
+                                            {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
-                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                        <button onClick={handleClose} className="hidden md:block p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
                             <X className="w-6 h-6" />
                         </button>
                     </div>
 
                     {/* Form Content */}
-                    <div className="flex-1 overflow-y-auto p-8">
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
                         <WizardFormContent
                             mode={mode}
                             step={step}
@@ -198,7 +203,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-8 py-5 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                    <div className="px-4 py-4 md:px-8 md:py-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center flex-shrink-0">
                         <Button
                             variant="outline"
                             onClick={handleBack}
@@ -222,7 +227,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
 
                 {/* RIGHT PANEL: LIVE SIMULATOR */}
-                <div className="w-full md:w-[45%] bg-slate-50 flex flex-col relative overflow-hidden">
+                <div className="hidden md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden">
                     <LiveSimulator
                         mode={mode}
                         formData={formData}

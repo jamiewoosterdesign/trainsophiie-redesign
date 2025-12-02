@@ -11,19 +11,19 @@ export default function ServicesView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white border-b border-slate-100 px-8 py-5 flex justify-between items-center">
+            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Services Configuration</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Services Configuration</h1>
                     <p className="text-slate-500 text-sm mt-1">Teach Sophiie what services you offer.</p>
                 </div>
-                <Button onClick={() => openWizard('service')}>
+                <Button onClick={() => openWizard('service')} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add Service
                 </Button>
             </header>
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <button onClick={() => openWizard('service')}
-                        className="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
+                        className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
                         <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>

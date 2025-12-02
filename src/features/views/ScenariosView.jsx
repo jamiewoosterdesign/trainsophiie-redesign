@@ -12,12 +12,12 @@ export default function ScenariosView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white border-b border-slate-100 px-8 py-5 flex justify-between items-center">
+            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Specific Scenarios</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Specific Scenarios</h1>
                     <p className="text-slate-500 text-sm mt-1">Define handling rules for refunds, complaints, and general inquiries.</p>
                 </div>
-                <Button onClick={() => openWizard('protocol')}>
+                <Button onClick={() => openWizard('protocol')} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add Scenario
                 </Button>
             </header>
@@ -25,7 +25,7 @@ export default function ScenariosView() {
                 <div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <button onClick={() => openWizard('protocol')}
-                            className="border-2 border-dashed border-slate-300 rounded-xl p-5 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[140px]">
+                            className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-5 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[140px]">
                             <Plus className="w-5 h-5 mb-2" />
                             <span className="text-sm font-medium">Create Scenario</span>
                         </button>
