@@ -4,6 +4,10 @@ import { Button } from '@/components/ui/button';
 import WizardFormContent from './WizardFormContent';
 import LiveSimulator from '@/features/simulator/LiveSimulator';
 
+
+
+const USE_GLOBAL_VOICE_UI = true;
+
 export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [step, setStep] = useState(1);
     const [returnToMode, setReturnToMode] = useState(null);
@@ -149,7 +153,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
             )}
 
-            <div className={`bg-white w-full h-full md:w-[95vw] md:h-[90vh] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''}`}>
+            <div className={`bg-white w-full h-full md:w-[95vw] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
 
                 {/* LEFT PANEL: WIZARD FORM */}
                 <div className="w-full md:w-[55%] flex flex-col border-r border-slate-200 bg-white relative z-10 h-full">

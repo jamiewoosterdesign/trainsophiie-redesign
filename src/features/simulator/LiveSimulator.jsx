@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
 import { Bot, Mic, MicOff, Square, Headset, Zap, Send, RotateCcw, Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { callGemini } from '@/lib/gemini';
+
+const USE_GLOBAL_VOICE_UI = true;
 
 export default function LiveSimulator({ mode, formData, step, onChange, updateFormFields, onStepAdvance, simulatorTab, setSimulatorTab, setActiveField }) {
     const [messages, setMessages] = useState([]);
@@ -106,8 +110,10 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
 
     const handleVoiceInput = (text) => {
-        // Add user response to chat
-        setMessages(prev => [...prev, { role: 'user', text: text }]);
+        // Don't add user response to chat in Global UI mode
+        if (!USE_GLOBAL_VOICE_UI) {
+            setMessages(prev => [...prev, { role: 'user', text: text }]);
+        }
 
         const currentPhase = convoPhaseRef.current;
         console.log("Handling Voice Input:", text, "Current Phase:", currentPhase);
@@ -122,7 +128,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 // Immediate Confirmation
                 setTimeout(() => {
                     const reply = `I heard ${text}. Is that correct?`;
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     speak(reply);
                 }, 500);
             }
@@ -137,13 +143,13 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         // KB Found path
                         setConvoPhase('KB_DECISION');
                         const reply = "I have found relevant details in SOP_Manual.pdf. Would you like me to populate some of the fields with it?";
-                        setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                        if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                         speak(reply);
                     } else {
                         // No KB path
                         setConvoPhase('ASK_UPLOAD');
                         const reply = "I didn't find any relevant documents. Do you want to upload one, or just describe the service manually?";
-                        setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                        if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                         speak(reply);
                     }
                 } else {
@@ -151,7 +157,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     setTempNameSafe("");
                     setConvoPhase('ASK_NAME');
                     const reply = "Sorry about that. Please say the name again.";
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     speak(reply);
                 }
             }
@@ -171,7 +177,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     });
 
                     const reply = "Great. I've populated the fields for you. Moving to the next step.";
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
 
                     // Special case: Advance after speaking
                     setIsSpeaking(true);
@@ -187,7 +193,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     setConvoPhase('ASK_DESC'); // Fallback to manual
                     setActiveField('description');
                     const reply = "Okay, let's do it manually. Please describe the service briefly.";
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     speak(reply);
                 }
             }
@@ -196,7 +202,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 if (text.toLowerCase().includes('upload')) {
                     // Simulate Upload Trigger
                     const reply = "Okay, I'm opening the upload window for you.";
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
 
                     // Special case: End flow
                     setIsSpeaking(true);
@@ -211,7 +217,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     setConvoPhase('ASK_DESC'); // Fallback to description
                     setActiveField('description');
                     const reply = "Understood. Please describe the service briefly.";
-                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                    if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     speak(reply);
                 }
             }
@@ -220,7 +226,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 onChange('description', text);
                 setActiveField(null);
                 const reply = "Description saved. Let's move to pricing.";
-                setMessages(prev => [...prev, { role: 'bot', text: reply }]);
+                if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
 
                 // Special case: Advance
                 setIsSpeaking(true);
@@ -250,7 +256,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 setConvoPhase('ASK_NAME');
                 setActiveField('serviceName');
                 const msg = "Let's set up a new service. What is the name of this service?";
-                setMessages(prev => [...prev, { role: 'bot', text: msg }]);
+                if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: msg }]);
                 // Use timeout to ensure refs are ready
                 setTimeout(() => speak(msg), 100);
             }
@@ -350,43 +356,42 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
             {/* TABBED INTERFACE (Voice or Preview) */}
             {simulatorTab !== 'invitation' && (
                 <>
-                    <div className="px-4 py-3 bg-white border-b border-slate-200 flex justify-center items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative">
+                    <div className="px-4 py-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative">
 
-                        <div className="flex p-1 bg-slate-100 rounded-lg">
-                            <button
-                                onClick={() => setSimulatorTab('preview')}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${simulatorTab === 'preview' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                Live Preview
-                            </button>
-                            <button
-                                onClick={() => setSimulatorTab('voice')}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 ${simulatorTab === 'voice' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                Voice Setup
-                                {simulatorTab === 'voice' && <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>}
-                            </button>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-slate-800">Live Preview</h3>
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-full">Test Mode</span>
                         </div>
 
-                        <button
-                            onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }])}
-                            className="absolute right-4 text-xs text-slate-400 hover:text-slate-600 font-medium flex items-center"
-                        >
-                            <RotateCcw className="w-3 h-3" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${simulatorTab === 'voice' ? 'bg-purple-100 text-purple-600 ring-2 ring-purple-500 ring-offset-2' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'}`}
+                                title={simulatorTab === 'voice' ? "Exit Voice Setup" : "Start Voice Setup"}
+                            >
+                                <Mic className="w-4 h-4" />
+                            </button>
+
+                            <button
+                                onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }])}
+                                className="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors"
+                                title="Reset Preview"
+                            >
+                                <RotateCcw className="w-3 h-3" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Subtitles */}
                     <div className="px-6 py-2 bg-slate-50 border-b border-slate-100 text-center">
                         <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
-                            {simulatorTab === 'voice' ? "Sophiie will ask you questions to build your configuration." : "Test your current configuration by chatting with Sophiie."}
+                            {simulatorTab === 'voice' ? "Voice Setup Active - Speak to Sophiie" : "Interact with the preview to test your flow."}
                         </p>
                     </div>
 
-                    {simulatorTab === 'voice' ? (
+                    {/* OLD VOICE UI (Only if Global UI is OFF) */}
+                    {simulatorTab === 'voice' && !USE_GLOBAL_VOICE_UI && (
                         <div className="flex-1 flex flex-col min-h-0 animate-in fade-in zoom-in-95">
-
-                            {/* Chat History Container for Voice Mode - Scrollable & Flexible */}
                             <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0" ref={scrollRef}>
                                 {messages.map((msg, idx) => (
                                     <div key={idx} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
@@ -400,7 +405,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 ))}
                             </div>
 
-                            {/* Active Listening State at Bottom - Fixed */}
                             <div className="flex-none w-full p-6 bg-white border-t border-slate-200 flex flex-col items-center justify-center">
                                 <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 transition-all duration-500 ${isSpeaking ? 'bg-purple-100 scale-110' : isListening ? 'bg-green-50 scale-105' : 'bg-slate-100'}`}>
                                     <div className={`w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center relative z-10`}>
@@ -410,7 +414,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                             <Bot className={`w-6 h-6 transition-colors ${isSpeaking ? 'text-purple-600' : isListening ? 'text-green-500' : 'text-slate-400'}`} />
                                         )}
                                     </div>
-                                    {/* Pulse Rings */}
                                     {isSpeaking && !isMicMuted && (
                                         <>
                                             <div className="absolute w-20 h-20 rounded-full border-2 border-purple-200 animate-ping opacity-20"></div>
@@ -431,7 +434,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 </div>
 
                                 <div className="mt-4 flex gap-4">
-                                    {/* Mute and Stop Controls */}
                                     <Button variant="outline" size="icon" onClick={() => setIsMicMuted(!isMicMuted)} className={isMicMuted ? "bg-red-50 border-red-200 text-red-500" : ""}>
                                         {isMicMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                                     </Button>
@@ -443,7 +445,10 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 </div>
                             </div>
                         </div>
-                    ) : (
+                    )}
+
+                    {/* PREVIEW UI (Always visible in Global Mode, or if Preview Tab active) */}
+                    {(simulatorTab === 'preview' || (simulatorTab === 'voice' && USE_GLOBAL_VOICE_UI)) && (
                         <div className="flex-1 flex flex-col min-h-0 animate-in fade-in zoom-in-95">
                             <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0" ref={scrollRef}>
                                 {messages.map((msg, idx) => (
@@ -468,7 +473,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 )}
                             </div>
 
-                            {/* Interactive Input Area */}
                             <div className="p-4 bg-white border-t border-slate-200">
                                 <form
                                     className="flex gap-2"
@@ -482,7 +486,14 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                             className="w-full h-10 bg-slate-100 rounded-full border border-transparent px-4 pr-10 text-slate-700 text-sm focus:bg-white focus:border-blue-400 focus:outline-none transition-all"
                                             placeholder="Type a message..."
                                             value={previewInput}
-                                            onChange={(e) => setPreviewInput(e.target.value)}
+                                            onChange={(e) => {
+                                                setPreviewInput(e.target.value);
+                                                // Auto-switch to manual mode if typing
+                                                if (simulatorTab === 'voice') setSimulatorTab('preview');
+                                            }}
+                                            onFocus={() => {
+                                                if (simulatorTab === 'voice') setSimulatorTab('preview');
+                                            }}
                                         />
                                         <button
                                             type="button"
@@ -502,6 +513,27 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 </form>
                             </div>
                         </div>
+                    )}
+
+                    {/* Global Voice UI Portal */}
+                    {USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' && createPortal(
+                        <VoiceCommandBar
+                            isOpen={true}
+                            isListening={isListening}
+                            isSpeaking={isSpeaking}
+                            transcript={voiceTranscript}
+                            isMicMuted={isMicMuted}
+                            onMicToggle={() => setIsMicMuted(!isMicMuted)}
+                            onClose={() => setSimulatorTab('preview')}
+                            activeContext={
+                                convoPhase === 'ASK_NAME' ? 'Editing: Service Name' :
+                                    convoPhase === 'ASK_DESC' ? 'Editing: Description' :
+                                        convoPhase === 'KB_DECISION' ? 'Reviewing: Knowledge Base' :
+                                            convoPhase === 'CONFIRM_NAME' ? 'Confirming: Service Name' :
+                                                'Voice Setup'
+                            }
+                        />,
+                        document.body
                     )}
                 </>
             )}
