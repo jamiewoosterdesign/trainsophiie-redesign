@@ -77,8 +77,8 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             placeholder="e.g., Hot Water System"
                             value={formData.serviceName}
                             onChange={(e) => onChange('serviceName', e.target.value)}
-                            highlight={activeField === 'serviceName'}
-                            autoFocus
+                            highlight={(activeField === 'serviceName').toString()}
+
                         />
                     </div>
 
@@ -157,7 +157,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 className={`h-32 resize-none transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
                                 value={formData.description}
                                 onChange={(e) => onChange('description', e.target.value)}
-                                highlight={activeField === 'description'}
+                                highlight={(activeField === 'description').toString()}
                             />
                             {formData.isContextActive && (
                                 <div className="absolute bottom-3 right-3 p-1.5 bg-emerald-100 rounded-lg text-emerald-600 animate-in zoom-in">

@@ -7,7 +7,7 @@ const Input = React.forwardRef(({ className, type, highlight, ...props }, ref) =
             type={type}
             className={cn(
                 "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-                highlight && "border-purple-400 ring-2 ring-purple-100 shadow-[0_0_15px_rgba(168,85,247,0.15)] scale-[1.02]",
+                highlight === "true" && "border-purple-400 ring-2 ring-purple-100 shadow-[0_0_15px_rgba(168,85,247,0.15)] scale-[1.02]",
                 props.success && "border-emerald-400 ring-2 ring-emerald-100 shadow-[0_0_15px_rgba(52,211,153,0.15)] bg-emerald-50/30",
                 className
             )}

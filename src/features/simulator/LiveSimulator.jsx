@@ -16,7 +16,19 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
     // Conversation State Machine
     // Phases: 'INIT', 'ASK_NAME', 'CONFIRM_NAME', 'CHECK_KB', 'KB_DECISION', 'ASK_DESC', 'ASK_UPLOAD', 'DONE'
-    const [convoPhase, setConvoPhase] = useState('INIT');
+    const [convoPhase, setConvoPhaseState] = useState('INIT');
+    const convoPhaseRef = useRef('INIT');
+    const setConvoPhase = (phase) => {
+        convoPhaseRef.current = phase;
+        setConvoPhaseState(phase);
+    };
+
+    const [tempName, setTempName] = useState("");
+    const tempNameRef = useRef("");
+    const setTempNameSafe = (name) => {
+        tempNameRef.current = name;
+        setTempName(name);
+    };
 
     // Preview Chat State
     const [previewInput, setPreviewInput] = useState("");
@@ -65,28 +77,29 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         // --- STATE MACHINE DRIVER ---
         if (mode === 'service' && !isSpeaking && !isListening && !voiceTranscript) {
 
-            if (convoPhase === 'INIT') {
+            if (convoPhaseRef.current === 'INIT') {
                 setConvoPhase('ASK_NAME');
                 setActiveField('serviceName');
                 const msg = "Let's set up a new service. What is the name of this service?";
                 setMessages(prev => [...prev, { role: 'bot', text: msg }]);
                 speak(msg);
             }
-
-            // NOTE: Other phases are triggered by user input (handleVoiceInput)
         }
 
-    }, [simulatorTab, step, mode, isMicMuted, convoPhase, messages]);
+    }, [simulatorTab, step, mode, isMicMuted]); // Removed convoPhase from dependencies to avoid re-binding loops, relying on ref
 
     const handleVoiceInput = (text) => {
         // Add user response to chat
         setMessages(prev => [...prev, { role: 'user', text: text }]);
 
+        const currentPhase = convoPhaseRef.current;
+        console.log("Handling Voice Input:", text, "Current Phase:", currentPhase);
+
         if (mode === 'service') {
 
-            if (convoPhase === 'ASK_NAME') {
-                // Capture Name
-                onChange('serviceName', text);
+            if (currentPhase === 'ASK_NAME') {
+                // Capture Name temporarily
+                setTempNameSafe(text);
                 setConvoPhase('CONFIRM_NAME');
 
                 // Immediate Confirmation
@@ -96,8 +109,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     const u = new SpeechSynthesisUtterance(reply);
                     u.onend = () => {
                         setIsSpeaking(false); if (!isMicMuted) {
-                            // Manually re-trigger listen because we are inside the flow
-                            // The useEffect won't catch this transition immediately
                             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (SpeechRecognition) {
                                 const recognition = new SpeechRecognition();
@@ -116,18 +127,20 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 }, 500);
             }
 
-            else if (convoPhase === 'CONFIRM_NAME') {
-                if (text.toLowerCase().includes('yes')) {
-                    // Check for KB (Simulated)
-                    if (formData.serviceName.length > 4) {
+            else if (currentPhase === 'CONFIRM_NAME') {
+                if (text.toLowerCase().includes('yes') || text.toLowerCase().includes('yeah') || text.toLowerCase().includes('correct')) {
+                    // Commit Name
+                    onChange('serviceName', tempNameRef.current);
+
+                    // Check for KB (Simulated) - Must match WizardFormContent logic (heater/hot water)
+                    if (tempNameRef.current.toLowerCase().includes('heater') || tempNameRef.current.toLowerCase().includes('hot water')) {
                         // KB Found path
                         setConvoPhase('KB_DECISION');
-                        const reply = "I've found relevant details in SOP_Manual.pdf. Would you like me to auto-fill the description and pricing based on that document?";
+                        const reply = "I have found relevant details in SOP_Manual.pdf. Would you like me to populate some of the fields with it?";
                         setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                         const u = new SpeechSynthesisUtterance(reply);
                         u.onend = () => {
                             setIsSpeaking(false); if (!isMicMuted) {
-                                // Re-listen logic
                                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                                 if (SpeechRecognition) {
                                     const recognition = new SpeechRecognition();
@@ -151,7 +164,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         const u = new SpeechSynthesisUtterance(reply);
                         u.onend = () => {
                             setIsSpeaking(false); if (!isMicMuted) {
-                                // Re-listen logic
                                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                                 if (SpeechRecognition) {
                                     const recognition = new SpeechRecognition();
@@ -170,13 +182,13 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     }
                 } else {
                     // Retry Name
-                    onChange('serviceName', '');
+                    setTempNameSafe("");
                     setConvoPhase('ASK_NAME');
                     const reply = "Sorry about that. Please say the name again.";
+                    setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     const u = new SpeechSynthesisUtterance(reply);
                     u.onend = () => {
                         setIsSpeaking(false); if (!isMicMuted) {
-                            // Re-listen logic
                             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (SpeechRecognition) {
                                 const recognition = new SpeechRecognition();
@@ -195,10 +207,12 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 }
             }
 
-            else if (convoPhase === 'KB_DECISION') {
-                if (text.toLowerCase().includes('yes')) {
+            else if (currentPhase === 'KB_DECISION') {
+                if (text.toLowerCase().includes('yes') || text.toLowerCase().includes('sure') || text.toLowerCase().includes('please')) {
                     // Trigger Auto Fill & ADVANCE STEP
                     updateFormFields({
+                        isContextActive: true,
+                        contextFileName: 'SOP_Manual.pdf',
                         contextSource: 'SOP_Manual.pdf (Smart Find)',
                         description: "Professional heater diagnosis and repair. We check gas/electric connections, pilot lights, and thermostats.",
                         priceMode: 'na',
@@ -207,14 +221,14 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         questions: ["Is the area easily accessible?", "How old is the current unit?", "Is it gas or electric?"]
                     });
 
-                    const reply = "Done. I've filled in the description, pricing, and follow-up questions for you. Moving to the next step.";
+                    const reply = "Great. I've populated the fields for you. Moving to the next step.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     const u = new SpeechSynthesisUtterance(reply);
                     window.speechSynthesis.speak(u);
                     setIsSpeaking(true);
 
                     // Advance Wizard
-                    setTimeout(() => onStepAdvance(2), 2000);
+                    setTimeout(() => onStepAdvance(2), 4000);
                     setConvoPhase('DONE');
 
                 } else {
@@ -225,7 +239,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     const u = new SpeechSynthesisUtterance(reply);
                     u.onend = () => {
                         setIsSpeaking(false); if (!isMicMuted) {
-                            // Re-listen
                             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (SpeechRecognition) {
                                 const recognition = new SpeechRecognition();
@@ -244,7 +257,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 }
             }
 
-            else if (convoPhase === 'ASK_UPLOAD') {
+            else if (currentPhase === 'ASK_UPLOAD') {
                 if (text.toLowerCase().includes('upload')) {
                     // Simulate Upload Trigger
                     const reply = "Okay, I'm opening the upload window for you.";
@@ -262,7 +275,6 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     const u = new SpeechSynthesisUtterance(reply);
                     u.onend = () => {
                         setIsSpeaking(false); if (!isMicMuted) {
-                            // Re-listen
                             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                             if (SpeechRecognition) {
                                 const recognition = new SpeechRecognition();
@@ -281,7 +293,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 }
             }
 
-            else if (convoPhase === 'ASK_DESC') {
+            else if (currentPhase === 'ASK_DESC') {
                 onChange('description', text);
                 setActiveField(null);
                 const reply = "Description saved. Let's move to pricing.";
