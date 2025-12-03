@@ -12,10 +12,12 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isMicMuted, setIsMicMuted] = useState(false);
+    const isMicMutedRef = useRef(false);
+    useEffect(() => { isMicMutedRef.current = isMicMuted; }, [isMicMuted]);
+
     const [voiceTranscript, setVoiceTranscript] = useState("");
 
     // Conversation State Machine
-    // Phases: 'INIT', 'ASK_NAME', 'CONFIRM_NAME', 'CHECK_KB', 'KB_DECISION', 'ASK_DESC', 'ASK_UPLOAD', 'DONE'
     const [convoPhase, setConvoPhaseState] = useState('INIT');
     const convoPhaseRef = useRef('INIT');
     const setConvoPhase = (phase) => {
@@ -33,60 +35,75 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     // Preview Chat State
     const [previewInput, setPreviewInput] = useState("");
 
+    // Refs for circular dependencies
+    const listenRef = useRef(null);
+    const speakRef = useRef(null);
+
     // Initialize Simulation
     useEffect(() => {
         setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }]);
     }, [mode]);
 
-    // Voice Interaction Effect
-    useEffect(() => {
-        if (simulatorTab !== 'voice') {
-            setActiveField(null);
+    // --- SHARED VOICE FUNCTIONS ---
+    const speak = (text) => {
+        setIsSpeaking(true);
+        // Cancel any current speech
+        window.speechSynthesis.cancel();
+
+        const u = new SpeechSynthesisUtterance(text);
+        u.onend = () => {
+            setIsSpeaking(false);
+            if (!isMicMutedRef.current && listenRef.current) {
+                listenRef.current();
+            }
+        };
+        u.onerror = (e) => {
+            console.error("Speech synthesis error", e);
+            setIsSpeaking(false);
+        };
+        window.speechSynthesis.speak(u);
+    };
+    speakRef.current = speak;
+
+    const listen = () => {
+        if (isMicMutedRef.current) return;
+
+        // Stop any existing recognition
+        // Note: We can't easily access the old instance to stop it unless we store it in a ref, 
+        // but creating a new one usually takes over or throws an error.
+        // For robustness, we'll just proceed.
+
+        setIsListening(true);
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setIsListening(false);
             return;
         }
 
-        const speak = (text) => {
-            setIsSpeaking(true);
-            const u = new SpeechSynthesisUtterance(text);
-            u.onend = () => {
-                setIsSpeaking(false);
-                if (!isMicMuted) listen();
-            };
-            window.speechSynthesis.speak(u);
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setVoiceTranscript(transcript);
+            handleVoiceInput(transcript);
         };
 
-        const listen = () => {
-            if (isMicMuted) return;
-            setIsListening(true);
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.start();
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                setVoiceTranscript(transcript);
-                handleVoiceInput(transcript);
-            };
-
-            recognition.onend = () => setIsListening(false);
+        recognition.onend = () => {
+            setIsListening(false);
         };
 
-        // --- STATE MACHINE DRIVER ---
-        if (mode === 'service' && !isSpeaking && !isListening && !voiceTranscript) {
+        recognition.onerror = (event) => {
+            console.error("Speech recognition error", event.error);
+            setIsListening(false);
+        };
+    };
+    listenRef.current = listen;
 
-            if (convoPhaseRef.current === 'INIT') {
-                setConvoPhase('ASK_NAME');
-                setActiveField('serviceName');
-                const msg = "Let's set up a new service. What is the name of this service?";
-                setMessages(prev => [...prev, { role: 'bot', text: msg }]);
-                speak(msg);
-            }
-        }
-
-    }, [simulatorTab, step, mode, isMicMuted]); // Removed convoPhase from dependencies to avoid re-binding loops, relying on ref
 
     const handleVoiceInput = (text) => {
         // Add user response to chat
@@ -106,24 +123,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 setTimeout(() => {
                     const reply = `I heard ${text}. Is that correct?`;
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false); if (!isMicMuted) {
-                            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                            if (SpeechRecognition) {
-                                const recognition = new SpeechRecognition();
-                                recognition.lang = 'en-US';
-                                recognition.start();
-                                recognition.onresult = (e) => {
-                                    const t = e.results[0][0].transcript;
-                                    setVoiceTranscript(t);
-                                    handleVoiceInput(t);
-                                };
-                            }
-                        }
-                    };
-                    window.speechSynthesis.speak(u);
-                    setIsSpeaking(true);
+                    speak(reply);
                 }, 500);
             }
 
@@ -138,47 +138,13 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         setConvoPhase('KB_DECISION');
                         const reply = "I have found relevant details in SOP_Manual.pdf. Would you like me to populate some of the fields with it?";
                         setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                        const u = new SpeechSynthesisUtterance(reply);
-                        u.onend = () => {
-                            setIsSpeaking(false); if (!isMicMuted) {
-                                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                                if (SpeechRecognition) {
-                                    const recognition = new SpeechRecognition();
-                                    recognition.lang = 'en-US';
-                                    recognition.start();
-                                    recognition.onresult = (e) => {
-                                        const t = e.results[0][0].transcript;
-                                        setVoiceTranscript(t);
-                                        handleVoiceInput(t);
-                                    };
-                                }
-                            }
-                        };
-                        window.speechSynthesis.speak(u);
-                        setIsSpeaking(true);
+                        speak(reply);
                     } else {
                         // No KB path
                         setConvoPhase('ASK_UPLOAD');
                         const reply = "I didn't find any relevant documents. Do you want to upload one, or just describe the service manually?";
                         setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                        const u = new SpeechSynthesisUtterance(reply);
-                        u.onend = () => {
-                            setIsSpeaking(false); if (!isMicMuted) {
-                                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                                if (SpeechRecognition) {
-                                    const recognition = new SpeechRecognition();
-                                    recognition.lang = 'en-US';
-                                    recognition.start();
-                                    recognition.onresult = (e) => {
-                                        const t = e.results[0][0].transcript;
-                                        setVoiceTranscript(t);
-                                        handleVoiceInput(t);
-                                    };
-                                }
-                            }
-                        };
-                        window.speechSynthesis.speak(u);
-                        setIsSpeaking(true);
+                        speak(reply);
                     }
                 } else {
                     // Retry Name
@@ -186,24 +152,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     setConvoPhase('ASK_NAME');
                     const reply = "Sorry about that. Please say the name again.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false); if (!isMicMuted) {
-                            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                            if (SpeechRecognition) {
-                                const recognition = new SpeechRecognition();
-                                recognition.lang = 'en-US';
-                                recognition.start();
-                                recognition.onresult = (e) => {
-                                    const t = e.results[0][0].transcript;
-                                    setVoiceTranscript(t);
-                                    handleVoiceInput(t);
-                                };
-                            }
-                        }
-                    };
-                    window.speechSynthesis.speak(u);
-                    setIsSpeaking(true);
+                    speak(reply);
                 }
             }
 
@@ -223,37 +172,23 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
                     const reply = "Great. I've populated the fields for you. Moving to the next step.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    window.speechSynthesis.speak(u);
-                    setIsSpeaking(true);
 
-                    // Advance Wizard
-                    setTimeout(() => onStepAdvance(2), 4000);
-                    setConvoPhase('DONE');
+                    // Special case: Advance after speaking
+                    setIsSpeaking(true);
+                    const u = new SpeechSynthesisUtterance(reply);
+                    u.onend = () => {
+                        setIsSpeaking(false);
+                        setTimeout(() => onStepAdvance(2), 1000);
+                        setConvoPhase('DONE');
+                    };
+                    window.speechSynthesis.speak(u);
 
                 } else {
                     setConvoPhase('ASK_DESC'); // Fallback to manual
                     setActiveField('description');
                     const reply = "Okay, let's do it manually. Please describe the service briefly.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false); if (!isMicMuted) {
-                            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                            if (SpeechRecognition) {
-                                const recognition = new SpeechRecognition();
-                                recognition.lang = 'en-US';
-                                recognition.start();
-                                recognition.onresult = (e) => {
-                                    const t = e.results[0][0].transcript;
-                                    setVoiceTranscript(t);
-                                    handleVoiceInput(t);
-                                };
-                            }
-                        }
-                    };
-                    window.speechSynthesis.speak(u);
-                    setIsSpeaking(true);
+                    speak(reply);
                 }
             }
 
@@ -262,34 +197,22 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     // Simulate Upload Trigger
                     const reply = "Okay, I'm opening the upload window for you.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    window.speechSynthesis.speak(u);
+
+                    // Special case: End flow
                     setIsSpeaking(true);
-                    // In real app, trigger file picker. Here we just say it.
-                    setConvoPhase('DONE');
+                    const u = new SpeechSynthesisUtterance(reply);
+                    u.onend = () => {
+                        setIsSpeaking(false);
+                        setConvoPhase('DONE');
+                    };
+                    window.speechSynthesis.speak(u);
+
                 } else {
                     setConvoPhase('ASK_DESC'); // Fallback to description
                     setActiveField('description');
                     const reply = "Understood. Please describe the service briefly.";
                     setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false); if (!isMicMuted) {
-                            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                            if (SpeechRecognition) {
-                                const recognition = new SpeechRecognition();
-                                recognition.lang = 'en-US';
-                                recognition.start();
-                                recognition.onresult = (e) => {
-                                    const t = e.results[0][0].transcript;
-                                    setVoiceTranscript(t);
-                                    handleVoiceInput(t);
-                                };
-                            }
-                        }
-                    };
-                    window.speechSynthesis.speak(u);
-                    setIsSpeaking(true);
+                    speak(reply);
                 }
             }
 
@@ -298,15 +221,42 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 setActiveField(null);
                 const reply = "Description saved. Let's move to pricing.";
                 setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-                const u = new SpeechSynthesisUtterance(reply);
-                window.speechSynthesis.speak(u);
-                setIsSpeaking(true);
 
-                setTimeout(() => onStepAdvance(2), 2000);
-                setConvoPhase('DONE');
+                // Special case: Advance
+                setIsSpeaking(true);
+                const u = new SpeechSynthesisUtterance(reply);
+                u.onend = () => {
+                    setIsSpeaking(false);
+                    setTimeout(() => onStepAdvance(2), 1000);
+                    setConvoPhase('DONE');
+                };
+                window.speechSynthesis.speak(u);
             }
         }
     };
+
+    // Voice Interaction Trigger
+    useEffect(() => {
+        if (simulatorTab !== 'voice') {
+            setActiveField(null);
+            // Reset phase if needed, or keep it?
+            // setConvoPhase('INIT'); 
+            return;
+        }
+
+        // --- STATE MACHINE DRIVER ---
+        if (mode === 'service') {
+            if (convoPhaseRef.current === 'INIT') {
+                setConvoPhase('ASK_NAME');
+                setActiveField('serviceName');
+                const msg = "Let's set up a new service. What is the name of this service?";
+                setMessages(prev => [...prev, { role: 'bot', text: msg }]);
+                // Use timeout to ensure refs are ready
+                setTimeout(() => speak(msg), 100);
+            }
+        }
+
+    }, [simulatorTab, mode]);
 
     const handlePreviewSend = async (text) => {
         if (!text.trim()) return;
