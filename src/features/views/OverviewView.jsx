@@ -13,9 +13,9 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
     const navigate = useNavigate();
 
     return (
-        <Card className="p-6 flex flex-col h-full hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group" onClick={() => navigate(link)}>
+        <Card className={`p-6 flex flex-col h-full hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group ${colorClass.includes('ring-') ? colorClass.split(' ').filter(c => c.startsWith('ring') || c.startsWith('shadow') || c.startsWith('scale') || c.startsWith('transition') || c.startsWith('duration')).join(' ') : ''}`} onClick={() => navigate(link)}>
             <div className="flex-1">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${colorClass}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${colorClass.split(' ').filter(c => !c.startsWith('ring') && !c.startsWith('shadow') && !c.startsWith('scale') && !c.startsWith('transition') && !c.startsWith('duration')).join(' ')}`}>
                     <Icon className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-lg text-slate-900 mb-1">{title}</h3>

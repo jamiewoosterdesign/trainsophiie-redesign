@@ -80,7 +80,10 @@ export default function MainLayout() {
         speakText(text, voices, () => {
             console.log("Speech ended");
             setIsSpeaking(false);
-            startListening(); // Auto-listen after speaking
+            // Small delay to ensure speech synthesis is fully released before recognition starts
+            setTimeout(() => {
+                startListening();
+            }, 100);
         }, (e) => {
             console.error("Speech error:", e);
             setIsSpeaking(false);
@@ -139,7 +142,7 @@ export default function MainLayout() {
     return (
         <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
             <Sidebar />
-            <main className={`flex-1 flex flex-col h-full overflow-hidden relative bg-white transition-all duration-500 ${voiceFlowStep === 'OVERVIEW' ? 'ring-[12px] ring-inset ring-purple-500/30 shadow-[inset_0_0_50px_rgba(168,85,247,0.2)]' : ''}`}>
+            <main className={`flex-1 flex flex-col h-full overflow-hidden relative bg-white transition-all duration-500 ${voiceFlowStep === 'OVERVIEW' ? 'shadow-[inset_0_0_100px_rgba(147,51,234,0.5)]' : ''}`}>
                 <Outlet context={{ openWizard, openSettings, startGlobalVoiceFlow, voiceFlowStep }} />
             </main>
 
