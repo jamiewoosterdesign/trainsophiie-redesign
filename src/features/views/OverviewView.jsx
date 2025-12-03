@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
     Users, ArrowRightLeft, Bell, Tag,
@@ -40,6 +40,7 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
 };
 
 export default function OverviewView() {
+    const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
     const sections = [
         {
             title: "Knowledge Base",
@@ -59,7 +60,7 @@ export default function OverviewView() {
                     icon: Wrench,
                     status: "Services added",
                     link: "/services",
-                    colorClass: "bg-green-50 text-green-600",
+                    colorClass: `bg-green-50 text-green-600 ${voiceFlowStep === 'OVERVIEW' ? 'ring-4 ring-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.4)] scale-105 transition-all duration-500' : ''}`,
                     statusColor: "text-slate-900"
                 },
                 {
@@ -186,7 +187,7 @@ export default function OverviewView() {
                         <p className="text-blue-100 text-lg mb-8 leading-relaxed opacity-90">
                             Your AI receptionist learns directly from your business data. You can guide her setup instantly with your voice or upload your existing documents to get started.
                         </p>
-                        <Button className="bg-white text-[#4c1d95] hover:bg-blue-50 border-none font-semibold">
+                        <Button onClick={startGlobalVoiceFlow} className="bg-white text-[#4c1d95] hover:bg-blue-50 border-none font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
                             <Mic2 className="w-4 h-4 mr-2" /> Guided Voice Setup
                         </Button>
                     </div>

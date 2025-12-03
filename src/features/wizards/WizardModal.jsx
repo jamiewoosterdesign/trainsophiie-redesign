@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronRight, Check, ArrowLeft } from 'lucide-react';
+import { X, ChevronRight, Check, ArrowLeft, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WizardFormContent from './WizardFormContent';
 import LiveSimulator from '@/features/simulator/LiveSimulator';
@@ -16,6 +16,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [simulatorTab, setSimulatorTab] = useState('invitation'); // 'invitation', 'voice', 'preview'
     const [activeField, setActiveField] = useState(null);
+    const [isMobileSimulatorOpen, setIsMobileSimulatorOpen] = useState(false);
 
     const [formData, setFormData] = useState({
         serviceName: '',
@@ -165,9 +166,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                             <div className="w-full md:w-auto">
                                 <div className="flex justify-between items-center w-full md:w-auto">
                                     <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
-                                    <button onClick={handleClose} className="md:hidden p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
-                                        <X className="w-6 h-6" />
-                                    </button>
+                                    <div className="flex items-center gap-2 md:hidden">
+                                        <button
+                                            onClick={() => setIsMobileSimulatorOpen(!isMobileSimulatorOpen)}
+                                            className={`p-2 rounded-full transition-colors ${isMobileSimulatorOpen ? 'bg-blue-100 text-blue-600' : 'hover:bg-slate-100 text-slate-400'}`}
+                                        >
+                                            <MessageSquare className="w-6 h-6" />
+                                        </button>
+                                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                            <X className="w-6 h-6" />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="flex flex-wrap items-center gap-3 mt-3">
                                     {(
@@ -230,8 +239,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                     </div>
                 </div>
 
-                {/* RIGHT PANEL: LIVE SIMULATOR */}
-                <div className="hidden md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden">
+                {/* RIGHT PANEL: LIVE SIMULATOR (Desktop & Mobile Toggle) */}
+                <div className={`${isMobileSimulatorOpen ? 'flex absolute inset-0 z-20' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden transition-all duration-300`}>
+                    {/* Mobile Close Button for Simulator */}
+                    <div className="md:hidden absolute top-4 right-4 z-30">
+                        <button
+                            onClick={() => setIsMobileSimulatorOpen(false)}
+                            className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm text-slate-500 hover:text-slate-900"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
                     <LiveSimulator
                         mode={mode}
                         formData={formData}

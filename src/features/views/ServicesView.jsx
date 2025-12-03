@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { MOCK_SERVICES } from '@/lib/mockData';
 
 export default function ServicesView() {
-    const { openWizard } = useOutletContext();
+    const { openWizard, voiceFlowStep } = useOutletContext();
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
@@ -23,7 +23,7 @@ export default function ServicesView() {
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <button onClick={() => openWizard('service')}
-                        className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
+                        className={`hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group ${voiceFlowStep === 'SERVICES' ? 'ring-[8px] ring-purple-400/50 shadow-[0_0_40px_rgba(168,85,247,0.3)] scale-105 border-purple-500 bg-purple-50/30' : ''}`}>
                         <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>

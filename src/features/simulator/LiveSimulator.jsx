@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
-import { Bot, Mic, MicOff, Square, Headset, Zap, Send, RotateCcw, Keyboard } from 'lucide-react';
+import { Bot, Mic, MicOff, Square, Headset, Zap, Send, RotateCcw, Keyboard, Volume2, VolumeX, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { callGemini } from '@/lib/gemini';
+import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
 
 const USE_GLOBAL_VOICE_UI = true;
 
@@ -43,6 +44,16 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     const listenRef = useRef(null);
     const speakRef = useRef(null);
 
+    // Load voices
+    const [voices, setVoices] = useState([]);
+    useEffect(() => {
+        const loadVoices = () => {
+            setVoices(window.speechSynthesis.getVoices());
+        };
+        loadVoices();
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+    }, []);
+
     // Initialize Simulation
     useEffect(() => {
         setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }]);
@@ -51,31 +62,20 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     // --- SHARED VOICE FUNCTIONS ---
     const speak = (text) => {
         setIsSpeaking(true);
-        // Cancel any current speech
-        window.speechSynthesis.cancel();
-
-        const u = new SpeechSynthesisUtterance(text);
-        u.onend = () => {
+        speakText(text, voices, () => {
             setIsSpeaking(false);
             if (!isMicMutedRef.current && listenRef.current) {
                 listenRef.current();
             }
-        };
-        u.onerror = (e) => {
+        }, (e) => {
             console.error("Speech synthesis error", e);
             setIsSpeaking(false);
-        };
-        window.speechSynthesis.speak(u);
+        });
     };
     speakRef.current = speak;
 
     const listen = () => {
         if (isMicMutedRef.current) return;
-
-        // Stop any existing recognition
-        // Note: We can't easily access the old instance to stop it unless we store it in a ref, 
-        // but creating a new one usually takes over or throws an error.
-        // For robustness, we'll just proceed.
 
         setIsListening(true);
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -178,16 +178,9 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
                     const reply = "Great. I've populated the fields for you. Moving to the next step.";
                     if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-
-                    // Special case: Advance after speaking
-                    setIsSpeaking(true);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false);
-                        setTimeout(() => onStepAdvance(2), 1000);
-                        setConvoPhase('DONE');
-                    };
-                    window.speechSynthesis.speak(u);
+                    speak(reply);
+                    setTimeout(() => onStepAdvance(2), 3000); // Advance after speak
+                    setConvoPhase('DONE');
 
                 } else {
                     setConvoPhase('ASK_DESC'); // Fallback to manual
@@ -203,15 +196,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     // Simulate Upload Trigger
                     const reply = "Okay, I'm opening the upload window for you.";
                     if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-
-                    // Special case: End flow
-                    setIsSpeaking(true);
-                    const u = new SpeechSynthesisUtterance(reply);
-                    u.onend = () => {
-                        setIsSpeaking(false);
-                        setConvoPhase('DONE');
-                    };
-                    window.speechSynthesis.speak(u);
+                    speak(reply);
+                    setConvoPhase('DONE');
 
                 } else {
                     setConvoPhase('ASK_DESC'); // Fallback to description
@@ -227,16 +213,9 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 setActiveField(null);
                 const reply = "Description saved. Let's move to pricing.";
                 if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
-
-                // Special case: Advance
-                setIsSpeaking(true);
-                const u = new SpeechSynthesisUtterance(reply);
-                u.onend = () => {
-                    setIsSpeaking(false);
-                    setTimeout(() => onStepAdvance(2), 1000);
-                    setConvoPhase('DONE');
-                };
-                window.speechSynthesis.speak(u);
+                speak(reply);
+                setTimeout(() => onStepAdvance(2), 3000);
+                setConvoPhase('DONE');
             }
         }
     };
@@ -274,15 +253,15 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
         // Use Gemini for Dynamic Chat Simulation
         const systemPrompt = `You are Sophiie, an AI receptionist for a company.
-      Current Configuration Context:
-      - Service being configured: ${formData.serviceName || 'Unknown'} (${formData.description || 'No description'})
-      - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
-      - Staff: ${formData.staffName || 'Unknown'} (${formData.staffRole || 'Staff'})
-      - Transfer Rule: ${formData.transferName || 'None'} -> ${formData.transferSummary || 'Standard transfer'}
-      
-      User (Owner testing the bot) says: "${text}"
-      
-      Reply briefly as Sophiie would to a customer, using the configuration context if relevant. If not relevant, just be helpful.`;
+          Current Configuration Context:
+          - Service being configured: ${formData.serviceName || 'Unknown'} (${formData.description || 'No description'})
+          - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
+          - Staff: ${formData.staffName || 'Unknown'} (${formData.staffRole || 'Staff'})
+          - Transfer Rule: ${formData.transferName || 'None'} -> ${formData.transferSummary || 'Standard transfer'}
+          
+          User (Owner testing the bot) says: "${text}"
+          
+          Reply briefly as Sophiie would to a customer, using the configuration context if relevant. If not relevant, just be helpful.`;
 
         const botResponse = await callGemini(systemPrompt);
 
