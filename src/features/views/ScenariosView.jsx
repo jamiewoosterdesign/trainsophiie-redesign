@@ -14,7 +14,7 @@ export default function ScenariosView() {
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Specific Scenarios</h1>
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Scenarios & Restrictions</h1>
                     <p className="text-slate-500 text-sm mt-1">Define handling rules for refunds, complaints, and general inquiries.</p>
                 </div>
                 <Button onClick={() => openWizard('protocol')} className="w-full md:w-auto">

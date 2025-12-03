@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Headset, Mail, Users, Wrench, ListChecks, ArrowRightLeft,
-    Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown
+    Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown,
+    LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders
 } from 'lucide-react';
 import { SophiieLogo } from '@/components/icons/SophiieLogo';
 import { Badge } from '@/components/ui/badge';
@@ -85,11 +86,20 @@ export default function Sidebar() {
 
                             {isSubMenuOpen && (
                                 <div className="pl-2 space-y-1 animate-in slide-in-from-top-2">
+                                    <SidebarItem icon={<LayoutGrid />} label="Overview" active={currentPath === 'overview'} onClick={() => { navigate('/overview'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => { navigate('/business-info'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => { navigate('/services'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => { navigate('/knowledge'); setIsMobileMenuOpen(false); }} />
-                                    <SidebarItem icon={<ShieldAlert />} label="Protocols" active={currentPath === 'scenarios'} onClick={() => { navigate('/scenarios'); setIsMobileMenuOpen(false); }} />
-                                    <SidebarItem icon={<Users />} label="Staff" active={currentPath === 'staff'} onClick={() => { navigate('/staff'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => { navigate('/policies'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => { navigate('/faqs'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<ShieldAlert />} label="Scenarios & Restrictions" active={currentPath === 'scenarios'} onClick={() => { navigate('/scenarios'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Users />} label="Team" active={currentPath === 'staff'} onClick={() => { navigate('/staff'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => { navigate('/transfers'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => { navigate('/notifications'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => { navigate('/tags'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Mic />} label="Voice & Personality" active={currentPath === 'voice'} onClick={() => { navigate('/voice'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<MessageSquare />} label="Greetings & Closings" active={currentPath === 'greetings'} onClick={() => { navigate('/greetings'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Sliders />} label="Behaviors" active={currentPath === 'behaviors'} onClick={() => { navigate('/behaviors'); setIsMobileMenuOpen(false); }} />
                                 </div>
                             )}
                         </div>
@@ -108,8 +118,9 @@ export default function Sidebar() {
                             </button>
                         </div>
                     </div>
-                </div>
-            )}
+                </div >
+            )
+            }
 
             {/* Tier 1 Sidebar (Desktop) */}
             <aside className="hidden md:flex w-[72px] bg-slate-950 flex-col items-center py-6 z-30 flex-shrink-0 shadow-xl text-white">
@@ -148,17 +159,30 @@ export default function Sidebar() {
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+                    <div>
+                        <SidebarItem icon={<LayoutGrid />} label="Overview" active={currentPath === 'overview'} onClick={() => navigate('/overview')} />
+                    </div>
+
                     <SidebarGroup title="Knowledge Base">
+                        <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => navigate('/business-info')} />
                         <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => navigate('/services')} />
                         <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => navigate('/knowledge')} />
-                        <SidebarItem icon={<ShieldAlert />} label="Protocols" active={currentPath === 'scenarios'} onClick={() => navigate('/scenarios')} />
-                        <SidebarItem icon={<ListChecks />} label="Policies" />
-                        <SidebarItem icon={<HelpCircle />} label="FAQs" />
+                        <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => navigate('/policies')} />
+                        <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => navigate('/faqs')} />
+                        <SidebarItem icon={<ShieldAlert />} label="Scenarios & Restrictions" active={currentPath === 'scenarios'} onClick={() => navigate('/scenarios')} />
                     </SidebarGroup>
 
                     <SidebarGroup title="Team & Routing">
-                        <SidebarItem icon={<Users />} label="Staff" active={currentPath === 'staff'} onClick={() => navigate('/staff')} />
+                        <SidebarItem icon={<Users />} label="Team" active={currentPath === 'staff'} onClick={() => navigate('/staff')} />
                         <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => navigate('/transfers')} />
+                        <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => navigate('/notifications')} />
+                        <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => navigate('/tags')} />
+                    </SidebarGroup>
+
+                    <SidebarGroup title="Personality">
+                        <SidebarItem icon={<Mic />} label="Voice & Personality" active={currentPath === 'voice'} onClick={() => navigate('/voice')} />
+                        <SidebarItem icon={<MessageSquare />} label="Greetings & Closings" active={currentPath === 'greetings'} onClick={() => navigate('/greetings')} />
+                        <SidebarItem icon={<Sliders />} label="Behaviors" active={currentPath === 'behaviors'} onClick={() => navigate('/behaviors')} />
                     </SidebarGroup>
                 </nav>
 

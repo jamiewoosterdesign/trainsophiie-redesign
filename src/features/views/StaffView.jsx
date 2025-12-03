@@ -14,7 +14,7 @@ export default function StaffView() {
             <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div className="w-full md:w-auto flex justify-between items-start">
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Team & Routing</h1>
+                        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Team</h1>
                         <p className="text-slate-500 text-sm mt-1">Manage team members and configure transfer logic.</p>
                     </div>
                     <Button variant="ghost" size="icon" onClick={openSettings} className="md:hidden text-slate-400 hover:text-slate-600">
