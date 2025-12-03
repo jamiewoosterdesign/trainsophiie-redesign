@@ -7,12 +7,15 @@ import ScenariosView from '@/features/views/ScenariosView';
 import TransfersView from '@/features/views/TransfersView';
 import KnowledgeBaseView from '@/features/views/KnowledgeBaseView';
 
+import OverviewView from '@/features/views/OverviewView';
+
 function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<MainLayout />}>
-                    <Route index element={<Navigate to="/services" replace />} />
+                    <Route index element={<Navigate to="/overview" replace />} />
+                    <Route path="overview" element={<OverviewView />} />
                     <Route path="services" element={<ServicesView />} />
                     <Route path="staff" element={<StaffView />} />
                     <Route path="scenarios" element={<ScenariosView />} />
