@@ -149,7 +149,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
             )}
 
-            <div className="bg-white w-full h-full md:w-[95vw] md:h-[90vh] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+            <div className={`bg-white w-full h-full md:w-[95vw] md:h-[90vh] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''}`}>
 
                 {/* LEFT PANEL: WIZARD FORM */}
                 <div className="w-full md:w-[55%] flex flex-col border-r border-slate-200 bg-white relative z-10 h-full">
