@@ -1,5 +1,5 @@
 import React from 'react';
-import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, RotateCcw, Loader2, FileCheck, Book, CheckCircle2, Wrench, Shield, AlertTriangle, Wand2 } from 'lucide-react';
+import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, RotateCcw, Loader2, FileCheck, Book, CheckCircle2, Wrench, Shield, AlertTriangle, Wand2, Clock, Edit2, Copy } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -154,7 +154,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
                             <Label className="block">Description</Label>
-                            {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
+                            {formData.isContextActive && (
+                                <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                    <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                    <Sparkles className="w-3 h-3" />
+                                </div>
+                            )}
                         </div>
                         <div className="relative">
                             <Textarea
@@ -169,11 +174,32 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
-                            {formData.isContextActive && (
-                                <div className="absolute top-3 right-3 p-1.5 bg-emerald-100 rounded-lg text-emerald-600 animate-in zoom-in">
-                                    <Sparkles className="w-3 h-3" />
-                                </div>
-                            )}
+                        </div>
+                    </div>
+
+                    {/* Estimated Duration */}
+                    <div>
+                        <Label className="mb-1.5 block">Estimated Duration</Label>
+                        <div className="flex gap-3">
+                            <div className="flex-1">
+                                <Input
+                                    type="number"
+                                    placeholder="0"
+                                    value={formData.durationValue}
+                                    onChange={(e) => onChange('durationValue', e.target.value)}
+                                />
+                            </div>
+                            <div className="w-32">
+                                <select
+                                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={formData.durationUnit}
+                                    onChange={(e) => onChange('durationUnit', e.target.value)}
+                                >
+                                    <option value="minutes">Minutes</option>
+                                    <option value="hours">Hours</option>
+                                    <option value="days">Days</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -365,6 +391,118 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* SMS Content & Templates */}
+                                    <div className="pt-4 border-t border-slate-200">
+                                        <Label className="mb-2 block text-sm font-medium text-slate-700">SMS Content</Label>
+                                        <p className="text-xs text-slate-500 mb-2">This is the SMS content that will be sent to your customer</p>
+                                        <Textarea
+                                            className="min-h-[100px] mb-4"
+                                            placeholder="Enter SMS message content"
+                                            value={formData.sendInfoMessage}
+                                            onChange={(e) => onChange('sendInfoMessage', e.target.value)}
+                                        />
+
+                                        <div className="flex items-center justify-between mb-3">
+                                            <Label className="text-sm font-bold text-slate-900">SMS Templates</Label>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => {
+                                                    onChange('isCreatingTemplate', !formData.isCreatingTemplate);
+                                                }}
+                                            >
+                                                <Plus className="w-4 h-4 mr-2" /> New Template
+                                            </Button>
+                                        </div>
+
+                                        {formData.isCreatingTemplate && (
+                                            <div className="bg-slate-100 p-4 rounded-lg mb-4 border border-slate-200 animate-in fade-in slide-in-from-top-2">
+                                                <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">New SMS Template</div>
+
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <Label className="mb-1.5 block text-xs">Template Name</Label>
+                                                        <Input
+                                                            placeholder="Enter template name"
+                                                            className="bg-white"
+                                                            value={formData.newTemplateName || ''}
+                                                            onChange={(e) => onChange('newTemplateName', e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label className="mb-1.5 block text-xs">Content</Label>
+                                                        <Textarea
+                                                            placeholder="Enter SMS message content"
+                                                            className="bg-white min-h-[80px]"
+                                                            value={formData.newTemplateContent || ''}
+                                                            onChange={(e) => onChange('newTemplateContent', e.target.value)}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-end gap-2 pt-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => onChange('isCreatingTemplate', false)}
+                                                            className="bg-white hover:bg-slate-200"
+                                                        >
+                                                            Cancel
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                                                            onClick={() => {
+                                                                if (formData.newTemplateName && formData.newTemplateContent) {
+                                                                    const newTemplate = {
+                                                                        id: Date.now().toString(),
+                                                                        name: formData.newTemplateName,
+                                                                        content: formData.newTemplateContent
+                                                                    };
+                                                                    onChange('smsTemplates', [...(formData.smsTemplates || []), newTemplate]);
+                                                                    onChange('sendInfoMessage', formData.newTemplateContent); // Auto-use
+                                                                    onChange('isCreatingTemplate', false);
+                                                                    onChange('newTemplateName', '');
+                                                                    onChange('newTemplateContent', '');
+                                                                }
+                                                            }}
+                                                        >
+                                                            Save and Use Template
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-2">
+                                            {formData.smsTemplates?.map(t => (
+                                                <div key={t.id} className="group bg-white p-3 rounded-lg border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all flex items-start justify-between">
+                                                    <div className="flex-1">
+                                                        <div className="font-bold text-sm text-slate-900 mb-1">{t.name}</div>
+                                                        <div className="text-xs text-slate-500 line-clamp-2">{t.content}</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                            onClick={() => onChange('sendInfoMessage', t.content)}
+                                                        >
+                                                            Use
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600">
+                                                            <Edit2 className="w-3 h-3" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => {
+                                                            const newTemplates = formData.smsTemplates.filter(temp => temp.id !== t.id);
+                                                            onChange('smsTemplates', newTemplates);
+                                                        }}>
+                                                            <Trash2 className="w-3 h-3" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>

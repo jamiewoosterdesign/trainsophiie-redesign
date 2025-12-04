@@ -3,7 +3,7 @@ import { X, ChevronRight, Check, ArrowLeft, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WizardFormContent from './WizardFormContent';
 import LiveSimulator from '@/features/simulator/LiveSimulator';
-
+import WizardEntryModal from './WizardEntryModal';
 
 
 const USE_GLOBAL_VOICE_UI = true;
@@ -14,9 +14,13 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [lastStepCache, setLastStepCache] = useState({ service: 1, transfer: 1, protocol: 1 });
     const [isDirty, setIsDirty] = useState(false);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-    const [simulatorTab, setSimulatorTab] = useState('invitation'); // 'invitation', 'voice', 'preview'
+    const [simulatorTab, setSimulatorTab] = useState('preview'); // Default to preview
     const [activeField, setActiveField] = useState(null);
     const [isMobileSimulatorOpen, setIsMobileSimulatorOpen] = useState(false);
+
+    // Entry Modal State
+    const [showEntryModal, setShowEntryModal] = useState(true);
+    const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
 
     const [formData, setFormData] = useState({
         serviceName: '',
@@ -26,6 +30,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         // Business Logic
         priceMode: 'fixed', // 'fixed', 'hourly', 'range', 'na'
         price: '',
+        durationValue: '',
+        durationUnit: 'minutes',
         customPriceMessage: '',
         useCustomPriceMessage: false,
         questions: [],
@@ -49,6 +55,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         infoSource: '',
         sendInfoEmail: '',
         sendInfoPhone: '',
+        sendInfoMessage: '',
+        smsTemplates: [
+            { id: '1', name: 'generic call back 24hr', content: 'thanks for calling we will get back to asap, usually within 24 hours.' }
+        ],
 
         // Legacy / Other Modes (Keep for now to avoid breaking other wizards)
         staffName: '',
@@ -115,6 +125,18 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         onClose();
     };
 
+    const handleEntryModeSelect = (selectedMode) => {
+        setShowEntryModal(false);
+        if (selectedMode === 'voice') {
+            setSimulatorTab('voice');
+        } else {
+            setSimulatorTab('preview');
+        }
+        // Trigger tooltip
+        setShowVoiceTooltip(true);
+        setTimeout(() => setShowVoiceTooltip(false), 5000); // Hide after 5s
+    };
+
     const getWizardTitle = () => {
         switch (mode) {
             case 'service': return 'Add New Service';
@@ -134,6 +156,18 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200">
+
+            {/* Entry Modal Overlay */}
+            {showEntryModal && (
+                <WizardEntryModal
+                    onSelectMode={handleEntryModeSelect}
+                    onClose={() => {
+                        setShowEntryModal(false);
+                        setShowVoiceTooltip(true);
+                        setTimeout(() => setShowVoiceTooltip(false), 5000);
+                    }}
+                />
+            )}
 
             {/* Save Confirmation Dialog */}
             {showSaveConfirm && (
@@ -261,6 +295,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         simulatorTab={simulatorTab}
                         setSimulatorTab={setSimulatorTab}
                         setActiveField={setActiveField}
+                        showVoiceTooltip={showVoiceTooltip}
                     />
                 </div>
 
