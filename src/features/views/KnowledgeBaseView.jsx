@@ -29,23 +29,31 @@ export default function KnowledgeBaseView() {
                 </Button>
             </header>
 
-            {/* Tabs */}
-            <div className="px-8 pt-4 pb-0 border-b border-slate-100 flex gap-6">
-                <button onClick={() => setActiveTab('library')}
-                    className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'library' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-                >
-                    Library (Files)
-                </button>
-                <button onClick={() => setActiveTab('web')}
-                    className={`pb-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'web' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-                >
-                    Web Sources
-                </button>
-            </div>
-
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 relative">
                 <div className="max-w-7xl mx-auto w-full">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
+
+                    {/* Tabs */}
+                    <div className="flex items-center gap-2 mb-6 bg-slate-100 p-1 rounded-lg w-fit">
+                        <button
+                            onClick={() => setActiveTab('library')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'library'
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                }`}
+                        >
+                            Library (Files)
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('web')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'web'
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                }`}
+                        >
+                            Web Sources
+                        </button>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
 
