@@ -6,6 +6,7 @@ import StaffView from '@/features/views/StaffView';
 import ScenariosView from '@/features/views/ScenariosView';
 import TransfersView from '@/features/views/TransfersView';
 import KnowledgeBaseView from '@/features/views/KnowledgeBaseView';
+import BusinessInfoView from '@/features/views/BusinessInfoView';
 
 import OverviewView from '@/features/views/OverviewView';
 
@@ -20,7 +21,9 @@ function App() {
                     <Route path="staff" element={<StaffView />} />
                     <Route path="scenarios" element={<ScenariosView />} />
                     <Route path="transfers" element={<TransfersView />} />
+                    <Route path="transfers" element={<TransfersView />} />
                     <Route path="knowledge" element={<KnowledgeBaseView />} />
+                    <Route path="business-info" element={<BusinessInfoView />} />
                 </Route>
             </Routes>
         </Router>

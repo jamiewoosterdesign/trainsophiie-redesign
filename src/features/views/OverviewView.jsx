@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 
 const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, statusColor }) => {
     const navigate = useNavigate();
@@ -177,37 +178,31 @@ export default function OverviewView() {
     ];
 
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300 overflow-y-auto bg-slate-50/50">
-            <div className="p-8 max-w-7xl mx-auto w-full space-y-10">
-
-                {/* Hero Banner */}
-                <div className="rounded-2xl bg-gradient-to-r from-[#1e1b4b] to-[#4c1d95] p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
-                    <div className="relative z-10 max-w-2xl">
-                        <h1 className="text-3xl md:text-4xl font-bold mb-4">Let's Train Sophiie.</h1>
-                        <p className="text-blue-100 text-lg mb-8 leading-relaxed opacity-90">
-                            Your AI receptionist learns directly from your business data. You can guide her setup instantly with your voice or upload your existing documents to get started.
-                        </p>
-                        <Button onClick={startGlobalVoiceFlow} className="bg-white text-[#4c1d95] hover:bg-blue-50 border-none font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95">
-                            <Mic2 className="w-4 h-4 mr-2" /> Guided Voice Setup
-                        </Button>
-                    </div>
-
-                    {/* Decorative background elements to match the feel */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                    <div className="absolute bottom-0 right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div className="flex flex-col h-full animate-in fade-in duration-300">
+            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+                <div>
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Overview</h1>
+                    <p className="text-slate-500 text-sm mt-1">Welcome to your Sophiie dashboard.</p>
                 </div>
+            </header>
+            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+                <div className="max-w-7xl mx-auto w-full space-y-10">
 
-                {/* Sections */}
-                {sections.map((section, idx) => (
-                    <div key={idx}>
-                        <h2 className="text-lg font-bold text-slate-900 mb-6">{section.title}</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {section.items.map((item, itemIdx) => (
-                                <OverviewCard key={itemIdx} {...item} />
-                            ))}
+                    {/* Hero Banner */}
+                    <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
+
+                    {/* Sections */}
+                    {sections.map((section, idx) => (
+                        <div key={idx}>
+                            <h2 className="text-lg font-bold text-slate-900 mb-6">{section.title}</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {section.items.map((item, itemIdx) => (
+                                    <OverviewCard key={itemIdx} {...item} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );
