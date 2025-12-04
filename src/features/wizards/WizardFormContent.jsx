@@ -1,5 +1,5 @@
 import React from 'react';
-import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, RotateCcw, Loader2, FileCheck, Book, CheckCircle2, Wrench, Shield, AlertTriangle } from 'lucide-react';
+import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, RotateCcw, Loader2, FileCheck, Book, CheckCircle2, Wrench, Shield, AlertTriangle, Wand2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TeamMemberSelector } from '@/components/shared/TeamMemberSelector';
 import { TransferRoutingSelector } from '@/components/shared/TransferRoutingSelector';
+import QuestionRulesEditor from './QuestionRulesEditor';
 
 export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
 
@@ -27,7 +28,11 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     onChange('description', "Professional heater diagnosis and repair. We check gas/electric connections, pilot lights, and thermostats.");
                     onChange('price', "180.00");
                     onChange('priceMode', 'hourly');
-                    onChange('questions', ["Is the area easily accessible?", "How old is the current unit?", "Is it gas or electric?"]);
+                    onChange('questions', [
+                        { id: '1', text: "Is the area easily accessible?", options: [] },
+                        { id: '2', text: "How old is the current unit?", options: [] },
+                        { id: '3', text: "Is it gas or electric?", options: [] }
+                    ]);
                     onChange('serviceOutcome', 'collect');
                     onChange('serviceClosingScript', "e.g. I'll take your details and have someone from the team call you back shortly.");
                 }, 1500);
@@ -154,32 +159,25 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="relative">
                             <Textarea
                                 placeholder="Describe what this service entails..."
-                                className={`h-32 resize-none transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
                                 value={formData.description}
                                 onChange={(e) => onChange('description', e.target.value)}
                                 highlight={(activeField === 'description').toString()}
                             />
+                            <div className="absolute bottom-3 right-3">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                                    <Wand2 className="w-4 h-4" />
+                                </div>
+                            </div>
                             {formData.isContextActive && (
-                                <div className="absolute bottom-3 right-3 p-1.5 bg-emerald-100 rounded-lg text-emerald-600 animate-in zoom-in">
+                                <div className="absolute top-3 right-3 p-1.5 bg-emerald-100 rounded-lg text-emerald-600 animate-in zoom-in">
                                     <Sparkles className="w-3 h-3" />
                                 </div>
                             )}
                         </div>
                     </div>
-                </div>
-            );
-        }
-        if (step === 2) {
-            return (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    {formData.isContextActive && (
-                        <div className="-mx-4 -mt-4 mb-6 md:-mx-8 md:-mt-8 bg-emerald-50 border-b border-emerald-100 px-4 py-2 md:px-8 flex items-center gap-3 animate-in fade-in">
-                            <div className="w-6 h-6 bg-white rounded flex items-center justify-center text-emerald-600 shadow-sm">
-                                <FileCheck className="w-3 h-3" />
-                            </div>
-                            <span className="text-xs font-medium text-emerald-800">Using Context: <strong>{formData.contextFileName}</strong></span>
-                        </div>
-                    )}
+
+                    {/* Moved from Step 2: Pricing */}
                     <div>
                         <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
                             <Label className="block">Pricing Mode</Label>
@@ -211,57 +209,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         )}
                     </div>
 
+                    {/* Moved from Step 2: Question Rules */}
                     <div>
-                        <div className="flex flex-wrap justify-between items-center gap-2 mb-1.5">
-                            <Label className="block">Follow-up Questions</Label>
-                            {formData.isContextActive && <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">AI Auto-filled</span>}
-                        </div>
-                        <div className="space-y-2 mb-3">
-                            {formData.questions.map((q, i) => (
-                                <div key={i} className="flex gap-2 group">
-                                    <Input
-                                        value={q}
-                                        onChange={(e) => {
-                                            const newQ = [...formData.questions];
-                                            newQ[i] = e.target.value;
-                                            onChange('questions', newQ);
-                                        }}
-                                        className={`transition-colors ${formData.isContextActive ? 'bg-emerald-50/20 border-emerald-200 text-emerald-900 focus:bg-white' : 'bg-slate-50 border-slate-200 focus:bg-white'}`}
-                                    />
-                                    <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => {
-                                        const newQ = formData.questions.filter((_, idx) => idx !== i);
-                                        onChange('questions', newQ);
-                                    }}>
-                                        <Trash2 className="w-4 h-4 text-slate-400 hover:text-red-500" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex gap-2">
-                            <Input placeholder="Add a question..." id="new-q-input" onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    if (e.target.value.trim()) {
-                                        onChange('questions', [...formData.questions, e.target.value]);
-                                        e.target.value = '';
-                                    }
-                                }
-                            }} />
-                            <Button variant="secondary" onClick={() => {
-                                const input = document.getElementById('new-q-input');
-                                if (input.value.trim()) {
-                                    onChange('questions', [...formData.questions, input.value]);
-                                    input.value = '';
-                                }
-                            }}>
-                                Add
-                            </Button>
-                        </div>
+                        <QuestionRulesEditor
+                            questions={formData.questions}
+                            onChange={(newQuestions) => onChange('questions', newQuestions)}
+                        />
                     </div>
                 </div>
             );
         }
-        if (step === 3) {
+
+        // Step 2 (was Step 3)
+        if (step === 2) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     {formData.isContextActive && (
@@ -676,7 +636,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <div className="flex-1">
                                     <span className="text-sm font-medium text-slate-700 block mb-1">Ask Questions:</span>
                                     <ul className="list-disc list-inside text-xs text-slate-600">
-                                        {formData.questions.length > 0 ? formData.questions.map((q, i) => <li key={i}>{q}</li>) : <li>Default Questions</li>}
+                                        {formData.questions.length > 0 ? formData.questions.map((q, i) => <li key={i}>{q.text || q}</li>) : <li>Default Questions</li>}
                                     </ul>
                                 </div>
                             </div>

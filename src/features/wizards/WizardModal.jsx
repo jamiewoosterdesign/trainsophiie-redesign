@@ -127,7 +127,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     };
 
     const getTotalSteps = () => {
-        // All wizards now have 3 steps based on App-dump.jsx
+        if (mode === 'service') return 2;
+        // All other wizards have 3 steps
         return 3;
     };
 
@@ -181,7 +182,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                 <div className="flex flex-wrap items-center gap-3 mt-3">
                                     {(
                                         {
-                                            service: ['Identity & Knowledge', 'Business Logic', 'Outcome'],
+                                            service: ['Service Details', 'Outcome'],
                                             staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],

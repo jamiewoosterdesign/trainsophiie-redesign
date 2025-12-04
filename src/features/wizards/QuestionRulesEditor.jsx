@@ -1,0 +1,186 @@
+import React, { useState } from 'react';
+import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+
+// Recursive component for Question Nodes
+const QuestionNode = ({ question, onUpdate, onDelete, level = 0 }) => {
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    const addOption = () => {
+        const newOption = {
+            id: Date.now().toString(),
+            text: '',
+            followUps: []
+        };
+        onUpdate({
+            ...question,
+            options: [...(question.options || []), newOption]
+        });
+    };
+
+    const updateOption = (optionIndex, newOption) => {
+        const newOptions = [...(question.options || [])];
+        newOptions[optionIndex] = newOption;
+        onUpdate({ ...question, options: newOptions });
+    };
+
+    const deleteOption = (optionIndex) => {
+        const newOptions = [...(question.options || [])];
+        newOptions.splice(optionIndex, 1);
+        onUpdate({ ...question, options: newOptions });
+    };
+
+    return (
+        <div className={cn("border rounded-lg bg-white shadow-sm transition-all", level > 0 ? "mt-4 border-slate-200" : "border-slate-200")}>
+            {/* Question Header */}
+            <div className="p-3 flex items-start gap-3">
+                <div className="mt-2 text-slate-400 cursor-grab active:cursor-grabbing">
+                    <GripVertical className="w-4 h-4" />
+                </div>
+                <div className="flex-1">
+                    <Input
+                        value={question.text}
+                        onChange={(e) => onUpdate({ ...question, text: e.target.value })}
+                        placeholder="e.g. What type of business is this?"
+                        className="font-medium text-slate-900 border-slate-200 focus:border-blue-400 bg-transparent"
+                    />
+                </div>
+                <Button variant="ghost" size="icon" onClick={onDelete} className="text-slate-400 hover:text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                </Button>
+            </div>
+
+            {/* Options Section */}
+            <div className="px-3 pb-3 pl-10">
+                <div className="flex items-center justify-between mb-2">
+                    <Label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Answer Options & Follow-ups</Label>
+                    <Button variant="outline" size="sm" onClick={addOption} className="h-7 text-xs gap-1">
+                        <Plus className="w-3 h-3" /> Add Option
+                    </Button>
+                </div>
+
+                <div className="space-y-3 relative">
+                    {/* Vertical Line for Tree Structure */}
+                    {(question.options?.length > 0) && (
+                        <div className="absolute left-[-18px] top-2 bottom-4 w-px bg-slate-200" />
+                    )}
+
+                    {question.options?.map((option, idx) => (
+                        <div key={option.id} className="relative">
+                            {/* Connector Line */}
+                            <div className="absolute left-[-18px] top-5 w-4 h-px bg-slate-200" />
+
+                            <div className="bg-slate-50 rounded-lg border border-slate-200 p-3">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <span className="text-xs font-medium text-slate-500 w-16">Option {idx + 1}</span>
+                                    <Input
+                                        value={option.text}
+                                        onChange={(e) => updateOption(idx, { ...option, text: e.target.value })}
+                                        placeholder="e.g. Residential"
+                                        className="h-9 bg-white"
+                                    />
+                                    <Button variant="ghost" size="icon" onClick={() => deleteOption(idx)} className="h-9 w-9 text-slate-400 hover:text-red-500">
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
+
+                                {/* Nested Follow-ups */}
+                                <div className="pl-4 border-l-2 border-slate-200 ml-2 space-y-3">
+                                    {option.followUps?.map((fq, fqIdx) => (
+                                        <QuestionNode
+                                            key={fq.id}
+                                            question={fq}
+                                            level={level + 1}
+                                            onUpdate={(updatedFq) => {
+                                                const newFollowUps = [...option.followUps];
+                                                newFollowUps[fqIdx] = updatedFq;
+                                                updateOption(idx, { ...option, followUps: newFollowUps });
+                                            }}
+                                            onDelete={() => {
+                                                const newFollowUps = [...option.followUps];
+                                                newFollowUps.splice(fqIdx, 1);
+                                                updateOption(idx, { ...option, followUps: newFollowUps });
+                                            }}
+                                        />
+                                    ))}
+
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="w-full border border-dashed border-slate-300 text-slate-500 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-300 h-8 text-xs"
+                                        onClick={() => {
+                                            const newFollowUp = {
+                                                id: Date.now().toString(),
+                                                text: '',
+                                                options: []
+                                            };
+                                            updateOption(idx, { ...option, followUps: [...(option.followUps || []), newFollowUp] });
+                                        }}
+                                    >
+                                        <Plus className="w-3 h-3 mr-1" /> Add Follow-up Question
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default function QuestionRulesEditor({ questions, onChange }) {
+    const addQuestion = () => {
+        const newQuestion = {
+            id: Date.now().toString(),
+            text: '',
+            options: []
+        };
+        onChange([...(questions || []), newQuestion]);
+    };
+
+    const updateQuestion = (index, updatedQuestion) => {
+        const newQuestions = [...(questions || [])];
+        newQuestions[index] = updatedQuestion;
+        onChange(newQuestions);
+    };
+
+    const deleteQuestion = (index) => {
+        const newQuestions = [...(questions || [])];
+        newQuestions.splice(index, 1);
+        onChange(newQuestions);
+    };
+
+    return (
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <Label className="text-base font-bold text-slate-900">Question Rules</Label>
+                <Button variant="outline" size="sm" onClick={addQuestion}>
+                    <Plus className="w-4 h-4 mr-2" /> Add new question
+                </Button>
+            </div>
+
+            {/* Default Rule Banner */}
+            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-center gap-3 text-blue-800 text-sm">
+                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <span className="font-bold text-blue-600">!</span>
+                </div>
+                Sophiie will always start by asking for the caller's name
+            </div>
+
+            <div className="space-y-6">
+                {questions?.map((q, idx) => (
+                    <QuestionNode
+                        key={q.id}
+                        question={q}
+                        onUpdate={(updatedQ) => updateQuestion(idx, updatedQ)}
+                        onDelete={() => deleteQuestion(idx)}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}

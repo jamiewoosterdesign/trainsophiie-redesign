@@ -173,13 +173,17 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         priceMode: 'na',
                         useCustomPriceMessage: true,
                         customPriceMessage: "Based on our SOP, heater repairs require an on-site diagnosis. We charge a $89 call-out fee which is waived if you proceed.",
-                        questions: ["Is the area easily accessible?", "How old is the current unit?", "Is it gas or electric?"]
+                        questions: [
+                            { id: '1', text: "Is the area easily accessible?", options: [] },
+                            { id: '2', text: "How old is the current unit?", options: [] },
+                            { id: '3', text: "Is it gas or electric?", options: [] }
+                        ]
                     });
 
-                    const reply = "Great. I've populated the fields for you. Moving to the next step.";
+                    const reply = "Great. I've populated the fields for you.";
                     if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                     speak(reply);
-                    setTimeout(() => onStepAdvance(2), 3000); // Advance after speak
+                    // No step advance, just fill
                     setConvoPhase('DONE');
 
                 } else {
@@ -214,7 +218,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 const reply = "Description saved. Let's move to pricing.";
                 if (!USE_GLOBAL_VOICE_UI) setMessages(prev => [...prev, { role: 'bot', text: reply }]);
                 speak(reply);
-                setTimeout(() => onStepAdvance(2), 3000);
+                // No step advance
                 setConvoPhase('DONE');
             }
         }
