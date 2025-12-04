@@ -9,6 +9,8 @@ import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
+import { CategorySelector } from '@/components/shared/CategorySelector';
+
 export default function ServicesView() {
     const { openWizard, voiceFlowStep, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
@@ -25,9 +27,12 @@ export default function ServicesView() {
                         <p className="text-slate-500 text-sm mt-1">Teach Sophiie what services you offer.</p>
                     </div>
                 </div>
-                <Button onClick={() => openWizard('service')} className="w-full md:w-auto">
-                    <Plus className="w-4 h-4 mr-2" /> Add Service
-                </Button>
+                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                    <CategorySelector onSelect={(cat) => console.log('Selected category:', cat)} />
+                    <Button onClick={() => openWizard('service')} className="w-full md:w-auto">
+                        <Plus className="w-4 h-4 mr-2" /> Add Service
+                    </Button>
+                </div>
             </header>
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 relative">
                 <div className="max-w-7xl mx-auto w-full">
