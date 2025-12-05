@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mic2, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -13,8 +13,25 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
         localStorage.setItem('voiceSetupBannerCollapsed', isCollapsed);
     }, [isCollapsed]);
 
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const bannerRef = useRef(null);
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            if (!bannerRef.current) return;
+            const rect = bannerRef.current.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            setMousePos({ x, y });
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+
     return (
         <div
+            ref={bannerRef}
             className={cn(
                 "rounded-2xl text-white relative overflow-hidden transition-all duration-500 ease-in-out mb-10 border border-white/10",
                 isCollapsed ? "p-4 md:px-12 md:py-6" : "p-8 md:p-12"
@@ -23,22 +40,42 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none bg-slate-950">
                 {/* Deep Base Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 opacity-100" />
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 opacity-100" />
 
 
 
                 <div className="absolute w-[100%] h-[100%] top-0 left-0 overflow-hidden">
-                    {/* Blob 1: Vibrant Purple - Slightly reduced intensity */}
-                    <div className="absolute top-[10%] left-[10%] w-[60%] h-[60%] bg-purple-700 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-[moveInCircle_20s_linear_infinite]" />
+                    {/* Blob 1: Deep Blue */}
+                    <div className="absolute top-[10%] left-[10%] w-[60%] h-[60%] animate-[moveInCircle_20s_linear_infinite]">
+                        <div
+                            className="w-full h-full bg-blue-700 rounded-full mix-blend-screen filter blur-[100px] opacity-40 transition-transform duration-300 ease-out"
+                            style={{ transform: `translate(${mousePos.x * 0.04}px, ${mousePos.y * 0.04}px)` }}
+                        />
+                    </div>
 
-                    {/* Blob 2: Deep Indigo */}
-                    <div className="absolute top-[10%] right-[10%] w-[50%] h-[50%] bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-50 animate-[moveVertical_30s_ease-in-out_infinite]" />
+                    {/* Blob 2: Indigo */}
+                    <div className="absolute top-[10%] right-[10%] w-[50%] h-[50%] animate-[moveVertical_30s_ease-in-out_infinite]">
+                        <div
+                            className="w-full h-full bg-indigo-600 rounded-full mix-blend-screen filter blur-[100px] opacity-50 transition-transform duration-300 ease-out"
+                            style={{ transform: `translate(${mousePos.x * -0.05}px, ${mousePos.y * 0.05}px)` }}
+                        />
+                    </div>
 
-                    {/* Blob 3: Sky Blue (Replaced Fuchsia) */}
-                    <div className="absolute bottom-[20%] left-[20%] w-[50%] h-[50%] bg-sky-500 rounded-full mix-blend-screen filter blur-[100px] opacity-40 animate-[moveHorizontal_40s_ease-in-out_infinite]" />
+                    {/* Blob 3: Sky Blue */}
+                    <div className="absolute bottom-[20%] left-[20%] w-[50%] h-[50%] animate-[moveHorizontal_40s_ease-in-out_infinite]">
+                        <div
+                            className="w-full h-full bg-sky-500 rounded-full mix-blend-screen filter blur-[100px] opacity-40 transition-transform duration-300 ease-out"
+                            style={{ transform: `translate(${mousePos.x * 0.03}px, ${mousePos.y * -0.03}px)` }}
+                        />
+                    </div>
 
-                    {/* Blob 4: Cyan Highlight */}
-                    <div className="absolute bottom-[10%] right-[20%] w-[40%] h-[40%] bg-cyan-500 rounded-full mix-blend-screen filter blur-[120px] opacity-40 animate-[moveInCircle_40s_reverse_infinite]" />
+                    {/* Blob 4: Cyan */}
+                    <div className="absolute bottom-[10%] right-[20%] w-[40%] h-[40%] animate-[moveInCircle_40s_reverse_infinite]">
+                        <div
+                            className="w-full h-full bg-cyan-500 rounded-full mix-blend-screen filter blur-[120px] opacity-40 transition-transform duration-300 ease-out"
+                            style={{ transform: `translate(${mousePos.x * -0.06}px, ${mousePos.y * -0.06}px)` }}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -69,7 +106,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,#0000_0%,#38bdf8_50%,#a855f7_75%,#0000_100%)] animate-[spin_3s_linear_infinite]" />
                         </div>
-                        <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
+                        <div className="absolute inset-[2.25px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                         <div className="relative z-10 flex items-center px-6 py-2">
                             <Mic2 className="w-4 h-4 mr-2" /> <span className="font-medium">Guided Voice Setup</span>
                         </div>
@@ -100,7 +137,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,#0000_0%,#38bdf8_50%,#a855f7_75%,#0000_100%)] animate-[spin_3s_linear_infinite]" />
                                 </div>
-                                <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
+                                <div className="absolute inset-[2.25px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                                 <div className="relative z-10 flex items-center px-8 py-3 text-lg">
                                     <Mic2 className="w-5 h-5 mr-2.5" /> <span className="font-semibold">Start Voice Session</span>
                                 </div>
