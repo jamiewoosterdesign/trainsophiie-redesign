@@ -61,7 +61,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                         className="w-full md:w-auto bg-transparent hover:bg-transparent text-[#4c1d95] border-none shadow-sm transition-all hover:scale-105 active:scale-95 relative overflow-hidden group p-0 rounded-full"
                     >
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#22d3ee_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
+                            <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
                         </div>
                         <div className="absolute inset-[3px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                         <div className="relative z-10 flex items-center px-6 py-2">
@@ -74,15 +74,15 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                 <>
                     <div className="relative z-10 max-w-2xl animate-in fade-in duration-500">
                         <h1 className="text-3xl md:text-4xl font-bold mb-4">Let's Train Sophiie.</h1>
-                        <p className="text-blue-100 text-lg mb-8 leading-relaxed opacity-90">
-                            Your AI receptionist learns directly from your business data. You can guide her setup instantly with your voice or upload your existing documents to get started.
+                        <p className="text-blue-50 text-lg mb-8 leading-relaxed">
+                            Your AI receptionist learns from your business data. Use your voice to guide her training, or select the items below to configure Sophiie directly.
                         </p>
                         <Button
                             onClick={onStartVoiceFlow}
                             className="bg-transparent hover:bg-transparent text-[#4c1d95] border-none shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 relative overflow-hidden group p-0 rounded-full"
                         >
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#22d3ee_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
+                                <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
                             </div>
                             <div className="absolute inset-[3px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                             <div className="relative z-10 flex items-center px-6 py-2">
