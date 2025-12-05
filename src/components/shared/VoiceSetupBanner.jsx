@@ -67,7 +67,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                         className="w-full md:w-auto bg-transparent hover:bg-transparent text-[#4c1d95] border-none shadow-sm transition-all hover:scale-105 active:scale-95 relative overflow-hidden group p-0 rounded-full"
                     >
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
+                            <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,#0000_0%,#38bdf8_50%,#a855f7_75%,#0000_100%)] animate-[spin_3s_linear_infinite]" />
                         </div>
                         <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                         <div className="relative z-10 flex items-center px-6 py-2">
@@ -98,7 +98,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                                 className="bg-transparent hover:bg-transparent text-[#4c1d95] border-none shadow-[0_0_40px_-10px_rgba(168,85,247,0.6)] hover:shadow-[0_0_60px_-15px_rgba(168,85,247,0.8)] transition-all hover:scale-105 active:scale-95 relative overflow-hidden group p-0 rounded-full"
                             >
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
+                                    <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,#0000_0%,#38bdf8_50%,#a855f7_75%,#0000_100%)] animate-[spin_3s_linear_infinite]" />
                                 </div>
                                 <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                                 <div className="relative z-10 flex items-center px-8 py-3 text-lg">
