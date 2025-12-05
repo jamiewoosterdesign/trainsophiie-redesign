@@ -54,9 +54,12 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
             {isCollapsed ? (
                 // Collapsed View
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 pr-10 md:pr-12 relative z-10">
-                    <div className="hidden md:block font-bold text-lg tracking-tight">
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-sky-200 flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-white" /> Let's Train Sophiie.
+                    <div className="hidden md:flex items-center font-bold text-lg tracking-tight">
+                        <div className="p-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/10 shadow-sm mr-3">
+                            <Sparkles className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-sky-200">
+                            Let's Train Sophiie.
                         </span>
                     </div>
                     <Button
@@ -66,7 +69,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
                         </div>
-                        <div className="absolute inset-[3px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
+                        <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                         <div className="relative z-10 flex items-center px-6 py-2">
                             <Mic2 className="w-4 h-4 mr-2" /> <span className="font-medium">Guided Voice Setup</span>
                         </div>
@@ -76,8 +79,10 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                 // Expanded View
                 <>
                     <div className="relative z-10 max-w-2xl animate-in fade-in duration-500 slide-in-from-bottom-4">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight leading-tight flex items-center gap-3">
-                            <Sparkles className="w-8 h-8 text-white" />
+                        <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight leading-tight flex items-center gap-4">
+                            <div className="p-1.5 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10 shadow-sm">
+                                <Sparkles className="w-8 h-8 text-white" />
+                            </div>
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-sky-200">
                                 Let's Train Sophiie.
                             </span>
@@ -95,7 +100,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="w-[500%] h-[500%] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,#a855f7_50%,transparent_100%)] animate-[spin_3s_linear_infinite]" />
                                 </div>
-                                <div className="absolute inset-[3px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
+                                <div className="absolute inset-[1.5px] bg-white rounded-full group-hover:bg-blue-50 transition-colors" />
                                 <div className="relative z-10 flex items-center px-8 py-3 text-lg">
                                     <Mic2 className="w-5 h-5 mr-2.5" /> <span className="font-semibold">Start Voice Session</span>
                                 </div>
