@@ -8,6 +8,9 @@ import WizardEntryModal from './WizardEntryModal';
 
 const USE_GLOBAL_VOICE_UI = true;
 
+// Module-level variable to persist preference across modal opens but reset on page refresh
+let skipEntryModalPreference = false;
+
 export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [step, setStep] = useState(1);
     const [returnToMode, setReturnToMode] = useState(null);
@@ -19,8 +22,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [isMobileSimulatorOpen, setIsMobileSimulatorOpen] = useState(false);
 
     // Entry Modal State
-    const [showEntryModal, setShowEntryModal] = useState(true);
+    const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference);
     const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
+    const [showToast, setShowToast] = useState(null);
+
+    // Trigger tooltip if modal is skipped on mount
+    React.useEffect(() => {
+        if (!showEntryModal) {
+            setShowVoiceTooltip(true);
+            setTimeout(() => setShowVoiceTooltip(false), 5000);
+        }
+    }, []);
 
     const [formData, setFormData] = useState({
         serviceName: '',
@@ -76,6 +88,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         transferSummary: 'Hi, I have {Caller Name} on the line who needs assistance with {Reason}. They mentioned {Key Details}.',
         transferDestinationType: 'staff',
         transferDestinationValue: '',
+
+        // Policy Mode
+        policyName: '',
+        policyContent: '',
     });
 
     const updateFormData = (field, value) => {
@@ -125,13 +141,20 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         onClose();
     };
 
-    const handleEntryModeSelect = (selectedMode) => {
+    const handleEntryModeSelect = (selectedMode, dontShowAgain) => {
         setShowEntryModal(false);
         if (selectedMode === 'voice') {
             setSimulatorTab('voice');
         } else {
             setSimulatorTab('preview');
         }
+
+        if (dontShowAgain) {
+            skipEntryModalPreference = true;
+            setShowToast({ message: "Preference saved. You can change this in Settings." });
+            setTimeout(() => setShowToast(null), 3000);
+        }
+
         // Trigger tooltip
         setShowVoiceTooltip(true);
         setTimeout(() => setShowVoiceTooltip(false), 5000); // Hide after 5s
@@ -144,12 +167,14 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
             case 'protocol': return 'Create Scenario';
             case 'transfer': return 'Add Transfer Rule';
             case 'document': return 'Upload Document';
+            case 'policy': return 'Add Policy';
             default: return 'Configuration';
         }
     };
 
     const getTotalSteps = () => {
         if (mode === 'service') return 2;
+        if (mode === 'policy') return 1;
         // All other wizards have 3 steps
         return 3;
     };
@@ -157,12 +182,25 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200">
 
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-in slide-in-from-top-2 fade-in duration-300 flex items-center gap-2">
+                    <Check className="w-4 h-4 text-green-400" />
+                    {showToast.message}
+                </div>
+            )}
+
             {/* Entry Modal Overlay */}
             {showEntryModal && (
                 <WizardEntryModal
                     onSelectMode={handleEntryModeSelect}
-                    onClose={() => {
+                    onClose={(dontShowAgain) => {
                         setShowEntryModal(false);
+                        if (dontShowAgain) {
+                            skipEntryModalPreference = true;
+                            setShowToast({ message: "Preference saved. You can change this in Settings." });
+                            setTimeout(() => setShowToast(null), 3000);
+                        }
                         setShowVoiceTooltip(true);
                         setTimeout(() => setShowVoiceTooltip(false), 5000);
                     }}
@@ -220,7 +258,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                             staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                            document: ['Upload', 'Analyzing', 'Extraction Lab']
+                                            document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                            policy: ['Policy Details']
                                         }[mode] || ['Step 1', 'Step 2', 'Step 3']
                                     ).map((label, idx) => (
                                         <div key={idx} className="flex items-center gap-3">

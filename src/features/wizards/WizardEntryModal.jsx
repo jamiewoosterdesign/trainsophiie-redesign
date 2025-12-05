@@ -12,7 +12,7 @@ export default function WizardEntryModal({ onSelectMode, onClose }) {
         if (dontShowAgain) {
             console.log("Saving preference: Don't show entry modal again");
         }
-        onSelectMode(mode);
+        onSelectMode(mode, dontShowAgain);
     };
 
     return (
@@ -22,7 +22,7 @@ export default function WizardEntryModal({ onSelectMode, onClose }) {
 
                 {/* Close Button */}
                 <button
-                    onClick={onClose}
+                    onClick={() => onClose(dontShowAgain)}
                     className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
                 >
                     <X className="w-5 h-5" />

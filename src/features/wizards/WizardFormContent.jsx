@@ -11,6 +11,119 @@ import QuestionRulesEditor from './QuestionRulesEditor';
 
 export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
 
+    // --- POLICY WIZARD ---
+    if (mode === 'policy') {
+        const [isLoading, setIsLoading] = React.useState(false);
+
+        const handleKnowledgeSelect = (type) => {
+            setIsLoading(true);
+            // Simulate analysis delay
+            setTimeout(() => {
+                setIsLoading(false);
+                onChange('isContextActive', true);
+                onChange('contextFileName', 'Employee_Handbook.pdf');
+                // Auto-fill data
+                onChange('policyContent', "All employees are entitled to 4 weeks of paid annual leave per year. Leave requests must be submitted at least 2 weeks in advance.");
+            }, 1500);
+        };
+
+        return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
+
+                {/* Knowledge Found Banner */}
+                {formData.isContextActive && (
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
+                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-purple-900 text-sm">Knowledge Extracted</h4>
+                            <p className="text-xs text-purple-700 mt-1 mb-3">I've extracted the policy details from <strong>{formData.contextFileName}</strong>.</p>
+                            <div className="flex gap-3 items-center">
+                                <button
+                                    onClick={() => {
+                                        onChange('isContextActive', false);
+                                        onChange('contextFileName', '');
+                                        onChange('policyContent', '');
+                                    }}
+                                    className="text-xs text-purple-500 hover:text-purple-700 font-medium"
+                                >
+                                    Clear & Start Over
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div>
+                    <Label className="mb-1.5 block">Policy Title</Label>
+                    <Input
+                        placeholder="e.g., Annual Leave Policy"
+                        value={formData.policyName}
+                        onChange={(e) => onChange('policyName', e.target.value)}
+                        highlight={(activeField === 'policyName').toString()}
+                    />
+                </div>
+
+                <div>
+                    <Label className="mb-3 block">Knowledge Source</Label>
+                    <div className="relative">
+                        {/* Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div
+                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                            >
+                                <UploadCloud className={`w-8 h-8 mb-2 text-blue-500 transition-colors ${formData.isContextActive ? 'text-slate-300' : 'group-hover:text-blue-600'}`} />
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
+                                <div className="text-xs text-slate-500">PDF, DOCX</div>
+                            </div>
+
+                            <div
+                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                            >
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                    <Book className="w-5 h-5" />
+                                </div>
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Select from KB</div>
+                                <div className="text-xs text-slate-500">Existing Files</div>
+                            </div>
+                        </div>
+
+                        {/* Loading Overlay */}
+                        {isLoading && (
+                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100">
+                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+                                <span className="text-sm font-medium text-blue-600 animate-pulse">Reading Document...</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                        <Label className="block">Policy Content</Label>
+                    </div>
+                    <div className="relative">
+                        <Textarea
+                            placeholder="Write your policy details here..."
+                            className={`min-h-[200px] pb-10 resize-y transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                            value={formData.policyContent}
+                            onChange={(e) => onChange('policyContent', e.target.value)}
+                            highlight={(activeField === 'policyContent').toString()}
+                        />
+                        <div className="absolute bottom-3 right-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                                <Wand2 className="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // --- SERVICE WIZARD ---
     if (mode === 'service') {
         if (step === 1) {
