@@ -257,27 +257,28 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="flex flex-wrap items-center gap-3 mt-3">
-                                    {(
-                                        {
-                                            service: ['Service Details', 'Outcome'],
-                                            staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
-                                            protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
-                                            transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                            document: ['Upload', 'Analyzing', 'Extraction Lab'],
-                                            policy: ['Policy Details'],
-                                            faq: ['FAQ Details']
-                                        }[mode] || ['Step 1', 'Step 2', 'Step 3']
-                                    ).map((label, idx) => (
-                                        <div key={idx} className="flex items-center gap-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
-                                                <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
+                                {!['policy', 'faq'].includes(mode) && (
+                                    <div className="flex flex-wrap items-center gap-3 mt-3">
+                                        {(
+                                            {
+                                                service: ['Service Details', 'Outcome'],
+                                                staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
+                                                protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
+                                                transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
+                                                document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                                // policy and faq removed from here since they are hidden
+                                            }[mode] || ['Step 1', 'Step 2', 'Step 3']
+                                        ).map((label, idx) => (
+                                            <div key={idx} className="flex items-center gap-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                                                    <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
+                                                </div>
+                                                {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
                                             </div>
-                                            {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
-                                        </div>
-                                    ))}
-                                </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <button onClick={handleClose} className="hidden md:block p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
