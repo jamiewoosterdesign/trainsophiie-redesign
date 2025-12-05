@@ -4,7 +4,14 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export default function VoiceSetupBanner({ onStartVoiceFlow }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => {
+        const saved = localStorage.getItem('voiceSetupBannerCollapsed');
+        return saved === 'true';
+    });
+
+    React.useEffect(() => {
+        localStorage.setItem('voiceSetupBannerCollapsed', isCollapsed);
+    }, [isCollapsed]);
 
     return (
         <div
