@@ -92,6 +92,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         // Policy Mode
         policyName: '',
         policyContent: '',
+
+        // FAQ Mode
+        faqQuestion: '',
+        faqAnswer: '',
     });
 
     const updateFormData = (field, value) => {
@@ -168,6 +172,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
             case 'transfer': return 'Add Transfer Rule';
             case 'document': return 'Upload Document';
             case 'policy': return 'Add Policy';
+            case 'faq': return 'Add FAQ';
             default: return 'Configuration';
         }
     };
@@ -175,6 +180,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const getTotalSteps = () => {
         if (mode === 'service') return 2;
         if (mode === 'policy') return 1;
+        if (mode === 'faq') return 1;
         // All other wizards have 3 steps
         return 3;
     };
@@ -259,7 +265,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                             document: ['Upload', 'Analyzing', 'Extraction Lab'],
-                                            policy: ['Policy Details']
+                                            policy: ['Policy Details'],
+                                            faq: ['FAQ Details']
                                         }[mode] || ['Step 1', 'Step 2', 'Step 3']
                                     ).map((label, idx) => (
                                         <div key={idx} className="flex items-center gap-3">

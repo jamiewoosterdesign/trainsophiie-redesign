@@ -5,11 +5,124 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TeamMemberSelector } from '@/components/shared/TeamMemberSelector';
-import { TransferRoutingSelector } from '@/components/shared/TransferRoutingSelector';
-import QuestionRulesEditor from './QuestionRulesEditor';
-
 export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
+
+    // --- FAQ WIZARD ---
+    if (mode === 'faq') {
+        const [isLoading, setIsLoading] = React.useState(false);
+
+        const handleKnowledgeSelect = (type) => {
+            setIsLoading(true);
+            // Simulate analysis delay
+            setTimeout(() => {
+                setIsLoading(false);
+                onChange('isContextActive', true);
+                onChange('contextFileName', 'Website_FAQ.pdf');
+                // Auto-fill data
+                onChange('faqQuestion', "What is your return policy?");
+                onChange('faqAnswer', "You can return any item within 30 days of purchase for a full refund, provided it is in its original condition.");
+            }, 1500);
+        };
+
+        return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
+
+                {/* Knowledge Found Banner */}
+                {formData.isContextActive && (
+                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
+                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-purple-900 text-sm">Knowledge Extracted</h4>
+                            <p className="text-xs text-purple-700 mt-1 mb-3">I've extracted the FAQ details from <strong>{formData.contextFileName}</strong>.</p>
+                            <div className="flex gap-3 items-center">
+                                <button
+                                    onClick={() => {
+                                        onChange('isContextActive', false);
+                                        onChange('contextFileName', '');
+                                        onChange('faqQuestion', '');
+                                        onChange('faqAnswer', '');
+                                    }}
+                                    className="text-xs text-purple-500 hover:text-purple-700 font-medium"
+                                >
+                                    Clear & Start Over
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                <div>
+                    <Label className="mb-1.5 block">Question</Label>
+                    <Input
+                        placeholder="e.g., What are your opening hours?"
+                        value={formData.faqQuestion}
+                        onChange={(e) => onChange('faqQuestion', e.target.value)}
+                        highlight={(activeField === 'faqQuestion').toString()}
+                    />
+                </div>
+
+                <div>
+                    <Label className="mb-3 block">Knowledge Source</Label>
+                    <div className="relative">
+                        {/* Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div
+                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                            >
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                    <UploadCloud className="w-5 h-5" />
+                                </div>
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
+                                <div className="text-xs text-slate-500">PDF, DOCX</div>
+                            </div>
+
+                            <div
+                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                            >
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                    <Book className="w-5 h-5" />
+                                </div>
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Select from KB</div>
+                                <div className="text-xs text-slate-500">Existing Files</div>
+                            </div>
+                        </div>
+
+                        {/* Loading Overlay */}
+                        {isLoading && (
+                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100">
+                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+                                <span className="text-sm font-medium text-blue-600 animate-pulse">Reading Document...</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                        <Label className="block">Answer</Label>
+                    </div>
+                    <div className="relative">
+                        <Textarea
+                            placeholder="Write the answer here..."
+                            className={`min-h-[200px] pb-10 resize-y transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                            value={formData.faqAnswer}
+                            onChange={(e) => onChange('faqAnswer', e.target.value)}
+                            highlight={(activeField === 'faqAnswer').toString()}
+                        />
+                        <div className="absolute bottom-3 right-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                                <Wand2 className="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     // --- POLICY WIZARD ---
     if (mode === 'policy') {
@@ -74,7 +187,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
                                 className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
                             >
-                                <UploadCloud className={`w-8 h-8 mb-2 text-blue-500 transition-colors ${formData.isContextActive ? 'text-slate-300' : 'group-hover:text-blue-600'}`} />
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                    <UploadCloud className="w-5 h-5" />
+                                </div>
                                 <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
                                 <div className="text-xs text-slate-500">PDF, DOCX</div>
                             </div>
@@ -129,7 +244,6 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         if (step === 1) {
             const [isLoading, setIsLoading] = React.useState(false);
             const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isContextActive;
-
             const handleKnowledgeSelect = (type) => {
                 setIsLoading(true);
                 // Simulate analysis delay
@@ -215,7 +329,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
                                     className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
                                 >
-                                    <UploadCloud className={`w-8 h-8 mb-2 text-blue-500 transition-colors ${formData.isContextActive ? 'text-slate-300' : 'group-hover:text-blue-600'}`} />
+                                    <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                        <UploadCloud className="w-5 h-5" />
+                                    </div>
                                     <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
                                     <div className="text-xs text-slate-500">PDF, DOCX</div>
                                 </div>
@@ -1115,3 +1231,117 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
     return <div>Unknown Step</div>;
 }
+
+const QuestionRulesEditor = ({ questions, onChange }) => {
+    const addQuestion = () => {
+        onChange([...questions, { id: Date.now().toString(), text: '', options: [] }]);
+    };
+    const updateQuestion = (index, val) => {
+        const newQuestions = [...questions];
+        newQuestions[index] = { ...newQuestions[index], text: val };
+        onChange(newQuestions);
+    };
+    const removeQuestion = (index) => {
+        const newQuestions = [...questions];
+        newQuestions.splice(index, 1);
+        onChange(newQuestions);
+    };
+
+    return (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center">
+                <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Qualification Questions</Label>
+                <Button size="sm" variant="ghost" onClick={addQuestion} className="h-6 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+                    <Plus className="w-3 h-3 mr-1" /> Add
+                </Button>
+            </div>
+            <div className="space-y-2">
+                {questions.map((q, i) => (
+                    <div key={q.id || i} className="flex gap-2 items-center animate-in fade-in slide-in-from-left-2">
+                        <div className="flex-1">
+                            <Input
+                                value={q.text || q}
+                                onChange={(e) => updateQuestion(i, e.target.value)}
+                                placeholder="e.g. What is your postcode?"
+                                className="bg-white"
+                            />
+                        </div>
+                        <button onClick={() => removeQuestion(i)} className="text-slate-400 hover:text-red-500 transition-colors p-2">
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    </div>
+                ))}
+                {questions.length === 0 && (
+                    <div className="text-center p-4 border-2 border-dashed border-slate-200 rounded-lg text-slate-400 text-sm">
+                        No questions added. Sophiie will just collect basic details.
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const TeamMemberSelector = ({ value, onChange, onAddNew }) => {
+    return (
+        <div className="space-y-2">
+            <select
+                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+            >
+                <option value="">Select Team Member...</option>
+                <option value="sarah">Sarah (Reception)</option>
+                <option value="mike">Mike (Sales)</option>
+                <option value="support">Support Team</option>
+            </select>
+            <div className="flex justify-end">
+                <button onClick={onAddNew} className="text-xs text-blue-600 hover:underline font-medium flex items-center">
+                    <Plus className="w-3 h-3 mr-1" /> Add New Member
+                </button>
+            </div>
+        </div>
+    );
+};
+
+const TransferRoutingSelector = ({ type, value, onChangeType, onChangeValue, onAddNew }) => {
+    return (
+        <div className="space-y-3">
+            <div className="flex p-1 bg-slate-100 rounded-lg">
+                {['staff', 'queue', 'external'].map(t => (
+                    <button
+                        key={t}
+                        onClick={() => onChangeType(t)}
+                        className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${type === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                        {t === 'staff' ? 'Staff' : t === 'queue' ? 'Queue' : 'External'}
+                    </button>
+                ))}
+            </div>
+
+            {type === 'staff' && (
+                <TeamMemberSelector value={value} onChange={onChangeValue} onAddNew={onAddNew} />
+            )}
+
+            {type === 'queue' && (
+                <select
+                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={value}
+                    onChange={(e) => onChangeValue(e.target.value)}
+                >
+                    <option value="">Select Queue...</option>
+                    <option value="general">General Support</option>
+                    <option value="sales">Sales Team</option>
+                    <option value="urgent">Urgent / Escalations</option>
+                </select>
+            )}
+
+            {type === 'external' && (
+                <Input
+                    placeholder="+1 (555) 000-0000"
+                    value={value}
+                    onChange={(e) => onChangeValue(e.target.value)}
+                />
+            )}
+        </div>
+    );
+};

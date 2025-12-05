@@ -9,6 +9,7 @@ import PoliciesView from '@/features/views/PoliciesView';
 import KnowledgeBaseView from '@/features/views/KnowledgeBaseView';
 import BusinessInfoView from '@/features/views/BusinessInfoView';
 
+import FAQsView from '@/features/views/FAQsView';
 import OverviewView from '@/features/views/OverviewView';
 
 function App() {
@@ -22,8 +23,8 @@ function App() {
                     <Route path="staff" element={<StaffView />} />
                     <Route path="scenarios" element={<ScenariosView />} />
                     <Route path="transfers" element={<TransfersView />} />
-                    <Route path="transfers" element={<TransfersView />} />
                     <Route path="policies" element={<PoliciesView />} />
+                    <Route path="faqs" element={<FAQsView />} />
                     <Route path="knowledge" element={<KnowledgeBaseView />} />
                     <Route path="business-info" element={<BusinessInfoView />} />
                 </Route>
