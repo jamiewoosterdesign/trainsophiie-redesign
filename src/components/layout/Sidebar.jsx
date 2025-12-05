@@ -159,9 +159,9 @@ export default function Sidebar() {
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-8">
-                    <div>
+                    <ul className="space-y-1">
                         <SidebarItem icon={<LayoutGrid />} label="Overview" active={currentPath === 'overview'} onClick={() => navigate('/overview')} />
-                    </div>
+                    </ul>
 
                     <SidebarGroup title="Knowledge Base">
                         <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => navigate('/business-info')} />
