@@ -14,9 +14,9 @@ export default function TransfersView() {
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div className="w-full md:w-auto flex justify-between items-start">
-                    <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900">
-                            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    <div className="flex items-start gap-4">
+                        <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 mt-1 shrink-0">
+                            <ArrowLeft className="w-5 h-5" />
                         </Button>
                         <div>
                             <h1 className="text-xl md:text-2xl font-bold text-slate-900">Transfers Configuration</h1>
