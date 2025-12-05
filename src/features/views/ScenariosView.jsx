@@ -33,12 +33,7 @@ export default function ScenariosView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="p-1.5 bg-amber-100 text-amber-600 rounded-lg">
-                                <Zap className="w-4 h-4" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-800">Scenarios</h3>
-                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4">Scenarios</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <button onClick={() => openWizard('protocol')}
@@ -64,12 +59,7 @@ export default function ScenariosView() {
 
                     {/* Global Restrictions & Guardrails */}
                     <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="p-1.5 bg-red-100 text-red-600 rounded-lg">
-                                <ShieldAlert className="w-4 h-4" />
-                            </div>
-                            <h3 className="text-lg font-bold text-slate-800">Global Restrictions & Guardrails</h3>
-                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4">Restrictions</h3>
                         <Card className="p-6">
                             <p className="text-sm text-slate-500 mb-6">Define strict limits for the AI (Negative Constraints). These apply to every call.</p>
                             <div className="space-y-4">

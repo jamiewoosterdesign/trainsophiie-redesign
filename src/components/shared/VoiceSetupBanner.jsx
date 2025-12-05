@@ -16,7 +16,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
     return (
         <div
             className={cn(
-                "rounded-2xl text-white shadow-xl relative overflow-hidden transition-all duration-300 ease-in-out mb-10 bg-slate-900",
+                "rounded-2xl text-white relative overflow-hidden transition-all duration-300 ease-in-out mb-10 bg-slate-900",
                 isCollapsed ? "p-4 md:px-12 md:py-6" : "p-8 md:p-12"
             )}
         >
