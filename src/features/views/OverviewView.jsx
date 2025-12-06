@@ -19,20 +19,20 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${colorClass.split(' ').filter(c => !c.startsWith('ring') && !c.startsWith('shadow') && !c.startsWith('scale') && !c.startsWith('transition') && !c.startsWith('duration')).join(' ')}`}>
                     <Icon className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-lg text-slate-900 mb-1">{title}</h3>
-                <p className="text-sm text-slate-500 mb-4 leading-relaxed">{description}</p>
+                <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 mb-1">{title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{description}</p>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
                 <div className="flex items-center gap-2">
                     {status === 'Complete' || status === 'Services added' || status === 'Documents added' || status === 'Policy added' || status === 'Faqs added' || status === 'Team added' ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
                         <CheckCircle className="w-4 h-4 text-slate-300" />
                     )}
-                    <span className={`text-xs font-medium ${statusColor || 'text-slate-600'}`}>{status}</span>
+                    <span className={`text-xs font-medium ${statusColor || 'text-slate-600 dark:text-slate-400'}`}>{status}</span>
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-400 hover:text-slate-900">
+                <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-300">
                     Edit <ChevronRight className="w-3 h-3 ml-1" />
                 </Button>
             </div>
@@ -52,8 +52,8 @@ export default function OverviewView() {
                     icon: Briefcase,
                     status: "Complete",
                     link: "/business-info",
-                    colorClass: "bg-blue-50 text-blue-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Services",
@@ -61,8 +61,8 @@ export default function OverviewView() {
                     icon: Wrench,
                     status: "Services added",
                     link: "/services",
-                    colorClass: `bg-green-50 text-green-600 ${voiceFlowStep === 'OVERVIEW' ? 'ring-4 ring-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.4)] scale-105 transition-all duration-500' : ''}`,
-                    statusColor: "text-slate-900"
+                    colorClass: `bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 ${voiceFlowStep === 'OVERVIEW' ? 'ring-4 ring-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.4)] scale-105 transition-all duration-500' : ''}`,
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Documents",
@@ -70,8 +70,8 @@ export default function OverviewView() {
                     icon: Book,
                     status: "Documents added",
                     link: "/knowledge",
-                    colorClass: "bg-orange-50 text-orange-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Policies & Procedures",
@@ -79,8 +79,8 @@ export default function OverviewView() {
                     icon: ListChecks,
                     status: "Policy added",
                     link: "/policies",
-                    colorClass: "bg-slate-100 text-slate-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "FAQs",
@@ -88,8 +88,8 @@ export default function OverviewView() {
                     icon: HelpCircle,
                     status: "Faqs added",
                     link: "/faqs",
-                    colorClass: "bg-emerald-50 text-emerald-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Scenarios",
@@ -97,8 +97,8 @@ export default function OverviewView() {
                     icon: ShieldAlert,
                     status: "Complete",
                     link: "/scenarios",
-                    colorClass: "bg-emerald-50 text-emerald-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 }
             ]
         },
@@ -111,8 +111,8 @@ export default function OverviewView() {
                     icon: Users,
                     status: "Team added",
                     link: "/staff",
-                    colorClass: "bg-green-50 text-green-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Transfers",
@@ -120,8 +120,8 @@ export default function OverviewView() {
                     icon: ArrowRightLeft,
                     status: "Optional",
                     link: "/transfers",
-                    colorClass: "bg-blue-50 text-blue-600",
-                    statusColor: "text-slate-500"
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-500 dark:text-slate-400"
                 },
                 {
                     title: "Notifications",
@@ -129,8 +129,8 @@ export default function OverviewView() {
                     icon: Bell,
                     status: "Complete",
                     link: "/notifications",
-                    colorClass: "bg-green-50 text-green-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Tags",
@@ -138,8 +138,8 @@ export default function OverviewView() {
                     icon: Tag,
                     status: "Optional",
                     link: "/tags",
-                    colorClass: "bg-blue-50 text-blue-600",
-                    statusColor: "text-slate-500"
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-500 dark:text-slate-400"
                 }
             ]
         },
@@ -152,8 +152,8 @@ export default function OverviewView() {
                     icon: Mic,
                     status: "Optional",
                     link: "/voice",
-                    colorClass: "bg-blue-50 text-blue-600",
-                    statusColor: "text-slate-500"
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-500 dark:text-slate-400"
                 },
                 {
                     title: "Greetings & Closings",
@@ -161,8 +161,8 @@ export default function OverviewView() {
                     icon: MessageSquare,
                     status: "Complete",
                     link: "/greetings",
-                    colorClass: "bg-green-50 text-green-600",
-                    statusColor: "text-slate-900"
+                    colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
+                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Interruption & Speed",
@@ -170,8 +170,8 @@ export default function OverviewView() {
                     icon: Activity,
                     status: "Optional",
                     link: "/behaviors",
-                    colorClass: "bg-blue-50 text-blue-600",
-                    statusColor: "text-slate-500"
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-500 dark:text-slate-400"
                 }
             ]
         }
@@ -179,13 +179,13 @@ export default function OverviewView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">Overview</h1>
-                    <p className="text-slate-500 text-sm mt-1">Welcome to your Sophiie dashboard.</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Overview</h1>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Welcome to your Sophiie dashboard.</p>
                 </div>
             </header>
-            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-10">
 
                     {/* Hero Banner */}
@@ -194,7 +194,7 @@ export default function OverviewView() {
                     {/* Sections */}
                     {sections.map((section, idx) => (
                         <div key={idx}>
-                            <h2 className="text-lg font-bold text-slate-900 mb-6">{section.title}</h2>
+                            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{section.title}</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {section.items.map((item, itemIdx) => (
                                     <OverviewCard key={itemIdx} {...item} />

@@ -19,52 +19,52 @@ export default function FAQsView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
+            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <div className="flex items-start gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 mt-1 shrink-0">
+                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mt-1 shrink-0">
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Frequently Asked Questions</h1>
-                        <p className="text-slate-500 text-sm mt-1">Train Sophiie to answer common customer questions.</p>
+                        <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Frequently Asked Questions</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Train Sophiie to answer common customer questions.</p>
                     </div>
                 </div>
                 <Button onClick={() => openWizard('faq')} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add FAQ
                 </Button>
             </header>
-            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 relative">
+            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950 relative">
                 <div className="max-w-7xl mx-auto w-full">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
-                    <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-2">
                         <HelpCircle className="w-5 h-5 text-slate-500" /> Question Bank
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <button onClick={() => openWizard('faq')}
-                            className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
-                            <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
+                            <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                                 <Plus className="w-6 h-6 text-blue-500" />
                             </div>
                             <span className="font-medium">Add New FAQ</span>
                         </button>
                         {MOCK_FAQS.map(faq => (
-                            <Card key={faq.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px]">
+                            <Card key={faq.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div className="p-2 bg-slate-100 text-slate-600 rounded-lg">
+                                    <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
                                         <MessageCircle className="w-5 h-5" />
                                     </div>
                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                                             <Edit2 className="w-4 h-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500">
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500 dark:hover:text-red-400">
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-lg text-slate-900 mb-2">{faq.question}</h3>
-                                <p className="text-sm text-slate-500 line-clamp-4 flex-grow">{faq.answer}</p>
+                                <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{faq.question}</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow">{faq.answer}</p>
                             </Card>
                         ))}
                     </div>

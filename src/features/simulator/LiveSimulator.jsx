@@ -313,15 +313,15 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     }, [messages, isTyping]);
 
     return (
-        <div className="flex flex-col h-full bg-slate-50">
-            <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-50" />
+        <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-950">
+            <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-200 dark:via-blue-900 to-transparent opacity-50" />
 
             {/* TABBED INTERFACE (Voice or Preview) - Hidden on mobile if embedded in WizardModal */}
-            <div className={`px-4 py-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative ${isMobile ? 'hidden md:flex' : ''}`}>
+            <div className={`px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative ${isMobile ? 'hidden md:flex' : ''}`}>
 
                 <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-800">Live Preview</h3>
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-full">Test Mode</span>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-white">Live Preview</h3>
+                    <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full">Test Mode</span>
                 </div>
 
                 <div className="flex items-center gap-2 relative">
@@ -336,8 +336,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     <button
                         onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
                         className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
-                            ? 'bg-purple-600 text-white shadow-md hover:bg-purple-700'
-                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                             }`}
                     >
                         {simulatorTab === 'voice' ? (
@@ -353,7 +353,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
                     <button
                         onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }])}
-                        className="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors"
+                        className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 flex items-center justify-center transition-colors"
                         title="Reset Preview"
                     >
                         <RotateCcw className="w-3 h-3" />
@@ -362,8 +362,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
             </div>
 
             {/* Subtitles */}
-            <div className="px-6 py-2 bg-slate-50 border-b border-slate-100 text-center">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+            <div className="px-6 py-2 bg-slate-50 dark:bg-slate-950 border-b border-slate-100 dark:border-slate-900 text-center">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">
                     {simulatorTab === 'voice' ? "Voice Setup Active - Speak to Sophiie" : "Interact with the preview to test your flow."}
                 </p>
             </div>
@@ -432,10 +432,10 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                     <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0" ref={scrollRef}>
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white ${msg.role === 'bot' ? 'bg-blue-600' : msg.role === 'system' ? 'bg-orange-500' : 'bg-slate-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white ${msg.role === 'bot' ? 'bg-blue-600' : msg.role === 'system' ? 'bg-orange-500' : 'bg-slate-400 dark:bg-slate-600'}`}>
                                     {msg.role === 'bot' ? <Headset className="w-4 h-4" /> : msg.role === 'system' ? <Zap className="w-4 h-4" /> : <div className="font-bold">U</div>}
                                 </div>
-                                <div className={`py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === 'bot' ? 'bg-white text-slate-700 rounded-tl-sm border border-slate-100' : msg.role === 'system' ? 'bg-orange-50 text-orange-800 border border-orange-100 w-full' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
+                                <div className={`py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === 'bot' ? 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700' : msg.role === 'system' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-100 dark:border-orange-900/30 w-full' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
                                     {msg.text}
                                 </div>
                             </div>
@@ -443,16 +443,16 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         {isTyping && (
                             <div className="flex gap-3 animate-in fade-in">
                                 <div className="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-white"><Headset className="w-4 h-4" /></div>
-                                <div className="bg-white border border-slate-100 py-3 px-4 rounded-2xl rounded-tl-sm flex gap-1">
-                                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
-                                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-75" />
-                                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-150" />
+                                <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 py-3 px-4 rounded-2xl rounded-tl-sm flex gap-1">
+                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" />
+                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce delay-75" />
+                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce delay-150" />
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="p-4 bg-white border-t border-slate-200">
+                    <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
                         <form
                             className="flex gap-2"
                             onSubmit={(e) => {
@@ -462,7 +462,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         >
                             <div className="relative flex-1">
                                 <input
-                                    className="w-full h-10 bg-slate-100 rounded-full border border-transparent px-4 pr-10 text-slate-700 text-sm focus:bg-white focus:border-blue-400 focus:outline-none transition-all"
+                                    className="w-full h-10 bg-slate-100 dark:bg-slate-800 rounded-full border border-transparent px-4 pr-10 text-slate-700 dark:text-white text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-blue-400 focus:outline-none transition-all"
                                     placeholder="Type a message..."
                                     value={previewInput}
                                     onChange={(e) => {
@@ -477,7 +477,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 <button
                                     type="button"
                                     onClick={handlePreviewMic}
-                                    className="absolute right-1 top-1 p-1.5 rounded-full text-slate-400 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                                    className="absolute right-1 top-1 p-1.5 rounded-full text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
                                 >
                                     <Mic className="w-4 h-4" />
                                 </button>

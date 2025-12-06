@@ -40,7 +40,7 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none bg-slate-950">
                 {/* Deep Base Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 opacity-100" />
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-indigo-950 to-blue-950 opacity-100" />
 
                 <div className="absolute w-[100%] h-[100%] top-0 left-0 overflow-hidden">
                     {/* Blob 1: Deep Blue */}

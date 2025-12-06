@@ -140,9 +140,9 @@ export default function MainLayout() {
     };
 
     return (
-        <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
+        <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 overflow-hidden">
             <Sidebar />
-            <main className={`flex-1 flex flex-col h-full overflow-hidden relative bg-white transition-all duration-500 ${voiceFlowStep === 'OVERVIEW' ? 'shadow-[inset_0_0_100px_rgba(147,51,234,0.5)]' : ''}`}>
+            <main className={`flex-1 flex flex-col h-full overflow-hidden relative bg-white dark:bg-slate-900 transition-all duration-500 ${voiceFlowStep === 'OVERVIEW' ? 'shadow-[inset_0_0_100px_rgba(147,51,234,0.5)]' : ''}`}>
                 <Outlet context={{ openWizard, openSettings, startGlobalVoiceFlow, voiceFlowStep }} />
             </main>
 

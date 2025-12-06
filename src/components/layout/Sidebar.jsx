@@ -3,8 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Headset, Mail, Users, Wrench, ListChecks, ArrowRightLeft,
     Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown,
-    LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders
+    LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders, Sun, Moon
 } from 'lucide-react';
+import { useTheme } from '@/components/ThemeProvider';
+import { Switch } from '@/components/ui/switch';
 import { SophiieLogo } from '@/components/icons/SophiieLogo';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -32,9 +34,11 @@ const SidebarItem = ({ icon, label, active, onClick }) => (
     <li>
         <button onClick={onClick} className={cn(
             "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-            active ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            active
+                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
         )}>
-            {React.cloneElement(icon, { size: 18, className: cn("flex-shrink-0", active ? 'text-blue-500' : 'text-slate-400') })}
+            {React.cloneElement(icon, { size: 18, className: cn("flex-shrink-0", active ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500') })}
             <span className="flex-1 text-left leading-snug">{label}</span>
         </button>
     </li>
@@ -46,6 +50,23 @@ export default function Sidebar() {
     const currentPath = location.pathname.substring(1) || 'services';
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(true);
+    const { theme, setTheme } = useTheme();
+    const [showSettingsPopover, setShowSettingsPopover] = React.useState(false);
+    const [showMobileSettings, setShowMobileSettings] = React.useState(false);
+    const settingsRef = React.useRef(null);
+
+    // Click outside handler for desktop popover
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+                setShowSettingsPopover(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [settingsRef]);
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
@@ -64,24 +85,24 @@ export default function Sidebar() {
 
             {/* Mobile Navigation Drawer */}
             {isMobileMenuOpen && (
-                <div className="md:hidden fixed inset-0 top-16 z-40 bg-white flex flex-col animate-in slide-in-from-right-full duration-300">
+                <div className="md:hidden fixed inset-0 top-16 z-40 bg-white dark:bg-slate-950 flex flex-col animate-in slide-in-from-right-full duration-300">
                     <div className="flex-1 overflow-y-auto p-4 space-y-6">
                         {/* Train Sophiie Section */}
                         <div>
                             <button
                                 onClick={() => setIsSubMenuOpen(!isSubMenuOpen)}
-                                className="w-full flex items-center justify-between p-3 bg-slate-50 rounded-xl mb-2"
+                                className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl mb-2"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white">
                                         <Bot className="w-5 h-5" />
                                     </div>
                                     <div className="text-left">
-                                        <div className="font-bold text-slate-900 text-sm">Train Sophiie</div>
-                                        <div className="text-xs text-slate-500">Knowledge & Behavior</div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-sm">Train Sophiie</div>
+                                        <div className="text-xs text-slate-500 dark:text-slate-400">Knowledge & Behavior</div>
                                     </div>
                                 </div>
-                                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isSubMenuOpen ? 'rotate-180' : ''}`} />
+                                <ChevronDown className={`w-4 h-4 text-slate-400 dark:text-slate-500 transition-transform ${isSubMenuOpen ? 'rotate-180' : ''}`} />
                             </button>
 
                             {isSubMenuOpen && (
@@ -104,19 +125,46 @@ export default function Sidebar() {
                             )}
                         </div>
 
-                        <div className="h-px bg-slate-100 my-4" />
+                        <div className="h-px bg-slate-100 dark:bg-slate-800 my-4" />
 
                         {/* Main Navigation */}
                         <div className="grid grid-cols-2 gap-3">
-                            <button className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 text-slate-600 gap-2">
+                            <button className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                                 <Mail className="w-6 h-6" />
                                 <span className="text-xs font-medium">Inbox</span>
                             </button>
-                            <button className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 text-slate-600 gap-2">
+                            <button
+                                onClick={() => setShowMobileSettings(true)}
+                                className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            >
                                 <Settings className="w-6 h-6" />
                                 <span className="text-xs font-medium">Settings</span>
                             </button>
                         </div>
+
+                        {/* Mobile Settings Modal/Overlay */}
+                        {showMobileSettings && (
+                            <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+                                <div className="bg-white dark:bg-slate-950 rounded-2xl w-full max-w-xs p-6 shadow-2xl animate-in zoom-in-95">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Settings</h3>
+                                        <button onClick={() => setShowMobileSettings(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                                        <div className="flex items-center gap-3">
+                                            {theme === 'dark' ? <Moon className="text-blue-500" size={20} /> : <Sun className="text-orange-500" size={20} />}
+                                            <span className="font-medium text-slate-700 dark:text-slate-200">Dark Mode</span>
+                                        </div>
+                                        <Switch
+                                            checked={theme === 'dark'}
+                                            onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div >
             )
@@ -140,7 +188,31 @@ export default function Sidebar() {
                             <Bot className="w-6 h-6" />
                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-md -ml-3" />
                         </div>
-                        <NavIcon icon={<Settings />} />
+                        <div className="relative" ref={settingsRef}>
+                            <NavIcon
+                                icon={<Settings />}
+                                active={showSettingsPopover}
+                                onClick={() => setShowSettingsPopover(!showSettingsPopover)}
+                            />
+                            {showSettingsPopover && (
+                                <div className="absolute left-full bottom-0 ml-4 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800 p-4 z-50 animate-in slide-in-from-left-2 zoom-in-95 duration-200">
+                                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">Appearance</h4>
+                                    <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors">
+                                        <div className="flex items-center gap-3 text-sm font-medium text-slate-700 dark:text-slate-200">
+                                            {theme === 'dark' ? <Moon size={16} className="text-blue-400" /> : <Sun size={16} className="text-orange-400" />}
+                                            <span>Dark Mode</span>
+                                        </div>
+                                        <Switch
+                                            checked={theme === 'dark'}
+                                            onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                                        />
+                                    </div>
+
+                                    {/* Triangle Pointer */}
+                                    <div className="absolute left-0 bottom-4 -translate-x-1/2 w-3 h-3 bg-white dark:bg-slate-900 rotate-45 border-l border-b border-slate-100 dark:border-slate-800" />
+                                </div>
+                            )}
+                        </div>
                         <NavIcon icon={<HelpCircle />} />
                     </div>
                 </nav>
@@ -149,12 +221,11 @@ export default function Sidebar() {
             </aside>
 
             {/* Tier 2 Sidebar */}
-            <aside className="w-64 bg-white border-r border-slate-200 flex flex-col h-full flex-shrink-0 z-20 hidden md:flex">
-                <div className="p-6 border-b border-slate-100">
-                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Module</h2>
-                    <div className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full flex-shrink-0 z-20 hidden md:flex">
+                <div className="h-[97px] flex items-center px-6 border-b border-slate-100 dark:border-slate-800">
+                    <div className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         Train Sophiie
-                        <Badge variant="default" className="text-[10px]">Beta</Badge>
+                        <Badge variant="secondary" className="text-[10px] px-2 h-5 bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 border-0">Beta</Badge>
                     </div>
                 </div>
 
@@ -186,12 +257,12 @@ export default function Sidebar() {
                     </SidebarGroup>
                 </nav>
 
-                <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-slate-500">Setup Progress</span>
-                        <span className="text-xs font-bold text-blue-600">85%</span>
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Setup Progress</span>
+                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">85%</span>
                     </div>
-                    <div className="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                    <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                         <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
                     </div>
                 </div>

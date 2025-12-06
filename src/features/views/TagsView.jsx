@@ -45,7 +45,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
         <div className="space-y-4">
             {/* Header / Search */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                     {Icon && <Icon className="w-5 h-5 text-slate-500" />} {title}
                 </h2>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -55,48 +55,48 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                             placeholder="Search tags..."
                             value={searchQuery}
                             onChange={(e) => onSearchChange(e.target.value)}
-                            className="pl-9 h-9 bg-white"
+                            className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Desktop View: Table Rows */}
-            <div className="hidden md:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     <div className="col-span-1">Colour</div>
                     <div className="col-span-4">Name</div>
                     <div className="col-span-5">Description</div>
                     <div className="col-span-2 text-right">Enabled</div>
                 </div>
 
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-slate-100 dark:divide-slate-800">
                     {onAdd && (
                         <div
                             onClick={() => onAdd(null)}
-                            className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 cursor-pointer transition-colors group"
+                            className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group"
                         >
-                            <div className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
+                            <div className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 group-hover:border-blue-500 group-hover:text-blue-500">
                                 <Plus className="w-4 h-4" />
                             </div>
-                            <div className="col-span-11 text-slate-500 font-medium group-hover:text-blue-600">
+                            <div className="col-span-11 text-slate-500 dark:text-slate-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
                                 {addLabel}
                             </div>
                         </div>
                     )}
 
                     {filteredTags.map((tag) => (
-                        <div key={tag.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center group hover:bg-slate-50/50 transition-colors">
+                        <div key={tag.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                             <div className="col-span-1">
                                 <div className={`w-6 h-6 rounded ${tag.color}`}></div>
                             </div>
-                            <div className="col-span-4 font-medium text-slate-900 flex items-center gap-2">
+                            <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
                                 {tag.name}
                                 {tag.isPreset && (
                                     <TooltipProvider>
                                         <Tooltip delayDuration={300}>
                                             <TooltipTrigger asChild>
-                                                <div className="p-1 bg-blue-50 text-blue-600 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors cursor-help flex items-center justify-center">
+                                                <div className="p-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-help flex items-center justify-center">
                                                     <Sparkles className="w-3.5 h-3.5" />
                                                 </div>
                                             </TooltipTrigger>
@@ -110,7 +110,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                                     <TooltipProvider>
                                         <Tooltip delayDuration={300}>
                                             <TooltipTrigger asChild>
-                                                <div className="p-1 bg-sky-50 text-sky-600 rounded-md border border-sky-100 hover:bg-sky-100 transition-colors cursor-help flex items-center justify-center">
+                                                <div className="p-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md border border-sky-100 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-help flex items-center justify-center">
                                                     <Bot className="w-3.5 h-3.5" />
                                                 </div>
                                             </TooltipTrigger>
@@ -121,17 +121,17 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                                     </TooltipProvider>
                                 )}
                             </div>
-                            <div className="col-span-5 text-sm text-slate-500 truncate">
+                            <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">
                                 {tag.description}
                             </div>
                             <div className="col-span-2 flex items-center justify-end gap-3">
                                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
                                     {onEdit && (
-                                        <button onClick={() => onEdit(tag)} className="p-1.5 hover:bg-slate-200 rounded text-slate-400 hover:text-slate-600">
+                                        <button onClick={() => onEdit(tag)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                                             <Pencil className="w-3.5 h-3.5" />
                                         </button>
                                     )}
-                                    <button className="p-1.5 hover:bg-red-50 rounded text-slate-400 hover:text-red-500">
+                                    <button className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400">
                                         <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                 </div>
@@ -141,7 +141,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                     ))}
 
                     {filteredTags.length === 0 && !onAdd && (
-                        <div className="px-6 py-8 text-center text-slate-500 text-sm">
+                        <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                             No tags found matching your search.
                         </div>
                     )}
@@ -153,19 +153,19 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                 {onAdd && (
                     <button
                         onClick={() => onAdd(null)}
-                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 rounded-xl text-slate-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50/50 transition-all font-medium gap-2"
+                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2"
                     >
                         <Plus className="w-5 h-5" /> {addLabel}
                     </button>
                 )}
 
                 {filteredTags.map((tag) => (
-                    <Card key={tag.id} className="p-4 flex flex-col gap-3">
+                    <Card key={tag.id} className="p-4 flex flex-col gap-3 dark:bg-slate-900 dark:border-slate-800">
                         <div className="flex justify-between items-start">
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded-full ${tag.color} shrink-0`}></div>
                                 <div>
-                                    <div className="font-bold text-slate-900 flex items-center gap-2 flex-wrap">
+                                    <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
                                         {tag.name}
                                         {tag.isPreset && (
                                             <TooltipProvider>
@@ -201,16 +201,16 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                             </div>
                             <Switch checked={tag.enabled} />
                         </div>
-                        <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg">
+                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
                             {tag.description}
                         </p>
-                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50">
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-50 dark:border-slate-800">
                             {onEdit && (
-                                <Button size="sm" variant="ghost" className="h-8 text-slate-500" onClick={() => onEdit(tag)}>
+                                <Button size="sm" variant="ghost" className="h-8 text-slate-500 dark:text-slate-400" onClick={() => onEdit(tag)}>
                                     <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
                                 </Button>
                             )}
-                            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-600 hover:bg-red-50">
+                            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
                                 <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete
                             </Button>
                         </div>
@@ -218,7 +218,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                 ))}
 
                 {filteredTags.length === 0 && !onAdd && (
-                    <div className="p-8 text-center text-slate-500 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-sm bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
                         No tags found.
                     </div>
                 )}
@@ -246,20 +246,20 @@ export default function TagsView() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             {/* Header */}
-            <header className="bg-white border-b border-slate-100 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0">
+            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0">
                 <div className="flex items-start gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 mt-1 shrink-0">
+                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mt-1 shrink-0">
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Tags Management</h1>
-                        <p className="text-slate-500 text-sm mt-1">Manage your customer and inquiry tags.</p>
+                        <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Tags Management</h1>
+                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your customer and inquiry tags.</p>
                     </div>
                 </div>
             </header>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50">
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 

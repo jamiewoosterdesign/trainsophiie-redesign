@@ -254,14 +254,14 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
             {/* Save Confirmation Dialog */}
             {showSaveConfirm && (
                 <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/20">
-                    <div className="bg-white p-6 rounded-xl shadow-2xl w-96 animate-in zoom-in-95">
-                        <h3 className="font-bold text-lg mb-2">Unsaved Changes</h3>
-                        <p className="text-sm text-slate-500 mb-6">You have unsaved changes. How would you like to proceed?</p>
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-96 animate-in zoom-in-95 border border-transparent dark:border-slate-800">
+                        <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Unsaved Changes</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">You have unsaved changes. How would you like to proceed?</p>
                         <div className="flex flex-col gap-3">
                             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11" onClick={handleSaveAndExit}>Save & Exit</Button>
-                            <Button variant="danger" className="w-full h-11 bg-white" onClick={onClose}>Discard Changes</Button>
+                            <Button variant="danger" className="w-full h-11 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700" onClick={onClose}>Discard Changes</Button>
                             <button
-                                className="w-full text-sm text-slate-400 hover:text-slate-600 mt-2 transition-colors"
+                                className="w-full text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-2 transition-colors"
                                 onClick={() => setShowSaveConfirm(false)}
                             >
                                 Keep Editing
@@ -271,14 +271,14 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
             )}
 
-            <div className={`bg-white w-full h-full md:w-[95vw] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
+            <div className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
 
                 {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
                 <div className="md:hidden flex-none">
-                    <div className="px-4 py-4 border-b border-slate-100 flex flex-col justify-between items-start bg-white gap-4">
+                    <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 gap-4">
                         <div className="flex items-center gap-3 w-full justify-between">
                             <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{getWizardTitle()}</h2>
                             </div>
 
                             {/* Mobile Controls (Voice & Close) */}
@@ -295,7 +295,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                         onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
                                             ? 'bg-purple-600 text-white shadow-md'
-                                            : 'bg-slate-100 text-slate-600'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                                             }`}
                                     >
                                         {simulatorTab === 'voice' ? <Mic className="w-3.5 h-3.5 animate-pulse" /> : <Mic className="w-3.5 h-3.5" />}
@@ -303,7 +303,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                     </button>
                                 </div>
 
-                                <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
@@ -332,12 +332,12 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         )}
 
                         {/* Mobile Tabs */}
-                        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg w-full mt-2">
+                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full mt-2">
                             <button
                                 onClick={() => setMobileTab('wizard')}
                                 className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'wizard'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
                                     }`}
                             >
                                 <Settings className="w-4 h-4" /> Set Up
@@ -345,8 +345,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                             <button
                                 onClick={() => setMobileTab('preview')}
                                 className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'preview'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
                                     }`}
                             >
                                 <MessageSquare className="w-4 h-4" /> Live Preview
@@ -357,13 +357,13 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
 
                 {/* LEFT PANEL: WIZARD FORM (Visible if 'wizard' tab active on mobile, always on desktop) */}
-                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full md:w-[55%] flex-col border-r border-slate-200 bg-white relative z-10 flex-1 md:flex-auto min-h-0`}>
+                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full md:w-[55%] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}>
 
                     {/* Desktop Header (Hidden on Mobile) */}
-                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 flex-row justify-between items-center bg-white flex-shrink-0">
+                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-center bg-white dark:bg-slate-900 flex-shrink-0">
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-full md:w-auto">
-                                <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{getWizardTitle()}</h2>
                                 {!['policy', 'faq'].includes(mode) && (
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
@@ -377,17 +377,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                         ).map((label, idx) => (
                                             <div key={idx} className="flex items-center gap-3">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
-                                                    <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
+                                                    <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                                                    <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
                                                 </div>
-                                                {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
+                                                {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200 dark:bg-slate-700" />}
                                             </div>
                                         ))}
                                     </div>
                                 )}
                             </div>
                         </div>
-                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                             <X className="w-6 h-6" />
                         </button>
                     </div>
@@ -404,7 +404,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-4 py-4 md:px-8 md:py-6 border-t border-slate-100 bg-slate-50 flex justify-between items-center flex-shrink-0">
+                    <div className="px-4 py-4 md:px-8 md:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center flex-shrink-0">
                         <Button
                             variant="outline"
                             onClick={handleBack}
@@ -428,7 +428,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 </div>
 
                 {/* RIGHT PANEL: LIVE SIMULATOR (Visible if 'preview' tab active on mobile, always on desktop) */}
-                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
+                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 dark:bg-slate-950 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
                     <LiveSimulator
                         mode={mode}
                         formData={formData}

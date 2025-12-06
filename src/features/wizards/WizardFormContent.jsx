@@ -47,13 +47,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                 {/* Knowledge Found Banner */}
                 {formData.isContextActive && (
-                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
-                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
+                        <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-purple-900 text-sm">Knowledge Extracted</h4>
-                            <p className="text-xs text-purple-700 mt-1 mb-3">I've extracted the FAQ details from <strong>{formData.contextFileName}</strong>.</p>
+                            <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Extracted</h4>
+                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I've extracted the FAQ details from <strong>{formData.contextFileName}</strong>.</p>
                             <div className="flex gap-3 items-center">
                                 <button
                                     onClick={() => {
@@ -62,7 +62,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                         onChange('faqQuestion', '');
                                         onChange('faqAnswer', '');
                                     }}
-                                    className="text-xs text-purple-500 hover:text-purple-700 font-medium"
+                                    className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
                                 >
                                     Clear & Start Over
                                 </button>
@@ -88,32 +88,32 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div
                                 onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200 dark:border-slate-800' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'}`}
                             >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
-                                <div className="text-xs text-slate-500">PDF, DOCX</div>
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400 dark:text-slate-600' : 'text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`}>Upload Doc</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">PDF, DOCX</div>
                             </div>
 
                             <div
                                 onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
+                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200 dark:border-slate-800' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'}`}
                             >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
                                     <Book className="w-5 h-5" />
                                 </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Select from KB</div>
-                                <div className="text-xs text-slate-500">Existing Files</div>
+                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400 dark:text-slate-600' : 'text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`}>Select from KB</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Existing Files</div>
                             </div>
                         </div>
 
                         {/* Loading Overlay */}
                         {isLoading && (
-                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100">
+                            <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100 dark:border-slate-800">
                                 <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                                <span className="text-sm font-medium text-blue-600 animate-pulse">Reading Document...</span>
+                                <span className="text-sm font-medium text-blue-600 dark:text-blue-400 animate-pulse">Reading Document...</span>
                             </div>
                         )}
                     </div>
@@ -135,7 +135,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <TooltipProvider>
                                 <Tooltip delayDuration={300}>
                                     <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                                             <Mic className="w-4 h-4" />
                                         </div>
                                     </TooltipTrigger>
@@ -147,7 +147,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <TooltipProvider>
                                 <Tooltip delayDuration={300}>
                                     <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                                             <Wand2 className="w-4 h-4" />
                                         </div>
                                     </TooltipTrigger>
@@ -182,13 +182,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                 {/* Knowledge Found Banner */}
                 {formData.isContextActive && (
-                    <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
-                        <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
+                        <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-bold text-purple-900 text-sm">Knowledge Extracted</h4>
-                            <p className="text-xs text-purple-700 mt-1 mb-3">I've extracted the policy details from <strong>{formData.contextFileName}</strong>.</p>
+                            <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Extracted</h4>
+                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I've extracted the policy details from <strong>{formData.contextFileName}</strong>.</p>
                             <div className="flex gap-3 items-center">
                                 <button
                                     onClick={() => {
@@ -196,7 +196,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                         onChange('contextFileName', '');
                                         onChange('policyContent', '');
                                     }}
-                                    className="text-xs text-purple-500 hover:text-purple-700 font-medium"
+                                    className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
                                 >
                                     Clear & Start Over
                                 </button>
@@ -317,13 +317,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                 <div className="space-y-6 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300 relative">
                     {/* Knowledge Found Banner */}
                     {showAutoFillBanner && (
-                        <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
-                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
+                            <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
                                 <Sparkles className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-bold text-purple-900 text-sm">Knowledge Found</h4>
-                                <p className="text-xs text-purple-700 mt-1 mb-3">I found pricing and details for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill this?</p>
+                                <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Found</h4>
+                                <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I found pricing and details for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill this?</p>
                                 <div className="flex gap-3 items-center">
                                     <Button
                                         size="sm"
@@ -347,7 +347,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     >
                                         Yes, Auto-fill
                                     </Button>
-                                    <button className="text-xs text-purple-500 hover:text-purple-700 font-medium">Dismiss</button>
+                                    <button className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium">Dismiss</button>
                                 </div>
                             </div>
                         </div>
@@ -355,14 +355,14 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                     {/* Context Active Banner Overlay */}
                     {formData.isContextActive && (
-                        <div className="bg-emerald-50/95 backdrop-blur-sm flex items-center justify-between px-4 py-3 rounded-xl border border-emerald-100 animate-in fade-in zoom-in-95 duration-300 mb-4">
+                        <div className="bg-emerald-50/95 dark:bg-emerald-900/20 backdrop-blur-sm flex items-center justify-between px-4 py-3 rounded-xl border border-emerald-100 dark:border-emerald-800 animate-in fade-in zoom-in-95 duration-300 mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-emerald-600 shadow-sm">
+                                <div className="w-8 h-8 bg-white dark:bg-emerald-800/50 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
                                     <FileCheck className="w-4 h-4" />
                                 </div>
                                 <div>
-                                    <div className="text-sm font-bold text-emerald-900">Active Context</div>
-                                    <div className="text-xs text-emerald-700 font-medium">{formData.contextFileName}</div>
+                                    <div className="text-sm font-bold text-emerald-900 dark:text-emerald-100">Active Context</div>
+                                    <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">{formData.contextFileName}</div>
                                 </div>
                             </div>
                             <button
@@ -374,7 +374,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     onChange('price', '');
                                     onChange('questions', []);
                                 }}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 hover:bg-emerald-100 hover:text-emerald-900 transition-colors"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors"
                             >
                                 <X className="w-3.5 h-3.5" />
                                 Remove Context
@@ -480,7 +480,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 </div>
                             )}
                         </div>
-                        <div className={`flex gap-2 mb-4 overflow-x-auto pb-2 p-1 -mx-1 ${formData.autoFilledFields?.priceMode ? 'bg-emerald-50/30 rounded-xl' : ''}`}>
+                        <div className={`flex gap-2 mb-4 overflow-x-auto pb-2 p-1 -mx-1 ${formData.autoFilledFields?.priceMode ? 'bg-emerald-50/30 dark:bg-emerald-900/10 rounded-xl' : ''}`}>
                             {['fixed', 'hourly', 'range', 'na'].map(m => (
                                 <div key={m}
                                     onClick={() => {
@@ -489,7 +489,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             onChange('autoFilledFields', { ...formData.autoFilledFields, priceMode: false });
                                         }
                                     }}
-                                    className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m ? (formData.autoFilledFields?.priceMode ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium ring-1 ring-emerald-500' : 'bg-blue-50 border-blue-500 text-blue-700 font-medium ring-1 ring-blue-500') : 'hover:bg-slate-50 text-slate-600'}`}
+                                    className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m ? (formData.autoFilledFields?.priceMode ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-medium ring-1 ring-emerald-500' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400 font-medium ring-1 ring-blue-500') : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}`}
                                 >
                                     {m === 'fixed' ? 'Fixed' : m === 'hourly' ? 'Hourly' : m === 'range' ? 'Range' : 'Not Applicable'}
                                 </div>
@@ -590,13 +590,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 {/* Edit Global Default Modal */}
                                 {showGlobalDefaultModal && (
                                     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-[2px] animate-in fade-in duration-200">
-                                        <div className="bg-white rounded-xl shadow-2xl w-[500px] max-w-[95vw] p-6 animate-in zoom-in-95 duration-200 border border-slate-100">
+                                        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-[500px] max-w-[95vw] p-6 animate-in zoom-in-95 duration-200 border border-slate-100 dark:border-slate-800">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <h3 className="font-bold text-lg text-slate-900">Edit Global Default Message</h3>
-                                                    <p className="text-sm text-slate-500 mt-1">This message will be used for all services with "Not Applicable" pricing that don't have a custom message.</p>
+                                                    <h3 className="font-bold text-lg text-slate-900 dark:text-white">Edit Global Default Message</h3>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">This message will be used for all services with "Not Applicable" pricing that don't have a custom message.</p>
                                                 </div>
-                                                <button onClick={() => setShowGlobalDefaultModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                                                <button onClick={() => setShowGlobalDefaultModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                                                     <X className="w-5 h-5" />
                                                 </button>
                                             </div>
@@ -610,17 +610,17 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                     autoFocus
                                                 />
                                                 <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                         <Mic className="w-4 h-4" />
                                                     </div>
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                         <Wand2 className="w-4 h-4" />
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="flex justify-end gap-3">
-                                                <Button variant="outline" onClick={() => setShowGlobalDefaultModal(false)}>Cancel</Button>
+                                                <Button variant="outline" onClick={() => setShowGlobalDefaultModal(false)} className="bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 dark:hover:bg-slate-700">Cancel</Button>
                                                 <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowGlobalDefaultModal(false)}>Save Changes</Button>
                                             </div>
                                         </div>
@@ -698,12 +698,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             ].map(opt => (
                                 <div key={opt.id}
                                     onClick={() => onChange('serviceOutcome', opt.id)}
-                                    className={`cursor-pointer h-24 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${formData.serviceOutcome === opt.id ? 'border-blue-500 bg-blue-50 shadow-sm' : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'}`}
+                                    className={`cursor-pointer h-24 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${formData.serviceOutcome === opt.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                                 >
-                                    <div className={`mb-2 ${formData.serviceOutcome === opt.id ? 'text-blue-600' : 'text-slate-400'}`}>
-                                        <opt.icon className={`w-6 h-6 ${formData.serviceOutcome === opt.id ? 'text-blue-600' : opt.color}`} />
+                                    <div className={`mb-2 ${formData.serviceOutcome === opt.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                                        <opt.icon className={`w-6 h-6 ${formData.serviceOutcome === opt.id ? 'text-blue-600 dark:text-blue-400' : opt.color}`} />
                                     </div>
-                                    <div className={`font-semibold text-sm ${formData.serviceOutcome === opt.id ? 'text-blue-900' : 'text-slate-700'}`}>{opt.label}</div>
+                                    <div className={`font-semibold text-sm ${formData.serviceOutcome === opt.id ? 'text-blue-900 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'}`}>{opt.label}</div>
                                 </div>
                             ))}
                         </div>
@@ -711,9 +711,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         {/* Conditional Configuration */}
                         <div className="animate-in fade-in">
                             {formData.serviceOutcome === 'collect' && (
-                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+                                <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
                                     <div>
-                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500">
+                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500 dark:text-slate-400">
                                             Closing Script (Optional)
                                             <TooltipProvider>
                                                 <Tooltip delayDuration={0} open={tooltipOpen['closingScript']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, closingScript: open }))}>
@@ -729,15 +729,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                         <div className="relative">
                                             <Textarea
                                                 placeholder="e.g. I'll take your details and have someone from the team call you back shortly."
-                                                className="min-h-[80px] pb-10 text-sm bg-white"
+                                                className="min-h-[80px] pb-10 text-sm bg-white dark:bg-slate-800"
                                                 value={formData.serviceClosingScript}
                                                 onChange={(e) => onChange('serviceClosingScript', e.target.value)}
                                             />
                                             <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                     <Mic className="w-4 h-4" />
                                                 </div>
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                     <Wand2 className="w-4 h-4" />
                                                 </div>
                                             </div>
@@ -750,9 +750,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             )}
 
                             {formData.serviceOutcome === 'transfer' && (
-                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+                                <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
                                     <div>
-                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500">
+                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500 dark:text-slate-400">
                                             Destination
                                             <TooltipProvider>
                                                 <Tooltip delayDuration={0} open={tooltipOpen['destination']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, destination: open }))}>
@@ -777,13 +777,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             )}
 
                             {formData.serviceOutcome === 'booking' && (
-                                <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm flex-shrink-0">
+                                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-6 flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-white dark:bg-purple-800/50 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
                                         <Calendar className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-purple-900 text-base">Calendar Active</h4>
-                                        <p className="text-sm text-purple-700">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
+                                        <h4 className="font-bold text-purple-900 dark:text-purple-100 text-base">Calendar Active</h4>
+                                        <p className="text-sm text-purple-700 dark:text-purple-300">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
                                     </div>
                                 </div>
                             )}
@@ -792,15 +792,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     {/* Tabs for SMS / Email */}
                                     {/* Tabs for SMS / Email */}
-                                    <div className="bg-slate-100 p-1 rounded-lg flex mb-4">
+                                    <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex mb-4">
                                         <button
-                                            className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'sms' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'sms' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                             onClick={() => onChange('serviceSendInfoType', 'sms')}
                                         >
                                             SMS
                                         </button>
                                         <button
-                                            className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'email' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                            className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${formData.serviceSendInfoType === 'email' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                                             onClick={() => onChange('serviceSendInfoType', 'email')}
                                         >
                                             Email
@@ -809,9 +809,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                                     {formData.serviceSendInfoType === 'sms' && (
                                         <div className="animate-in fade-in space-y-4 pt-2">
-                                            <div className="bg-blue-50 p-3 rounded-lg flex gap-3 border border-blue-100">
-                                                <div className="text-blue-500 mt-0.5"><ShieldAlert className="w-4 h-4" /></div>
-                                                <p className="text-xs text-blue-800 leading-relaxed">
+                                            <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg flex gap-3 border border-blue-100 dark:border-blue-900/50">
+                                                <div className="text-blue-500 dark:text-blue-400 mt-0.5"><ShieldAlert className="w-4 h-4" /></div>
+                                                <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
                                                     This action only works for <strong>phone calls</strong>. For chatbot and web calls, it will automatically fallback to "Continue Call".
                                                 </p>
                                             </div>
@@ -833,7 +833,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                 <div className="relative">
                                                     <Textarea
                                                         placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
-                                                        className="min-h-[100px] pb-10 text-sm bg-white"
+                                                        className="min-h-[100px] pb-10 text-sm bg-white dark:bg-slate-800"
                                                         value={formData.smsContent || ''}
                                                         onChange={(e) => onChange('smsContent', e.target.value)}
                                                     />
@@ -994,7 +994,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                         <Plus className="w-3 h-3 mr-1" /> New Template
                                                     </Button>
                                                 </div>
-                                                <div className="text-center p-6 border-2 border-dashed border-slate-200 rounded-lg text-slate-400 text-sm">
+                                                <div className="text-center p-6 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-slate-400 dark:text-slate-500 text-sm">
                                                     No EMAIL templates found. Create one to get started.
                                                 </div>
                                             </div>
@@ -1046,24 +1046,24 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <p className="text-xs text-slate-500 mb-2">Tell Sophiie what this person handles.</p>
                         <div className="relative">
                             <Textarea
-                                className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[120px] pb-10"
+                                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[120px] pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                                 placeholder="e.g. Handles billing disputes..."
                                 value={formData.staffResp}
                                 onChange={(e) => onChange('staffResp', e.target.value)}
                             />
                             <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                     <Mic className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start gap-3">
-                        <Sparkles className="w-4 h-4 text-blue-500 mt-0.5" />
-                        <div className="text-sm text-blue-800"><strong>AI Tip:</strong> Be specific. Instead of "Sales", say "Residential Sales".</div>
+                    <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/50 rounded-lg p-4 flex items-start gap-3">
+                        <Sparkles className="w-4 h-4 text-blue-500 dark:text-blue-400 mt-0.5" />
+                        <div className="text-sm text-blue-800 dark:text-blue-200"><strong>AI Tip:</strong> Be specific. Instead of "Sales", say "Residential Sales".</div>
                     </div>
                 </div>
             );
@@ -1079,10 +1079,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <button className="text-xs text-blue-600 hover:underline">+ Add</button>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
+                    <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                         <div>
-                            <div className="font-medium text-slate-800 text-sm">Escalation Point</div>
-                            <div className="text-xs text-slate-500">Route angry calls here</div>
+                            <div className="font-medium text-slate-800 dark:text-white text-sm">Escalation Point</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">Route angry calls here</div>
                         </div>
                         <input type="checkbox" className="toggle-checkbox" />
                     </div>
@@ -1112,10 +1112,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <div
                                     key={type}
                                     onClick={() => onChange('protocolTriggerType', type)}
-                                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.protocolTriggerType === type ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.protocolTriggerType === type ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                                 >
-                                    <div className="font-semibold text-slate-800 capitalize mb-1">{type === 'keyword' ? 'Specific Keywords' : 'Customer Intent'}</div>
-                                    <div className="text-xs text-slate-500">{type === 'keyword' ? 'Exact phrases (e.g. "Refund")' : 'Vague goals (e.g. Wants a job)'}</div>
+                                    <div className="font-semibold text-slate-800 dark:text-slate-200 capitalize mb-1">{type === 'keyword' ? 'Specific Keywords' : 'Customer Intent'}</div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400">{type === 'keyword' ? 'Exact phrases (e.g. "Refund")' : 'Vague goals (e.g. Wants a job)'}</div>
                                 </div>
                             ))}
                         </div>
@@ -1143,12 +1143,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <div
                                     key={opt.id}
                                     onClick={() => onChange('protocolAction', opt.id)}
-                                    className={`cursor-pointer p-4 rounded-xl border-2 flex flex-col items-center text-center transition-all ${formData.protocolAction === opt.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                    className={`cursor-pointer p-4 rounded-xl border-2 flex flex-col items-center text-center transition-all ${formData.protocolAction === opt.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center mb-2 shadow-sm">
-                                        <opt.icon className={`w-5 h-5 ${opt.color}`} />
+                                    <div className={`w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center mb-2 shadow-sm ${opt.color}`}>
+                                        <opt.icon className="w-5 h-5" />
                                     </div>
-                                    <span className="text-sm font-semibold capitalize">{opt.label}</span>
+                                    <span className="text-sm font-semibold capitalize text-slate-900 dark:text-slate-200">{opt.label}</span>
                                 </div>
                             ))}
                         </div>
@@ -1186,21 +1186,21 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     {/* Script Editor & Questions */}
                     {(formData.protocolAction === 'script' || formData.protocolAction === 'collect') && (
                         <div className="space-y-6 animate-in fade-in">
-                            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                <Label className="text-xs text-slate-500 uppercase block mb-2">{formData.protocolAction === 'collect' ? 'Data Collection Script' : 'Response Script'}</Label>
+                            <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800">
+                                <Label className="text-xs text-slate-500 dark:text-slate-400 uppercase block mb-2">{formData.protocolAction === 'collect' ? 'Data Collection Script' : 'Response Script'}</Label>
                                 <div className="relative">
                                     <Textarea
-                                        className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10"
+                                        className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
                                         rows={3}
                                         placeholder={formData.protocolAction === 'collect' ? "e.g. I need to take down some details first..." : "e.g. We do not offer refunds on sale items..."}
                                         value={formData.protocolScript}
                                         onChange={(e) => onChange('protocolScript', e.target.value)}
                                     />
                                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                             <Mic className="w-4 h-4" />
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                             <Wand2 className="w-4 h-4" />
                                         </div>
                                     </div>
@@ -1219,9 +1219,9 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             </div>
                                         ))
                                     ) : (
-                                        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm flex justify-between group">
-                                            <span>Could you please provide the order number?</span>
-                                            <Trash2 className="w-4 h-4 text-slate-300 group-hover:text-red-500 cursor-pointer" />
+                                        <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-sm flex justify-between group">
+                                            <span className="text-slate-800 dark:text-slate-200">Could you please provide the order number?</span>
+                                            <Trash2 className="w-4 h-4 text-slate-300 cursor-pointer group-hover:text-red-500" />
                                         </div>
                                     )}
                                 </div>
@@ -1270,26 +1270,26 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <p className="text-sm text-slate-500">Review the logic before activating.</p>
                     </div>
 
-                    <div className="p-5 border border-slate-200 rounded-xl shadow-sm bg-white">
-                        <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-                            <Badge variant="outline">IF</Badge>
-                            <span className="text-sm font-medium text-slate-700">
+                    <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800">
+                        <div className="flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
+                            <Badge variant="outline" className="dark:text-white dark:border-slate-600">IF</Badge>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                                 User {formData.protocolTriggerType === 'intent' ? 'intends to' : 'says keyword'}:
                                 <strong> "{formData.protocolTrigger || '...'}"</strong>
                             </span>
                         </div>
 
-                        <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-3">
-                            <Badge variant="outline">THEN</Badge>
-                            <span className="text-sm font-medium text-slate-700 capitalize">
+                        <div className="flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
+                            <Badge variant="outline" className="dark:text-white dark:border-slate-600">THEN</Badge>
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200 capitalize">
                                 Action: <strong>{formData.protocolAction}</strong>
                             </span>
                         </div>
 
                         {formData.protocolAction === 'transfer' && (
                             <div className="flex items-center gap-2">
-                                <Badge variant="outline">TO</Badge>
-                                <span className="text-sm font-medium text-slate-700">
+                                <Badge variant="outline" className="dark:text-white dark:border-slate-600">TO</Badge>
+                                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                                     Routing: <strong>{formData.protocolDestinationValue || 'Selected Team'}</strong>
                                 </span>
                             </div>
@@ -1297,10 +1297,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                         {(formData.protocolAction === 'script' || formData.protocolAction === 'collect') && (
                             <div className="flex items-start gap-2">
-                                <Badge variant="outline">AND</Badge>
+                                <Badge variant="outline" className="dark:text-white dark:border-slate-600">AND</Badge>
                                 <div className="flex-1">
-                                    <span className="text-sm font-medium text-slate-700 block mb-1">Ask Questions:</span>
-                                    <ul className="list-disc list-inside text-xs text-slate-600">
+                                    <span className="text-sm font-medium text-slate-700 dark:text-slate-200 block mb-1">Ask Questions:</span>
+                                    <ul className="list-disc list-inside text-xs text-slate-600 dark:text-slate-400">
                                         {formData.questions.length > 0 ? formData.questions.map((q, i) => <li key={i}>{q.text || q}</li>) : <li>Default Questions</li>}
                                     </ul>
                                 </div>
@@ -1330,23 +1330,23 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="grid grid-cols-2 gap-4">
                             <div
                                 onClick={() => onChange('transferType', 'warm')}
-                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.transferType === 'warm' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.transferType === 'warm' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                             >
-                                <div className="flex items-center gap-2 mb-1 text-orange-600">
+                                <div className="flex items-center gap-2 mb-1 text-orange-600 dark:text-orange-400">
                                     <Zap className="w-4 h-4" />
-                                    <span className="font-semibold text-slate-800">Warm Transfer</span>
+                                    <span className="font-semibold text-slate-800 dark:text-slate-200">Warm Transfer</span>
                                 </div>
-                                <div className="text-xs text-slate-500">AI introduces caller to agent first.</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">AI introduces caller to agent first.</div>
                             </div>
                             <div
                                 onClick={() => onChange('transferType', 'cold')}
-                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.transferType === 'cold' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}
+                                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${formData.transferType === 'cold' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
                             >
-                                <div className="flex items-center gap-2 mb-1 text-blue-600">
+                                <div className="flex items-center gap-2 mb-1 text-blue-600 dark:text-blue-400">
                                     <PhoneForwarded className="w-4 h-4" />
-                                    <span className="font-semibold text-slate-800">Cold Transfer</span>
+                                    <span className="font-semibold text-slate-800 dark:text-slate-200">Cold Transfer</span>
                                 </div>
-                                <div className="text-xs text-slate-500">Immediate connect, no intro.</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Immediate connect, no intro.</div>
                             </div>
                         </div>
                     </div>
@@ -1361,15 +1361,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <p className="text-xs text-slate-500 mb-3">What the AI says to the agent before connecting.</p>
                         <div className="relative">
                             <Textarea
-                                className="w-full rounded-lg border border-slate-300 p-3 text-sm font-mono bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px] pb-10"
+                                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm font-mono bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px] pb-10"
                                 value={formData.transferSummary}
                                 onChange={(e) => onChange('transferSummary', e.target.value)}
                             />
                             <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                     <Mic className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
@@ -1377,7 +1377,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="mt-3 flex flex-wrap gap-2">
                             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Vars:</span>
                             {['{Caller Name}', '{Reason}', '{Key Details}'].map(v => (
-                                <Badge key={v} variant="outline" className="bg-white hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-colors">{v}</Badge>
+                                <Badge key={v} variant="outline" className="bg-white dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-colors">{v}</Badge>
                             ))}
                         </div>
                     </div>
@@ -1399,10 +1399,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             onAddNew={() => { }}
                         />
 
-                        <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
+                        <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                             <div>
-                                <div className="font-medium text-slate-800 text-sm">Ignore Business Hours</div>
-                                <div className="text-xs text-slate-500">Transfer even if closed (Emergency)</div>
+                                <div className="font-medium text-slate-800 dark:text-white text-sm">Ignore Business Hours</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">Transfer even if closed (Emergency)</div>
                             </div>
                             <input type="checkbox" className="toggle-checkbox" />
                         </div>
@@ -1417,12 +1417,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         if (step === 1) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    <div className="border-2 border-dashed border-slate-300 rounded-xl h-48 flex flex-col items-center justify-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition-colors cursor-pointer">
-                        <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-3">
+                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl h-48 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer">
+                        <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full shadow-sm flex items-center justify-center mb-3">
                             <UploadCloud className="w-6 h-6 text-blue-500" />
                         </div>
-                        <div className="text-sm font-medium text-slate-700">Click to upload or drag and drop</div>
-                        <div className="text-xs text-slate-400 mt-1">PDF, DOCX, TXT (Max 10MB)</div>
+                        <div className="text-sm font-medium text-slate-700 dark:text-slate-200">Click to upload or drag and drop</div>
+                        <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">PDF, DOCX, TXT (Max 10MB)</div>
                     </div>
 
                     <div>
@@ -1514,7 +1514,7 @@ const TeamMemberSelector = ({ value, onChange, onAddNew }) => {
     return (
         <div className="space-y-2">
             <select
-                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:text-slate-100"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             >
@@ -1535,12 +1535,12 @@ const TeamMemberSelector = ({ value, onChange, onAddNew }) => {
 const TransferRoutingSelector = ({ type, value, onChangeType, onChangeValue, onAddNew }) => {
     return (
         <div className="space-y-3">
-            <div className="flex p-1 bg-slate-100 rounded-lg">
+            <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
                 {['staff', 'queue', 'external'].map(t => (
                     <button
                         key={t}
                         onClick={() => onChangeType(t)}
-                        className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${type === t ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${type === t ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         {t === 'staff' ? 'Staff' : t === 'queue' ? 'Queue' : 'External'}
                     </button>
@@ -1553,7 +1553,7 @@ const TransferRoutingSelector = ({ type, value, onChangeType, onChangeValue, onA
 
             {type === 'queue' && (
                 <select
-                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:text-slate-100"
                     value={value}
                     onChange={(e) => onChangeValue(e.target.value)}
                 >
@@ -1567,6 +1567,7 @@ const TransferRoutingSelector = ({ type, value, onChangeType, onChangeValue, onA
             {type === 'external' && (
                 <Input
                     placeholder="+1 (555) 000-0000"
+                    className="bg-white dark:bg-slate-800"
                     value={value}
                     onChange={(e) => onChangeValue(e.target.value)}
                 />
