@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Pause, Bot, Volume2, Shield, Info, Check, Lock, Settings } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Bot, Volume2, Shield, Info, Check, Lock, Settings, Filter, Globe, Smile, MessageCircle, User, Clock, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -8,6 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
+
+import sophiieAvatar from '@/avatars/sophiie-avatar.png';
+import steveAvatar from '@/avatars/Steve-avatar.png';
+import lucyAvatar from '@/avatars/lucy-avatar.png';
+import charlieAvatar from '@/avatars/Charlie-avatar.png';
+import emmaAvatar from '@/avatars/Emma-avatar.png';
+import arthurAvatar from '@/avatars/arthur-avatar.png';
+import arohaAvatar from '@/avatars/Aroha-avatar.png';
+import nikauAvatar from '@/avatars/nikau-avatar.png';
 
 // Helper icons avoiding import errors if they don't exist in lucide-react
 const BriefcaseIcon = (props) => (
@@ -20,18 +29,18 @@ const HeartIcon = (props) => (
 // Mock data for voices with tags
 const VOICES = {
     australian: [
-        { id: 'au-1', name: 'Sophiie', gender: 'Female', preview: '/audio/sophiie.mp3', tags: ['Friendly', 'Casual', 'Female'] },
-        { id: 'au-2', name: 'Steve', gender: 'Male', preview: '/audio/steve.mp3', tags: ['Professional', 'Male', 'Middle-Aged'] },
-        { id: 'au-3', name: 'Lucy', gender: 'Female', preview: '/audio/lucy.mp3', tags: ['Conversational', 'Female', 'Casual'] },
-        { id: 'au-4', name: 'Charlie', gender: 'Male', preview: '/audio/charlie.mp3', tags: ['Friendly', 'Male', 'Casual'] },
+        { id: 'au-1', name: 'Sophiie', gender: 'Female', preview: '/audio/sophiie.mp3', tags: ['Friendly', 'Casual', 'Female'], avatar: sophiieAvatar },
+        { id: 'au-2', name: 'Steve', gender: 'Male', preview: '/audio/steve.mp3', tags: ['Professional', 'Male', 'Middle-Aged'], avatar: steveAvatar },
+        { id: 'au-3', name: 'Lucy', gender: 'Female', preview: '/audio/lucy.mp3', tags: ['Conversational', 'Female', 'Casual'], avatar: lucyAvatar },
+        { id: 'au-4', name: 'Charlie', gender: 'Male', preview: '/audio/charlie.mp3', tags: ['Friendly', 'Male', 'Casual'], avatar: charlieAvatar },
     ],
     british: [
-        { id: 'uk-1', name: 'Emma', gender: 'Female', preview: '/audio/emma.mp3', tags: ['Professional', 'British', 'Female'] },
-        { id: 'uk-2', name: 'Arthur', gender: 'Male', preview: '/audio/arthur.mp3', tags: ['Formal', 'British', 'Male'] },
+        { id: 'uk-1', name: 'Emma', gender: 'Female', preview: '/audio/emma.mp3', tags: ['Professional', 'British', 'Female'], avatar: emmaAvatar },
+        { id: 'uk-2', name: 'Arthur', gender: 'Male', preview: '/audio/arthur.mp3', tags: ['Formal', 'British', 'Male'], avatar: arthurAvatar },
     ],
     newzealand: [
-        { id: 'nz-1', name: 'Aroha', gender: 'Female', preview: '/audio/aroha.mp3', tags: ['Friendly', 'Casual', 'Female'] },
-        { id: 'nz-2', name: 'Nikau', gender: 'Male', preview: '/audio/nikau.mp3', tags: ['Calm', 'Male'] },
+        { id: 'nz-1', name: 'Aroha', gender: 'Female', preview: '/audio/aroha.mp3', tags: ['Friendly', 'Casual', 'Female'], avatar: arohaAvatar },
+        { id: 'nz-2', name: 'Nikau', gender: 'Male', preview: '/audio/nikau.mp3', tags: ['Calm', 'Male'], avatar: nikauAvatar },
     ]
 };
 
@@ -121,7 +130,7 @@ export default function VoicePersonalityView() {
                         {/* Filter Voices by Style */}
                         <div className="mb-6">
                             <div className="flex items-center gap-2 mb-3">
-                                <Settings className="w-4 h-4 text-slate-400" />
+                                <Filter className="w-4 h-4 text-slate-400" />
                                 <h3 className="text-sm font-bold text-slate-900">Filter Voices by Style</h3>
                             </div>
                             <div className="flex flex-wrap gap-2">
@@ -129,17 +138,18 @@ export default function VoicePersonalityView() {
                                     <button
                                         key={filter}
                                         onClick={() => setSelectedFilter(filter)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedFilter === filter
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${selectedFilter === filter
                                             ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-500/20 shadow-sm'
                                             : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-300 hover:text-blue-600'
                                             }`}
                                     >
-                                        {filter === 'All styles' && <span className="mr-1">🌐</span>}
-                                        {filter === 'Casual' && <span className="mr-1">😎</span>}
-                                        {filter === 'Conversational' && <span className="mr-1">💬</span>}
-                                        {filter === 'Female' && <span className="mr-1">👩</span>}
-                                        {filter === 'Male' && <span className="mr-1">👨</span>}
-                                        {filter === 'Middle-Aged' && <span className="mr-1">👱</span>}
+                                        {filter === 'All styles' && <Globe className="w-3.5 h-3.5" />}
+                                        {filter === 'Casual' && <Smile className="w-3.5 h-3.5" />}
+                                        {filter === 'Professional' && <Briefcase className="w-3.5 h-3.5" />}
+                                        {filter === 'Conversational' && <MessageCircle className="w-3.5 h-3.5" />}
+                                        {filter === 'Female' && <User className="w-3.5 h-3.5" />}
+                                        {filter === 'Male' && <User className="w-3.5 h-3.5" />}
+                                        {filter === 'Middle-Aged' && <Clock className="w-3.5 h-3.5" />}
                                         {filter}
                                     </button>
                                 ))}
@@ -169,10 +179,14 @@ export default function VoicePersonalityView() {
                                                         </div>
                                                     )}
 
-                                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
-                                                        <span className="text-xl filter grayscale text-slate-400">
-                                                            {region === 'australian' ? '🇦🇺' : region === 'british' ? '🇬🇧' : '🇳🇿'}
-                                                        </span>
+                                                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3 overflow-hidden">
+                                                        {voice.avatar ? (
+                                                            <img src={voice.avatar} alt={voice.name} className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span className="text-xl filter grayscale text-slate-400">
+                                                                {region === 'australian' ? '🇦🇺' : region === 'british' ? '🇬🇧' : '🇳🇿'}
+                                                            </span>
+                                                        )}
                                                     </div>
 
                                                     <h3 className="font-bold text-slate-900">{voice.name}</h3>
