@@ -73,6 +73,7 @@ export default function VoicePersonalityView() {
     const [selectedVoice, setSelectedVoice] = useState('au-1');
     const [selectedFilter, setSelectedFilter] = useState('All styles');
     const [selectedPersonality, setSelectedPersonality] = useState('friendly');
+    const [activeRegion, setActiveRegion] = useState('australian');
     const [profanityFilter, setProfanityFilter] = useState(true);
     const [playingVoice, setPlayingVoice] = useState(null);
 
@@ -113,7 +114,7 @@ export default function VoicePersonalityView() {
 
                     {/* Voice Selection Section */}
                     <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-6">
                             <div>
                                 <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                                     <Volume2 className="w-5 h-5 text-blue-500" />
@@ -121,7 +122,7 @@ export default function VoicePersonalityView() {
                                 </h2>
                                 <p className="text-sm text-slate-500 mt-1">Choose the voice that best fits your brand.</p>
                             </div>
-                            <Button variant="outline" className="gap-2">
+                            <Button variant="outline" className="gap-2 w-full md:w-auto">
                                 <Settings className="w-4 h-4" />
                                 Voice Settings
                             </Button>
@@ -156,11 +157,20 @@ export default function VoicePersonalityView() {
                             </div>
                         </div>
 
-                        <Tabs defaultValue="australian" className="w-full">
+                        <Tabs value={activeRegion} onValueChange={setActiveRegion} className="w-full">
                             <TabsList className="grid w-full grid-cols-3 mb-6">
-                                <TabsTrigger value="australian">Australian 🇦🇺</TabsTrigger>
-                                <TabsTrigger value="british">British 🇬🇧</TabsTrigger>
-                                <TabsTrigger value="newzealand">New Zealand 🇳🇿</TabsTrigger>
+                                <TabsTrigger value="australian">
+                                    <span className="md:hidden text-base">🇦🇺 AU</span>
+                                    <span className="hidden md:inline text-base">🇦🇺 Australian</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="british">
+                                    <span className="md:hidden text-base">🇬🇧 GB</span>
+                                    <span className="hidden md:inline text-base">🇬🇧 British</span>
+                                </TabsTrigger>
+                                <TabsTrigger value="newzealand">
+                                    <span className="md:hidden text-base">🇳🇿 NZ</span>
+                                    <span className="hidden md:inline text-base">🇳🇿 New Zealand</span>
+                                </TabsTrigger>
                             </TabsList>
 
                             {Object.entries(VOICES).map(([region, voices]) => (
@@ -269,9 +279,9 @@ export default function VoicePersonalityView() {
                             <label className="text-xs font-bold text-slate-900 mb-1.5 block flex items-center gap-1">
                                 Current Agent Name <Info className="w-3 h-3 text-slate-400" />
                             </label>
-                            <div className="flex gap-3">
+                            <div className="flex flex-col md:flex-row gap-3">
                                 <Input value="Sophiie" disabled className="bg-white text-slate-500 border-slate-200" />
-                                <Button className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
+                                <Button className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 w-full md:w-auto">
                                     Upgrade to Customize
                                 </Button>
                             </div>
