@@ -8,9 +8,15 @@ import TransfersView from '@/features/views/TransfersView';
 import PoliciesView from '@/features/views/PoliciesView';
 import KnowledgeBaseView from '@/features/views/KnowledgeBaseView';
 import BusinessInfoView from '@/features/views/BusinessInfoView';
+import TagsView from '@/features/views/TagsView';
+import NotificationsView from '@/features/views/NotificationsView';
 
 import FAQsView from '@/features/views/FAQsView';
 import OverviewView from '@/features/views/OverviewView';
+import VoicePersonalityView from '@/features/views/VoicePersonalityView';
+import GreetingsView from '@/features/views/GreetingsView';
+import BehavioursView from '@/features/views/BehavioursView';
+
 
 function App() {
     return (
@@ -27,9 +33,14 @@ function App() {
                     <Route path="faqs" element={<FAQsView />} />
                     <Route path="knowledge" element={<KnowledgeBaseView />} />
                     <Route path="business-info" element={<BusinessInfoView />} />
+                    <Route path="tags" element={<TagsView />} />
+                    <Route path="notifications" element={<NotificationsView />} />
+                    <Route path="voice" element={<VoicePersonalityView />} />
+                    <Route path="greetings" element={<GreetingsView />} />
+                    <Route path="behaviors" element={<BehavioursView />} />
                 </Route>
-            </Routes>
-        </Router>
+            </Routes >
+        </Router >
     );
 }
 

@@ -175,8 +175,26 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                         customPriceMessage: "Based on our SOP, heater repairs require an on-site diagnosis. We charge a $89 call-out fee which is waived if you proceed.",
                         questions: [
                             { id: '1', text: "Is the area easily accessible?", options: [] },
-                            { id: '2', text: "How old is the current unit?", options: [] },
-                            { id: '3', text: "Is it gas or electric?", options: [] }
+                            {
+                                id: '2',
+                                text: "Is it a gas or electric unit?",
+                                options: [
+                                    {
+                                        id: 'opt1',
+                                        text: 'Gas',
+                                        followUps: [
+                                            { id: 'q2a', text: 'Is the pilot light on?', options: [] }
+                                        ]
+                                    },
+                                    {
+                                        id: 'opt2',
+                                        text: 'Electric',
+                                        followUps: [
+                                            { id: 'q2b', text: 'Have you checked the fuse box?', options: [] }
+                                        ]
+                                    }
+                                ]
+                            }
                         ]
                     });
 
@@ -262,6 +280,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
           - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
           - Staff: ${formData.staffName || 'Unknown'} (${formData.staffRole || 'Staff'})
           - Transfer Rule: ${formData.transferName || 'None'} -> ${formData.transferSummary || 'Standard transfer'}
+          - Questions: ${formData.questions?.map(q => q.text + (q.options ? ' (Options: ' + q.options.map(o => o.text).join(', ') + ')' : '')).join('; ') || 'None'}
           
           User (Owner testing the bot) says: "${text}"
           

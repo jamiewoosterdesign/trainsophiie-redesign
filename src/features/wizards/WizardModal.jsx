@@ -46,13 +46,14 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         durationUnit: 'minutes',
         customPriceMessage: '',
         useCustomPriceMessage: false,
+        globalDefaultPriceMessage: "Prices vary based on complexity. We can provide a quote on site.",
         questions: [],
 
         // Outcome
         serviceOutcome: 'collect', // 'collect', 'transfer', 'booking', 'send_info'
 
         // Outcome: Collect
-        serviceSendInfoType: 'team',
+        serviceSendInfoType: 'sms',
         serviceSendInfoValue: '',
         serviceClosingScript: '',
 
@@ -178,11 +179,48 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     };
 
     const getTotalSteps = () => {
-        if (mode === 'service') return 2;
+        if (mode === 'service') return 3;
         if (mode === 'policy') return 1;
         if (mode === 'faq') return 1;
         // All other wizards have 3 steps
         return 3;
+    };
+
+    const validateStep = (currentStep) => {
+        let newErrors = {};
+        let isValid = true;
+
+        if (mode === 'service') {
+            if (currentStep === 1) {
+                if (!formData.serviceName?.trim()) newErrors.serviceName = true;
+                if (!formData.description?.trim()) newErrors.description = true;
+                if (formData.priceMode === 'fixed' && !formData.price) newErrors.price = true;
+                if (formData.priceMode === 'hourly' && !formData.price) newErrors.price = true;
+                if (formData.priceMode === 'range' && !formData.price) newErrors.price = true;
+            }
+            if (currentStep === 3) {
+                if (formData.serviceOutcome === 'send_info') {
+                    if (formData.sendInfoType === 'sms' && !formData.smsContent) newErrors.smsContent = true;
+                    if (formData.sendInfoType === 'email' && !formData.emailSubject) newErrors.emailSubject = true;
+                }
+            }
+        }
+
+        // Pass errors to form data so content can display them
+        setFormData(prev => ({ ...prev, errors: newErrors }));
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleNext = () => {
+        if (validateStep(step)) {
+            setStep(step + 1);
+        }
+    };
+
+    const handleFinish = () => {
+        if (validateStep(step)) {
+            onClose();
+        }
     };
 
     return (
@@ -261,7 +299,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
                                             {
-                                                service: ['Service Details', 'Outcome'],
+                                                service: ['Service Details', 'Conversation Flow', 'Outcome'],
                                                 staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
                                                 protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
@@ -309,11 +347,11 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         </Button>
                         <div className="flex gap-3">
                             {step < getTotalSteps() ? (
-                                <Button onClick={() => setStep(step + 1)} className="w-32">
+                                <Button onClick={handleNext} className="w-32">
                                     Next <ChevronRight className="w-4 h-4 ml-1" />
                                 </Button>
                             ) : (
-                                <Button className="w-32 bg-green-600 hover:bg-green-700" onClick={onClose}>
+                                <Button className="w-32 bg-green-600 hover:bg-green-700" onClick={handleFinish}>
                                     Finish <Check className="w-4 h-4 ml-1" />
                                 </Button>
                             )}
