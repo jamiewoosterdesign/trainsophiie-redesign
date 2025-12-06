@@ -158,18 +158,18 @@ export default function VoicePersonalityView() {
                         </div>
 
                         <Tabs value={activeRegion} onValueChange={setActiveRegion} className="w-full">
-                            <TabsList className="grid w-full grid-cols-3 mb-6">
-                                <TabsTrigger value="australian">
-                                    <span className="md:hidden text-base">🇦🇺 AU</span>
-                                    <span className="hidden md:inline text-base">🇦🇺 Australian</span>
+                            <TabsList className="grid w-full grid-cols-3 mb-6 h-auto p-1">
+                                <TabsTrigger value="australian" className="py-2">
+                                    <span className="md:hidden text-sm font-semibold">AU</span>
+                                    <span className="hidden md:inline text-sm">Australian <span className="text-slate-400 ml-1 text-xs">AU</span></span>
                                 </TabsTrigger>
-                                <TabsTrigger value="british">
-                                    <span className="md:hidden text-base">🇬🇧 GB</span>
-                                    <span className="hidden md:inline text-base">🇬🇧 British</span>
+                                <TabsTrigger value="british" className="py-2">
+                                    <span className="md:hidden text-sm font-semibold">GB</span>
+                                    <span className="hidden md:inline text-sm">British <span className="text-slate-400 ml-1 text-xs">GB</span></span>
                                 </TabsTrigger>
-                                <TabsTrigger value="newzealand">
-                                    <span className="md:hidden text-base">🇳🇿 NZ</span>
-                                    <span className="hidden md:inline text-base">🇳🇿 New Zealand</span>
+                                <TabsTrigger value="newzealand" className="py-2">
+                                    <span className="md:hidden text-sm font-semibold">NZ</span>
+                                    <span className="hidden md:inline text-sm">New Zealand <span className="text-slate-400 ml-1 text-xs">NZ</span></span>
                                 </TabsTrigger>
                             </TabsList>
 
@@ -193,8 +193,8 @@ export default function VoicePersonalityView() {
                                                         {voice.avatar ? (
                                                             <img src={voice.avatar} alt={voice.name} className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <span className="text-xl filter grayscale text-slate-400">
-                                                                {region === 'australian' ? '🇦🇺' : region === 'british' ? '🇬🇧' : '🇳🇿'}
+                                                            <span className="text-xl font-bold text-slate-400">
+                                                                {region === 'australian' ? 'AU' : region === 'british' ? 'GB' : 'NZ'}
                                                             </span>
                                                         )}
                                                     </div>
