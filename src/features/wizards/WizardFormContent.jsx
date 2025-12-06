@@ -269,7 +269,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <TooltipProvider>
                                 <Tooltip delayDuration={300}>
                                     <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                                             <Mic className="w-4 h-4" />
                                         </div>
                                     </TooltipTrigger>
@@ -281,7 +281,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             <TooltipProvider>
                                 <Tooltip delayDuration={300}>
                                     <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                                             <Wand2 className="w-4 h-4" />
                                         </div>
                                     </TooltipTrigger>
@@ -446,10 +446,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 highlight={(activeField === 'description').toString()}
                             />
                             <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                     <Mic className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
@@ -575,10 +575,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                     placeholder="Enter pricing explanation or terms (e.g., 'Quote on request', 'Contact for pricing', etc.)"
                                                 />
                                                 <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                         <Mic className="w-4 h-4" />
                                                     </div>
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                         <Wand2 className="w-4 h-4" />
                                                     </div>
                                                 </div>
@@ -660,10 +660,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 onChange={(e) => onChange('aiResponse', e.target.value)}
                             />
                             <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                     <Mic className="w-4 h-4" />
                                 </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
@@ -789,7 +789,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             )}
 
                             {formData.serviceOutcome === 'send_info' && (
-                                <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
+                                <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
                                     {/* Tabs for SMS / Email */}
                                     {/* Tabs for SMS / Email */}
                                     <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex mb-4">
@@ -838,10 +838,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                         onChange={(e) => onChange('smsContent', e.target.value)}
                                                     />
                                                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                             <Mic className="w-4 h-4" />
                                                         </div>
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                             <Wand2 className="w-4 h-4" />
                                                         </div>
                                                     </div>
@@ -863,14 +863,14 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                                                 {/* Template Creation */}
                                                 {formData.isCreatingTemplate && (
-                                                    <div className="bg-slate-100 p-4 rounded-lg mb-4 border border-slate-200 animate-in fade-in slide-in-from-top-2">
-                                                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">New SMS Template</div>
+                                                    <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-lg mb-4 border border-slate-200 dark:border-slate-700 animate-in fade-in slide-in-from-top-2">
+                                                        <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">New SMS Template</div>
                                                         <div className="space-y-3">
                                                             <div>
                                                                 <Label className="mb-1.5 block text-xs">Template Name</Label>
                                                                 <Input
                                                                     placeholder="Enter template name"
-                                                                    className="bg-white"
+                                                                    className="bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-white"
                                                                     value={formData.newTemplateName || ''}
                                                                     onChange={(e) => onChange('newTemplateName', e.target.value)}
                                                                 />
@@ -880,15 +880,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                                 <div className="relative">
                                                                     <Textarea
                                                                         placeholder="Enter SMS message content"
-                                                                        className="bg-white min-h-[100px] pb-10"
+                                                                        className="bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-white min-h-[100px] pb-10"
                                                                         value={formData.newTemplateContent || ''}
                                                                         onChange={(e) => onChange('newTemplateContent', e.target.value)}
                                                                     />
                                                                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                                             <Mic className="w-4 h-4" />
                                                                         </div>
-                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                                             <Wand2 className="w-4 h-4" />
                                                                         </div>
                                                                     </div>
@@ -899,7 +899,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                                     variant="ghost"
                                                                     size="sm"
                                                                     onClick={() => onChange('isCreatingTemplate', false)}
-                                                                    className="bg-white hover:bg-slate-200"
+                                                                    className="bg-white dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600 hover:bg-slate-200"
                                                                 >
                                                                     Cancel
                                                                 </Button>
@@ -930,16 +930,16 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                                                 <div className="space-y-2">
                                                     {formData.smsTemplates?.map(t => (
-                                                        <div key={t.id} className="p-3 bg-white border border-slate-200 rounded-lg hover:border-blue-300 transition-colors cursor-pointer group flex justify-between items-start">
+                                                        <div key={t.id} className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:border-blue-300 dark:hover:border-blue-500 transition-colors cursor-pointer group flex justify-between items-start">
                                                             <div className="flex-1" onClick={() => onChange('smsContent', t.content)}>
-                                                                <div className="font-semibold text-sm text-slate-700 mb-1">{t.name}</div>
-                                                                <div className="text-xs text-slate-500 line-clamp-1">{t.content}</div>
+                                                                <div className="font-semibold text-sm text-slate-700 dark:text-slate-200 mb-1">{t.name}</div>
+                                                                <div className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{t.content}</div>
                                                             </div>
                                                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-blue-600"><Copy className="w-3 h-3" /></button>
-                                                                <button className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-blue-600"><Edit2 className="w-3 h-3" /></button>
+                                                                <button className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 dark:text-slate-500 hover:text-blue-600"><Copy className="w-3 h-3" /></button>
+                                                                <button className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 dark:text-slate-500 hover:text-blue-600"><Edit2 className="w-3 h-3" /></button>
                                                                 <button
-                                                                    className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-red-500"
+                                                                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 dark:text-slate-500 hover:text-red-500"
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         const newTemplates = formData.smsTemplates.filter(temp => temp.id !== t.id);
@@ -964,7 +964,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                     placeholder="e.g. Summary of our conversation"
                                                     value={formData.emailSubject || ''}
                                                     onChange={(e) => onChange('emailSubject', e.target.value)}
-                                                    className="bg-white"
+                                                    className="bg-white dark:bg-slate-900 dark:border-slate-700"
                                                 />
                                             </div>
                                             <div>
@@ -972,15 +972,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                 <div className="relative">
                                                     <Textarea
                                                         placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
-                                                        className="min-h-[100px] pb-10 text-sm bg-white"
+                                                        className="min-h-[100px] pb-10 text-sm bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                                                         value={formData.emailContent || ''}
                                                         onChange={(e) => onChange('emailContent', e.target.value)}
                                                     />
                                                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                             <Mic className="w-4 h-4" />
                                                         </div>
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                                             <Wand2 className="w-4 h-4" />
                                                         </div>
                                                     </div>
@@ -1246,10 +1246,10 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     onChange={(e) => onChange('protocolScript', e.target.value)}
                                 />
                                 <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                         <Mic className="w-4 h-4" />
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
                                         <Wand2 className="w-4 h-4" />
                                     </div>
                                 </div>
