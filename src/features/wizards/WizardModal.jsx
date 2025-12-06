@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronRight, Check, ArrowLeft, MessageSquare } from 'lucide-react';
+import { X, ChevronRight, Check, ArrowLeft, MessageSquare, Mic, MicOff, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WizardFormContent from './WizardFormContent';
 import LiveSimulator from '@/features/simulator/LiveSimulator';
@@ -19,7 +19,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
     const [simulatorTab, setSimulatorTab] = useState('preview'); // Default to preview
     const [activeField, setActiveField] = useState(null);
-    const [isMobileSimulatorOpen, setIsMobileSimulatorOpen] = useState(false);
+    const [mobileTab, setMobileTab] = useState('wizard'); // 'wizard' | 'preview'
 
     // Entry Modal State
     const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference);
@@ -273,28 +273,97 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
             <div className={`bg-white w-full h-full md:w-[95vw] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
 
-                {/* LEFT PANEL: WIZARD FORM */}
-                <div className="w-full md:w-[55%] flex flex-col border-r border-slate-200 bg-white relative z-10 h-full">
+                {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
+                <div className="md:hidden flex-none">
+                    <div className="px-4 py-4 border-b border-slate-100 flex flex-col justify-between items-start bg-white gap-4">
+                        <div className="flex items-center gap-3 w-full justify-between">
+                            <div className="flex items-center gap-3">
+                                <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
+                            </div>
 
-                    {/* Header */}
-                    <div className="px-4 py-4 md:px-8 md:py-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center bg-white flex-shrink-0 gap-4 md:gap-0">
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            {/* Back Arrow Removed */}
-                            <div className="w-full md:w-auto">
-                                <div className="flex justify-between items-center w-full md:w-auto">
-                                    <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
-                                    <div className="flex items-center gap-2 md:hidden">
-                                        <button
-                                            onClick={() => setIsMobileSimulatorOpen(!isMobileSimulatorOpen)}
-                                            className={`p-2 rounded-full transition-colors ${isMobileSimulatorOpen ? 'bg-blue-100 text-blue-600' : 'hover:bg-slate-100 text-slate-400'}`}
-                                        >
-                                            <MessageSquare className="w-6 h-6" />
-                                        </button>
-                                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
-                                            <X className="w-6 h-6" />
-                                        </button>
-                                    </div>
+                            {/* Mobile Controls (Voice & Close) */}
+                            <div className="flex items-center gap-2">
+                                {/* Mobile Voice Toggle */}
+                                <div className="relative">
+                                    {showVoiceTooltip && (
+                                        <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-40 text-center pointer-events-none">
+                                            <div className="absolute -top-1 right-8 w-2 h-2 bg-slate-900 rotate-45" />
+                                            Tap to toggle Voice
+                                        </div>
+                                    )}
+                                    <button
+                                        onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
+                                            ? 'bg-purple-600 text-white shadow-md'
+                                            : 'bg-slate-100 text-slate-600'
+                                            }`}
+                                    >
+                                        {simulatorTab === 'voice' ? <Mic className="w-3.5 h-3.5 animate-pulse" /> : <Mic className="w-3.5 h-3.5" />}
+                                        {simulatorTab === 'voice' ? 'On' : 'Off'}
+                                    </button>
                                 </div>
+
+                                <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {!['policy', 'faq'].includes(mode) && (
+                            <div className="flex flex-wrap items-center gap-3 mt-1 px-1">
+                                {(
+                                    {
+                                        service: ['Service Details', 'Conversation Flow', 'Outcome'],
+                                        staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
+                                        protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
+                                        transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
+                                        document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                    }[mode] || ['Step 1', 'Step 2', 'Step 3']
+                                ).map((label, idx) => (
+                                    <div key={idx} className="flex items-center gap-3">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                                            <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden' : ''}`}>{label}</span>
+                                        </div>
+                                        {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Mobile Tabs */}
+                        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg w-full mt-2">
+                            <button
+                                onClick={() => setMobileTab('wizard')}
+                                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'wizard'
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                <Settings className="w-4 h-4" /> Set Up
+                            </button>
+                            <button
+                                onClick={() => setMobileTab('preview')}
+                                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'preview'
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                <MessageSquare className="w-4 h-4" /> Live Preview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                {/* LEFT PANEL: WIZARD FORM (Visible if 'wizard' tab active on mobile, always on desktop) */}
+                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full md:w-[55%] flex-col border-r border-slate-200 bg-white relative z-10 flex-1 md:flex-auto min-h-0`}>
+
+                    {/* Desktop Header (Hidden on Mobile) */}
+                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 flex-row justify-between items-center bg-white flex-shrink-0">
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="w-full md:w-auto">
+                                <h2 className="text-xl font-bold text-slate-900">{getWizardTitle()}</h2>
                                 {!['policy', 'faq'].includes(mode) && (
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
@@ -304,7 +373,6 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                                 protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                                 document: ['Upload', 'Analyzing', 'Extraction Lab'],
-                                                // policy and faq removed from here since they are hidden
                                             }[mode] || ['Step 1', 'Step 2', 'Step 3']
                                         ).map((label, idx) => (
                                             <div key={idx} className="flex items-center gap-3">
@@ -319,13 +387,13 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                 )}
                             </div>
                         </div>
-                        <button onClick={handleClose} className="hidden md:block p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
                             <X className="w-6 h-6" />
                         </button>
                     </div>
 
                     {/* Form Content */}
-                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                    <div className="flex-1 overflow-y-auto p-4 pb-32 md:p-8">
                         <WizardFormContent
                             mode={mode}
                             step={step}
@@ -359,17 +427,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                     </div>
                 </div>
 
-                {/* RIGHT PANEL: LIVE SIMULATOR (Desktop & Mobile Toggle) */}
-                <div className={`${isMobileSimulatorOpen ? 'flex absolute inset-0 z-20' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden transition-all duration-300`}>
-                    {/* Mobile Close Button for Simulator */}
-                    <div className="md:hidden absolute top-4 right-4 z-30">
-                        <button
-                            onClick={() => setIsMobileSimulatorOpen(false)}
-                            className="p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm text-slate-500 hover:text-slate-900"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
+                {/* RIGHT PANEL: LIVE SIMULATOR (Visible if 'preview' tab active on mobile, always on desktop) */}
+                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
                     <LiveSimulator
                         mode={mode}
                         formData={formData}
@@ -381,6 +440,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         setSimulatorTab={setSimulatorTab}
                         setActiveField={setActiveField}
                         showVoiceTooltip={showVoiceTooltip}
+                        isMobile={true} // Hint to simulator
                     />
                 </div>
 

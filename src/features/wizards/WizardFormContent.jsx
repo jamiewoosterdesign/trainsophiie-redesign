@@ -7,11 +7,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
 export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
 
     // Unified State
     const [isLoading, setIsLoading] = React.useState(false);
+
+    // Mobile Tooltip State
+    const [tooltipOpen, setTooltipOpen] = React.useState({});
+    const toggleTooltip = (id, e) => {
+        e.preventDefault();
+        setTooltipOpen(prev => ({ ...prev, [id]: !prev[id] }));
+    };
     const [showGlobalDefaultModal, setShowGlobalDefaultModal] = React.useState(false);
 
     // --- FAQ WIZARD ---
@@ -119,12 +132,30 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             highlight={(activeField === 'faqAnswer').toString()}
                         />
                         <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
-                            </div>
+                            <TooltipProvider>
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>Voice Input</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>Generate with AI</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
                 </div>
@@ -235,12 +266,30 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             highlight={(activeField === 'policyContent').toString()}
                         />
                         <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
-                            </div>
+                            <TooltipProvider>
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>Voice Input</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                                <Tooltip delayDuration={300}>
+                                    <TooltipTrigger asChild>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>Generate with AI</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
                 </div>
@@ -265,7 +314,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
             const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isContextActive;
 
             return (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
+                <div className="space-y-6 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300 relative">
                     {/* Knowledge Found Banner */}
                     {showAutoFillBanner && (
                         <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
@@ -334,7 +383,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     )}
 
                     <div>
-                        <Label className={`mb-1.5 block ${isError('serviceName') ? 'text-red-500' : ''}`}>Service Name *</Label>
+                        <Label className={`mb-1.5 flex items-center gap-2 ${isError('serviceName') ? 'text-red-500' : ''}`}>
+                            Service Name *
+                            <TooltipProvider>
+                                <Tooltip delayDuration={0} open={tooltipOpen['serviceName']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, serviceName: open }))}>
+                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('serviceName', e)}>
+                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>The name of the service as clearly understood by customers.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </Label>
                         <Input
                             placeholder="e.g., Hot Water System"
                             value={formData.serviceName}
@@ -350,7 +411,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                     <div>
                         <div className="flex justify-between items-center mb-1.5">
-                            <Label className={`block ${isError('description') ? 'text-red-500' : ''}`}>Description *</Label>
+                            <Label className={`flex items-center gap-2 ${isError('description') ? 'text-red-500' : ''}`}>
+                                Description *
+                                <TooltipProvider>
+                                    <Tooltip delayDuration={0} open={tooltipOpen['description']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, description: open }))}>
+                                        <TooltipTrigger asChild onClick={(e) => toggleTooltip('description', e)}>
+                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                            <p>A detailed explanation of what the service includes.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </Label>
                             {formData.autoFilledFields?.description && (
                                 <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
                                     <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
@@ -387,7 +460,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     {/* Pricing */}
                     <div>
                         <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
-                            <Label className="block">Pricing Mode *</Label>
+                            <Label className="flex items-center gap-2">
+                                Pricing Mode *
+                                <TooltipProvider>
+                                    <Tooltip delayDuration={0} open={tooltipOpen['priceMode']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, priceMode: open }))}>
+                                        <TooltipTrigger asChild onClick={(e) => toggleTooltip('priceMode', e)}>
+                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                            <p>How you charge for this service.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </Label>
                             {formData.autoFilledFields?.priceMode && (
                                 <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
                                     <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
@@ -469,7 +554,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     {/* Custom Message Input */}
                                     {formData.useCustomPriceMessage && (
                                         <div className="animate-in fade-in slide-in-from-top-2">
-                                            <Label className="mb-1.5 block text-sm font-medium text-slate-900">Custom Message</Label>
+                                            <Label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-900">
+                                                Custom Message
+                                                <TooltipProvider>
+                                                    <Tooltip delayDuration={0} open={tooltipOpen['customPrice']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, customPrice: open }))}>
+                                                        <TooltipTrigger asChild onClick={(e) => toggleTooltip('customPrice', e)}>
+                                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                            <p>A specific message to read out when this service's price is requested.</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </Label>
                                             <div className="relative">
                                                 <Textarea
                                                     value={formData.customPriceMessage || ""}
@@ -539,10 +636,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         // --- STEP 2: CONVERSATION FLOW ---
         if (step === 2) {
             return (
-                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                <div className="space-y-8 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300">
                     {/* AI Response Section */}
                     <div>
-                        <Label className="mb-1.5 block">AI Response</Label>
+                        <Label className="mb-1.5 flex items-center gap-2">
+                            AI Response
+                            <TooltipProvider>
+                                <Tooltip delayDuration={0} open={tooltipOpen['aiResponse']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, aiResponse: open }))}>
+                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('aiResponse', e)}>
+                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>How Sophiie should boldy introduce the conversation flow.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </Label>
                         <div className="relative">
                             <Textarea
                                 placeholder="Sure, I can help with that."
@@ -604,7 +713,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             {formData.serviceOutcome === 'collect' && (
                                 <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     <div>
-                                        <Label className="mb-1.5 block text-xs uppercase text-slate-500">Closing Script (Optional)</Label>
+                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500">
+                                            Closing Script (Optional)
+                                            <TooltipProvider>
+                                                <Tooltip delayDuration={0} open={tooltipOpen['closingScript']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, closingScript: open }))}>
+                                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('closingScript', e)}>
+                                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                        <p>What Sophiie should say before ending the interaction.</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
                                         <div className="relative">
                                             <Textarea
                                                 placeholder="e.g. I'll take your details and have someone from the team call you back shortly."
@@ -631,7 +752,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             {formData.serviceOutcome === 'transfer' && (
                                 <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     <div>
-                                        <Label className="mb-1.5 block text-xs uppercase text-slate-500">Destination</Label>
+                                        <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500">
+                                            Destination
+                                            <TooltipProvider>
+                                                <Tooltip delayDuration={0} open={tooltipOpen['destination']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, destination: open }))}>
+                                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('destination', e)}>
+                                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                        <p>Who or where to transfer the call to.</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </Label>
                                         <TransferRoutingSelector
                                             type={formData.serviceDestinationType}
                                             value={formData.serviceDestinationValue}
@@ -684,7 +817,19 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             </div>
 
                                             <div>
-                                                <Label className="mb-1.5 block text-xs uppercase text-slate-500">SMS Content</Label>
+                                                <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500">
+                                                    SMS Content
+                                                    <TooltipProvider>
+                                                        <Tooltip delayDuration={0} open={tooltipOpen['smsContent']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, smsContent: open }))}>
+                                                            <TooltipTrigger asChild onClick={(e) => toggleTooltip('smsContent', e)}>
+                                                                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                                <p>The text message to send to the caller.</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                </Label>
                                                 <div className="relative">
                                                     <Textarea
                                                         placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."

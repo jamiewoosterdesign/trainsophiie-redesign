@@ -8,7 +8,7 @@ import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
 
 const USE_GLOBAL_VOICE_UI = true;
 
-export default function LiveSimulator({ mode, formData, step, onChange, updateFormFields, onStepAdvance, simulatorTab, setSimulatorTab, setActiveField, showVoiceTooltip }) {
+export default function LiveSimulator({ mode, formData, step, onChange, updateFormFields, onStepAdvance, simulatorTab, setSimulatorTab, setActiveField, showVoiceTooltip, isMobile }) {
     const [messages, setMessages] = useState([]);
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef(null);
@@ -316,8 +316,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         <div className="flex flex-col h-full bg-slate-50">
             <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-200 to-transparent opacity-50" />
 
-            {/* TABBED INTERFACE (Voice or Preview) */}
-            <div className="px-4 py-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative">
+            {/* TABBED INTERFACE (Voice or Preview) - Hidden on mobile if embedded in WizardModal */}
+            <div className={`px-4 py-3 bg-white border-b border-slate-200 flex justify-between items-center shadow-sm z-10 animate-in slide-in-from-top-2 relative ${isMobile ? 'hidden md:flex' : ''}`}>
 
                 <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-slate-800">Live Preview</h3>
@@ -327,7 +327,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 <div className="flex items-center gap-2 relative">
                     {/* Tooltip for Voice Toggle */}
                     {showVoiceTooltip && (
-                        <div className="absolute top-10 right-10 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
+                        <div className="absolute top-10 right-10 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none hidden md:block">
                             <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
                             Toggle Voice Setup anytime here
                         </div>
@@ -335,7 +335,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
                     <button
                         onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
+                        className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
                             ? 'bg-purple-600 text-white shadow-md hover:bg-purple-700'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}

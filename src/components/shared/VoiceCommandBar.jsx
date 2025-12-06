@@ -29,7 +29,7 @@ export default function VoiceCommandBar({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[9999] animate-in slide-in-from-bottom-10 fade-in duration-500 flex justify-center">
+        <div className="fixed bottom-[86px] md:bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-[9999] animate-in slide-in-from-bottom-10 fade-in duration-500 flex justify-center">
             <div className="bg-slate-900/90 backdrop-blur-md text-white rounded-full shadow-2xl border border-white/10 p-2 pl-4 md:pl-6 pr-2 flex items-center gap-3 md:gap-6 w-full md:w-auto md:min-w-[400px] max-w-[600px] transition-all hover:scale-[1.01]">
 
                 {/* Status Indicator / Visualizer */}
