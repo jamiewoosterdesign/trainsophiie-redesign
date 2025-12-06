@@ -37,21 +37,21 @@ export default function KnowledgeBaseView() {
                     <div className="flex items-center gap-2 mb-6 bg-slate-100 p-1 rounded-lg w-full">
                         <button
                             onClick={() => setActiveTab('library')}
-                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'library'
+                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'library'
                                 ? 'bg-white text-slate-900 shadow-sm'
                                 : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
                                 }`}
                         >
-                            Library (Files)
+                            <FileText className="w-4 h-4" /> Library (Files)
                         </button>
                         <button
                             onClick={() => setActiveTab('web')}
-                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all ${activeTab === 'web'
+                            className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'web'
                                 ? 'bg-white text-slate-900 shadow-sm'
                                 : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
                                 }`}
                         >
-                            Web Sources
+                            <Globe className="w-4 h-4" /> Web Sources
                         </button>
                     </div>
 

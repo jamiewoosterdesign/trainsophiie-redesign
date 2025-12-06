@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, Clock, Share2 } from 'lucide-react';
+import { Plus, Clock, Share2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,7 +37,11 @@ export default function ServicesView() {
             <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 relative">
                 <div className="max-w-7xl mx-auto w-full">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-slate-500" /> Active Services
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <button onClick={() => openWizard('service')}
                             className={`hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group ${voiceFlowStep === 'SERVICES' ? 'ring-[8px] ring-purple-400/50 shadow-[0_0_40px_rgba(168,85,247,0.3)] scale-105 border-purple-500 bg-purple-50/30' : ''}`}>
                             <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">

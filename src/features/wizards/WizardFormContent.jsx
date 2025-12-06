@@ -118,8 +118,11 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             onChange={(e) => onChange('faqAnswer', e.target.value)}
                             highlight={(activeField === 'faqAnswer').toString()}
                         />
-                        <div className="absolute bottom-3 right-3">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <Mic className="w-4 h-4" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
                                 <Wand2 className="w-4 h-4" />
                             </div>
                         </div>
@@ -231,8 +234,11 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             onChange={(e) => onChange('policyContent', e.target.value)}
                             highlight={(activeField === 'policyContent').toString()}
                         />
-                        <div className="absolute bottom-3 right-3">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                <Mic className="w-4 h-4" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
                                 <Wand2 className="w-4 h-4" />
                             </div>
                         </div>
@@ -599,12 +605,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <div className="p-5 bg-slate-50 rounded-xl border border-slate-100 space-y-4">
                                     <div>
                                         <Label className="mb-1.5 block text-xs uppercase text-slate-500">Closing Script (Optional)</Label>
-                                        <Textarea
-                                            placeholder="e.g. I'll take your details and have someone from the team call you back shortly."
-                                            className="h-20 text-sm bg-white"
-                                            value={formData.serviceClosingScript}
-                                            onChange={(e) => onChange('serviceClosingScript', e.target.value)}
-                                        />
+                                        <div className="relative">
+                                            <Textarea
+                                                placeholder="e.g. I'll take your details and have someone from the team call you back shortly."
+                                                className="min-h-[80px] pb-10 text-sm bg-white"
+                                                value={formData.serviceClosingScript}
+                                                onChange={(e) => onChange('serviceClosingScript', e.target.value)}
+                                            />
+                                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                    <Mic className="w-4 h-4" />
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                    <Wand2 className="w-4 h-4" />
+                                                </div>
+                                            </div>
+                                        </div>
                                         <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
                                             <HelpCircle className="w-3 h-3" /> Sophiie will automatically ask for name & contact details.
                                         </p>
@@ -669,12 +685,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                                             <div>
                                                 <Label className="mb-1.5 block text-xs uppercase text-slate-500">SMS Content</Label>
-                                                <Textarea
-                                                    placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
-                                                    className="h-24 text-sm bg-white"
-                                                    value={formData.smsContent || ''}
-                                                    onChange={(e) => onChange('smsContent', e.target.value)}
-                                                />
+                                                <div className="relative">
+                                                    <Textarea
+                                                        placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
+                                                        className="min-h-[100px] pb-10 text-sm bg-white"
+                                                        value={formData.smsContent || ''}
+                                                        onChange={(e) => onChange('smsContent', e.target.value)}
+                                                    />
+                                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                            <Mic className="w-4 h-4" />
+                                                        </div>
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                            <Wand2 className="w-4 h-4" />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div>
@@ -706,12 +732,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                                             </div>
                                                             <div>
                                                                 <Label className="mb-1.5 block text-xs">Content</Label>
-                                                                <Textarea
-                                                                    placeholder="Enter SMS message content"
-                                                                    className="bg-white min-h-[80px]"
-                                                                    value={formData.newTemplateContent || ''}
-                                                                    onChange={(e) => onChange('newTemplateContent', e.target.value)}
-                                                                />
+                                                                <div className="relative">
+                                                                    <Textarea
+                                                                        placeholder="Enter SMS message content"
+                                                                        className="bg-white min-h-[100px] pb-10"
+                                                                        value={formData.newTemplateContent || ''}
+                                                                        onChange={(e) => onChange('newTemplateContent', e.target.value)}
+                                                                    />
+                                                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                                            <Mic className="w-4 h-4" />
+                                                                        </div>
+                                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                                            <Wand2 className="w-4 h-4" />
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div className="flex justify-end gap-2 pt-2">
                                                                 <Button
@@ -788,12 +824,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             </div>
                                             <div>
                                                 <Label className="mb-1.5 block text-xs uppercase text-slate-500">Email Content</Label>
-                                                <Textarea
-                                                    placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
-                                                    className="h-24 text-sm bg-white"
-                                                    value={formData.emailContent || ''}
-                                                    onChange={(e) => onChange('emailContent', e.target.value)}
-                                                />
+                                                <div className="relative">
+                                                    <Textarea
+                                                        placeholder="e.g. Thanks for calling! Here is a summary of the next steps we discussed."
+                                                        className="min-h-[100px] pb-10 text-sm bg-white"
+                                                        value={formData.emailContent || ''}
+                                                        onChange={(e) => onChange('emailContent', e.target.value)}
+                                                    />
+                                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                                            <Mic className="w-4 h-4" />
+                                                        </div>
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                                            <Wand2 className="w-4 h-4" />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div>
@@ -853,12 +899,22 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     <div>
                         <Label className="mb-2 block">Responsibilities</Label>
                         <p className="text-xs text-slate-500 mb-2">Tell Sophiie what this person handles.</p>
-                        <Textarea
-                            className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[120px]"
-                            placeholder="e.g. Handles billing disputes..."
-                            value={formData.staffResp}
-                            onChange={(e) => onChange('staffResp', e.target.value)}
-                        />
+                        <div className="relative">
+                            <Textarea
+                                className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[120px] pb-10"
+                                placeholder="e.g. Handles billing disputes..."
+                                value={formData.staffResp}
+                                onChange={(e) => onChange('staffResp', e.target.value)}
+                            />
+                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                    <Mic className="w-4 h-4" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                    <Wand2 className="w-4 h-4" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-start gap-3">
                         <Sparkles className="w-4 h-4 text-blue-500 mt-0.5" />
@@ -987,13 +1043,23 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="space-y-6 animate-in fade-in">
                             <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                                 <Label className="text-xs text-slate-500 uppercase block mb-2">{formData.protocolAction === 'collect' ? 'Data Collection Script' : 'Response Script'}</Label>
-                                <Textarea
-                                    className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                    rows={3}
-                                    placeholder={formData.protocolAction === 'collect' ? "e.g. I need to take down some details first..." : "e.g. We do not offer refunds on sale items..."}
-                                    value={formData.protocolScript}
-                                    onChange={(e) => onChange('protocolScript', e.target.value)}
-                                />
+                                <div className="relative">
+                                    <Textarea
+                                        className="w-full rounded-lg border border-slate-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10"
+                                        rows={3}
+                                        placeholder={formData.protocolAction === 'collect' ? "e.g. I need to take down some details first..." : "e.g. We do not offer refunds on sale items..."}
+                                        value={formData.protocolScript}
+                                        onChange={(e) => onChange('protocolScript', e.target.value)}
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Reusing Questions Logic */}
@@ -1026,13 +1092,23 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     {formData.protocolAction === 'refuse' && (
                         <div className="p-4 bg-red-50 rounded-lg border border-red-200 animate-in fade-in">
                             <Label className="text-xs text-red-800 uppercase block mb-2">Polite Refusal Script</Label>
-                            <Textarea
-                                className="w-full rounded-lg border border-red-200 p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none bg-white"
-                                rows={3}
-                                placeholder="e.g. I apologize, but we are unable to process that request due to company policy."
-                                value={formData.protocolScript}
-                                onChange={(e) => onChange('protocolScript', e.target.value)}
-                            />
+                            <div className="relative">
+                                <Textarea
+                                    className="w-full rounded-lg border border-red-200 p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none bg-white pb-10"
+                                    rows={3}
+                                    placeholder="e.g. I apologize, but we are unable to process that request due to company policy."
+                                    value={formData.protocolScript}
+                                    onChange={(e) => onChange('protocolScript', e.target.value)}
+                                />
+                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                        <Mic className="w-4 h-4" />
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                        <Wand2 className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -1140,12 +1216,17 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <p className="text-xs text-slate-500 mb-3">What the AI says to the agent before connecting.</p>
                         <div className="relative">
                             <Textarea
-                                className="w-full rounded-lg border border-slate-300 p-3 text-sm font-mono bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px]"
+                                className="w-full rounded-lg border border-slate-300 p-3 text-sm font-mono bg-slate-50 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px] pb-10"
                                 value={formData.transferSummary}
                                 onChange={(e) => onChange('transferSummary', e.target.value)}
                             />
-                            <div className="absolute bottom-3 right-3">
-                                <button className="p-1.5 rounded-full bg-white border border-slate-200 hover:text-blue-600 shadow-sm"><RotateCcw className="w-3 h-3" /></button>
+                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                    <Mic className="w-4 h-4" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                    <Wand2 className="w-4 h-4" />
+                                </div>
                             </div>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2">

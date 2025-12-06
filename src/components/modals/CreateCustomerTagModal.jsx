@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check } from 'lucide-react';
+import { X, Check, Mic, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -43,13 +43,23 @@ export default function CreateCustomerTagModal({ onClose }) {
 
                     <div className="space-y-2">
                         <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            placeholder="Enter a description of what the tag represents"
-                            className="min-h-[80px]"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
+                        <div className="relative">
+                            <Textarea
+                                id="description"
+                                placeholder="Enter a description of what the tag represents"
+                                className="min-h-[80px] pb-10"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                    <Mic className="w-4 h-4" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                    <Wand2 className="w-4 h-4" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="space-y-3">

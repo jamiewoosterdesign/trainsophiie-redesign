@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, ArrowRight, ShieldAlert, Trash2, ArrowLeft, Zap } from 'lucide-react';
+import { Plus, ArrowRight, ShieldAlert, Trash2, ArrowLeft, Zap, Waypoints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +33,9 @@ export default function ScenariosView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     <div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-4">Scenarios</h3>
+                        <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                            <Waypoints className="w-5 h-5 text-slate-500" /> Scenarios
+                        </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             <button onClick={() => openWizard('protocol')}
@@ -59,7 +61,9 @@ export default function ScenariosView() {
 
                     {/* Global Restrictions & Guardrails */}
                     <div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-4">Restrictions</h3>
+                        <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                            <ShieldAlert className="w-5 h-5 text-slate-500" /> Restrictions
+                        </h2>
                         <Card className="p-6">
                             <p className="text-sm text-slate-500 mb-6">Define strict limits for the AI (Negative Constraints). These apply to every call.</p>
                             <div className="space-y-4">

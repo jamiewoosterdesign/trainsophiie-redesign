@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, Settings, Users, ArrowLeft } from 'lucide-react';
+import { Plus, Settings, Users, ArrowLeft, PhoneForwarded } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +40,11 @@ export default function TransfersView() {
                 <div className="max-w-7xl mx-auto w-full">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-8">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                        <PhoneForwarded className="w-5 h-5 text-slate-500" /> Transfer Rules
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         <button onClick={() => openWizard('transfer')}
                             className="hidden md:flex border-2 border-dashed border-slate-300 rounded-xl p-6 flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 transition-all min-h-[240px] group">
                             <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">

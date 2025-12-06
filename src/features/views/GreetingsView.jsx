@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MessageSquare, Phone, MessageCircle, Play, Mic, Plus } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Phone, MessageCircle, Play, Mic, Plus, Wand2, PhoneOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -66,7 +66,9 @@ export default function GreetingsView() {
                             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900">Greeting Message</h2>
+                                        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                            <MessageSquare className="w-5 h-5 text-slate-500" /> Greeting Message
+                                        </h2>
                                         <p className="text-sm text-slate-500">The first thing Sophiie says when answering a call.</p>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -74,12 +76,22 @@ export default function GreetingsView() {
                                         <Switch checked={omitGreeting} onCheckedChange={setOmitGreeting} />
                                     </div>
                                 </div>
-                                <Textarea
-                                    value={phoneGreeting}
-                                    onChange={(e) => setPhoneGreeting(e.target.value)}
-                                    className="min-h-[120px] text-base mb-3"
-                                    disabled={omitGreeting}
-                                />
+                                <div className="relative mb-3">
+                                    <Textarea
+                                        value={phoneGreeting}
+                                        onChange={(e) => setPhoneGreeting(e.target.value)}
+                                        className="min-h-[120px] text-base pb-10"
+                                        disabled={omitGreeting}
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="gap-2 text-slate-600">
                                         <Play className="w-3 h-3" /> Preview Audio
@@ -97,14 +109,26 @@ export default function GreetingsView() {
                             {/* Closing Section */}
                             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                                 <div className="mb-4">
-                                    <h2 className="text-lg font-bold text-slate-900">Closing Message</h2>
+                                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        <PhoneOff className="w-5 h-5 text-slate-500" /> Closing Message
+                                    </h2>
                                     <p className="text-sm text-slate-500">What Sophiie says before hanging up.</p>
                                 </div>
-                                <Textarea
-                                    value={phoneClosing}
-                                    onChange={(e) => setPhoneClosing(e.target.value)}
-                                    className="min-h-[100px] text-base mb-3"
-                                />
+                                <div className="relative mb-3">
+                                    <Textarea
+                                        value={phoneClosing}
+                                        onChange={(e) => setPhoneClosing(e.target.value)}
+                                        className="min-h-[100px] text-base pb-10"
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="outline" className="gap-2 text-slate-600">
                                         <Play className="w-3 h-3" /> Preview Audio
@@ -146,14 +170,26 @@ export default function GreetingsView() {
                             {/* Chatbot Greeting */}
                             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                                 <div className="mb-4">
-                                    <h2 className="text-lg font-bold text-slate-900">Chat Greeting</h2>
+                                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        <MessageSquare className="w-5 h-5 text-slate-500" /> Chat Greeting
+                                    </h2>
                                     <p className="text-sm text-slate-500">The initial message displayed in the chat widget.</p>
                                 </div>
-                                <Textarea
-                                    value={chatGreeting}
-                                    onChange={(e) => setChatGreeting(e.target.value)}
-                                    className="min-h-[100px] text-base mb-3"
-                                />
+                                <div className="relative mb-3">
+                                    <Textarea
+                                        value={chatGreeting}
+                                        onChange={(e) => setChatGreeting(e.target.value)}
+                                        className="min-h-[100px] text-base pb-10"
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <Button size="sm" variant="ghost" className="gap-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
                                         <Plus className="w-3 h-3" /> Add Variable
@@ -164,14 +200,26 @@ export default function GreetingsView() {
                             {/* Chatbot Closing */}
                             <section className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                                 <div className="mb-4">
-                                    <h2 className="text-lg font-bold text-slate-900">Chat Closing</h2>
+                                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                        <MessageSquare className="w-5 h-5 text-slate-500" /> Chat Closing
+                                    </h2>
                                     <p className="text-sm text-slate-500">Fixed message shown when the conversation ends.</p>
                                 </div>
-                                <Textarea
-                                    value={chatClosing}
-                                    onChange={(e) => setChatClosing(e.target.value)}
-                                    className="min-h-[100px] text-base"
-                                />
+                                <div className="relative">
+                                    <Textarea
+                                        value={chatClosing}
+                                        onChange={(e) => setChatClosing(e.target.value)}
+                                        className="min-h-[100px] text-base pb-10"
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
                             </section>
                         </div>
                     )}

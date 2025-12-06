@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, FileText, RefreshCw, ChevronUp, ChevronDown, Check, Copy, Instagram, Twitter, Facebook, Linkedin, Sparkles, Wand2, X, ArrowRight, Settings } from 'lucide-react';
+import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { cn } from '@/lib/utils';
+import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SHORT_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -276,8 +273,11 @@ export default function BusinessInfoView() {
                                 placeholder="Describe your business..."
                                 defaultValue="Gold Coast electricians providing domestic and commercial electrical, air conditioning (split & ducted) design/supply/install, CCTV, smoke alarms, generator changeovers, switchboard upgrades and maintenance across the region."
                             />
-                            <div className="absolute bottom-3 right-3">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-purple-600" title="Generate with AI">
+                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Voice Input">
+                                    <Mic className="w-4 h-4" />
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors text-slate-500 hover:text-blue-600" title="Generate with AI">
                                     <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
