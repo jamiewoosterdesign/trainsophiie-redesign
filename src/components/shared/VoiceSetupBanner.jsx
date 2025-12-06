@@ -42,8 +42,6 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
                 {/* Deep Base Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-950 via-indigo-950 to-blue-950 opacity-100" />
 
-
-
                 <div className="absolute w-[100%] h-[100%] top-0 left-0 overflow-hidden">
                     {/* Blob 1: Deep Blue */}
                     <div className="absolute top-[10%] left-[10%] w-[60%] h-[60%] animate-[moveInCircle_20s_linear_infinite]">
@@ -91,9 +89,9 @@ export default function VoiceSetupBanner({ onStartVoiceFlow }) {
             {isCollapsed ? (
                 // Collapsed View
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 pr-10 md:pr-12 relative z-10">
-                    <div className="hidden md:flex items-center font-bold text-lg tracking-tight">
-                        <div className="p-1.5 bg-white/10 rounded-lg backdrop-blur-sm border border-white/10 shadow-sm mr-3">
-                            <Sparkles className="w-4 h-4 text-white" />
+                    <div className="hidden md:flex items-center font-bold text-xl tracking-tight">
+                        <div className="p-2.5 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10 shadow-sm mr-4">
+                            <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-sky-200">
                             Let's Train Sophiie.
