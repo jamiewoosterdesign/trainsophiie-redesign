@@ -17,27 +17,36 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-// Mock Data for Electricians (20 items)
-const MOCK_ELECTRICIANS = Array.from({ length: 20 }).map((_, i) => ({
-    id: `elec-${i}`,
-    name: `Electrical Service ${i + 1}`,
-    desc: 'Install, maintain, and repair electrical control, wiring, and lighting systems.',
-    time: ['45 mins', '60 mins', '90 mins'][i % 3],
-    action: ['Book', 'Transfer'][i % 2],
-    active: i < 15, // First 15 active
-    icon: <Zap className="w-5 h-5 text-amber-500" />
-}));
+const MOCK_ELECTRICIANS = [
+    { id: 'elec-1', name: 'Switchboard Upgrade', desc: 'Upgrade old fuse box to modern circuit breaker panel with RCD protection.', time: '4 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-2', name: 'Powerpoint Installation', desc: 'Install new double power points in standard plasterboard walls.', time: '45 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-3', name: 'LED Downlight Install', desc: 'Supply and install energy-efficient LED downlights throughout property.', time: '2 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-4', name: 'Ceiling Fan Installation', desc: 'Installation of ceiling fans with wall control or remote.', time: '90 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-5', name: 'Safety Inspection', desc: 'Comprehensive electrical safety check and report for residential properties.', time: '60 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-6', name: 'Smoke Alarm Testing', desc: 'Test, battery replacement, and verification of smoke alarm compliance.', time: '30 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-7', name: 'EV Charger Install', desc: 'Installation of Level 2 Electric Vehicle home charging station.', time: '3 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-8', name: 'Emergency Fault Finding', desc: 'Urgent callout to diagnose and rectify power outages or electrical faults.', time: '60 mins', action: 'Transfer', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-9', name: 'Oven/Cooktop Connection', desc: 'Hardwiring of new electric ovens, cooktops, or stoves.', time: '60 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-10', name: 'Data Cabling', desc: 'Cat6 data point installation for home networking and internet.', time: '60 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-11', name: 'TV Wall Mounting', desc: 'Secure mounting of TV with concealed cabling and power point.', time: '90 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-12', name: 'Garden Lighting', desc: 'Design and installation of outdoor low-voltage garden lighting systems.', time: '4 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-13', name: 'Security Camera Install', desc: 'Installation of wired security camera systems and DVR setup.', time: '5 hrs', action: 'Transfer', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-14', name: 'Consumer Mains Upgrade', desc: 'Upgrade of incoming power supply cables to meet new demand.', time: 'Day', action: 'Transfer', active: false, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-15', name: 'Sensor Light Install', desc: 'security sensor lights for driveways and entryways.', time: '45 mins', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-16', name: 'Bathroom Heater/Fan', desc: 'Install 3-in-1 bathroom heater, light, and exhaust fan units.', time: '2 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-17', name: 'Hot Water System Repair', desc: 'Element and thermostat replacement for electric hot water systems.', time: '60 mins', action: 'Transfer', active: false, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-18', name: 'House Rewire', desc: 'Complete removal of old wiring and installation of new safe cabling.', time: '3 Days', action: 'Transfer', active: false, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-19', name: 'Surge Protection', desc: 'Installation of whole-house surge protection at the switchboard.', time: '45 mins', action: 'Book', active: false, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'elec-20', name: 'Test and Tag', desc: 'Electrical appliance testing and tagging for workplace compliance.', time: 'Varies', action: 'Book', active: false, icon: <Zap className="w-5 h-5 text-amber-500" /> }
+];
 
-// Mock Data for Builders (5 items)
-const MOCK_BUILDERS = Array.from({ length: 5 }).map((_, i) => ({
-    id: `build-${i}`,
-    name: `Builder Service ${i + 1}`,
-    desc: 'Construction and structural repair services for residential properties.',
-    time: ['2 hrs', '4 hrs', 'Day'][i % 3],
-    action: 'Book',
-    active: true,
-    icon: <Hammer className="w-5 h-5 text-slate-500" />
-}));
+const MOCK_BUILDERS = [
+    { id: 'build-1', name: 'Deck Installation', desc: 'Construction of timber or composite outdoor decking areas.', time: '3 Days', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
+    { id: 'build-2', name: 'Bathroom Renovation', desc: 'Full bathroom strip out and remodel including waterproofing and tiling.', time: '2 Weeks', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
+    { id: 'build-3', name: 'Kitchen Remodel', desc: 'Kitchen cabinetry installation, benchtop fitting, and splashbacks.', time: '1 Week', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
+    { id: 'build-4', name: 'Pergola Construction', desc: 'Custom designed pergolas and patios for outdoor entertaining.', time: '4 Days', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
+    { id: 'build-5', name: 'Structural Wall Removal', desc: 'Removal of load-bearing walls and installation of support beams.', time: '5 Days', action: 'Transfer', active: false, icon: <Hammer className="w-5 h-5 text-slate-500" /> }
+];
 
 function ServiceSection({ title, services, openWizard, icon: Icon }) {
     const [view, setView] = useState('grid');

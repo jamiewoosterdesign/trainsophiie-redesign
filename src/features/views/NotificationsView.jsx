@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, UserPlus, ArrowLeft, Mail, MessageSquare, Phone, Globe, Pencil, Trash2, Search, ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
+import { Bell, UserPlus, ArrowLeft, Mail, MessageSquare, Phone, Globe, Pencil, Trash2, Search, ChevronLeft, ChevronRight, LayoutGrid, List, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
