@@ -114,7 +114,7 @@ const TagCard = ({ tag, onEdit }) => (
     </Card>
 );
 
-function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange, icon: Icon, onEdit, view }) {
+function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange, icon: Icon, onEdit, view, onViewChange }) {
     const [sortBy, setSortBy] = useState('name'); // 'name' | 'status'
     const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'active' | 'inactive'
     const [filterType, setFilterType] = useState('all'); // 'all' | 'preset' | 'custom'
@@ -166,10 +166,11 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
         <div className="space-y-4">
             {/* Header / Search / Filters */}
             <div className="flex flex-col gap-4">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-row justify-between items-center gap-4">
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         {Icon && <Icon className="w-5 h-5 text-slate-500" />} {title}
                     </h2>
+                    <ViewToggle view={view} onViewChange={onViewChange} />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -423,13 +424,13 @@ export default function TagsView() {
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             {/* Header */}
             <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex items-start gap-4 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 md:max-h-[500px] md:opacity-100' : 'max-h-[500px] opacity-100'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mt-1 shrink-0">
+                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
+                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Tags Management</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Manage your customer and inquiry tags.</p>
+                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Tags Management</h1>
+                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Manage your customer and inquiry tags.</p>
                     </div>
                 </div>
 
@@ -449,11 +450,6 @@ export default function TagsView() {
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    {/* View Toggle */}
-                    <div className="flex justify-end pt-2 pb-0">
-                        <ViewToggle view={view} onViewChange={setView} />
-                    </div>
-
                     <TagSection
                         title="Customer Tags"
                         tags={MOCK_CUSTOMER_TAGS}
@@ -464,6 +460,7 @@ export default function TagsView() {
                         onSearchChange={setCustomerSearch}
                         icon={Tag}
                         view={view}
+                        onViewChange={setView}
                     />
 
                     <TagSection
@@ -476,6 +473,7 @@ export default function TagsView() {
                         onSearchChange={setInquirySearch}
                         icon={Tag}
                         view={view}
+                        onViewChange={setView}
                     />
 
                     <TagSection

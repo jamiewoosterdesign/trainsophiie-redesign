@@ -278,8 +278,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
                 {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
                 <div className="md:hidden flex-none">
-                    <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 gap-4">
-                        <div className={`transition-all duration-300 overflow-hidden ${scrollDirection === 'down' && mobileTab === 'wizard' ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'}`}>
+                    <div className={`px-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 transition-all duration-300 ${scrollDirection === 'down' ? 'pt-2 pb-2 gap-2' : 'py-4 gap-4'}`}>
+                        <div className="w-full">
                             <div className="flex items-center gap-3 w-full justify-between">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{getWizardTitle()}</h2>
@@ -314,7 +314,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                             </div>
 
                             {!['policy', 'faq'].includes(mode) && (
-                                <div className="flex flex-wrap items-center gap-3 mt-1 px-1">
+                                <div className={`flex flex-wrap items-center gap-3 px-1 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>
                                     {(
                                         {
                                             service: ['Service Details', 'Conversation Flow', 'Outcome'],
