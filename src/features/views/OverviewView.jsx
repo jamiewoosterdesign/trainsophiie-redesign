@@ -4,7 +4,7 @@ import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
     Users, ArrowRightLeft, Bell, Tag,
     Mic, MessageSquare, Activity,
-    CheckCircle, ChevronRight, Mic2
+    CheckCircle, ChevronRight, Mic2, ShoppingBag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -65,6 +65,15 @@ export default function OverviewView() {
                     statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
+                    title: "Products",
+                    description: "Manage product catalog",
+                    icon: ShoppingBag,
+                    status: "Optional",
+                    link: "/products",
+                    colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
+                    statusColor: "text-slate-500 dark:text-slate-400"
+                },
+                {
                     title: "Documents",
                     description: "PDFs and files Sophiie learns from.",
                     icon: Book,
@@ -106,7 +115,7 @@ export default function OverviewView() {
             title: "Team & Routing",
             items: [
                 {
-                    title: "Team",
+                    title: "Staff & Departments",
                     description: "Add staff contacts for routing",
                     icon: Users,
                     status: "Team added",

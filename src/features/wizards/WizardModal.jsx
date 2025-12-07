@@ -40,11 +40,15 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [formData, setFormData] = useState({
         serviceName: '',
         description: '',
+        productName: '',
+        productPrice: '',
         knowledgeSourceType: 'upload', // 'upload', 'kb'
 
         // Business Logic
         priceMode: 'fixed', // 'fixed', 'hourly', 'range', 'na'
         price: '',
+        minPrice: '',
+        maxPrice: '',
         durationValue: '',
         durationUnit: 'minutes',
         customPriceMessage: '',
@@ -96,6 +100,22 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         // Policy Mode
         policyName: '',
         policyContent: '',
+
+        // Department Mode
+        departmentName: '',
+        departmentActive: true,
+        departmentDescription: '',
+        departmentHours: {
+            monday: false,
+            tuesday: false,
+            wednesday: false,
+            thursday: false,
+            friday: false,
+            saturday: false,
+            sunday: false,
+        },
+        departmentMembers: [],
+        departmentRouting: 'Priority Order',
 
         // FAQ Mode
         faqQuestion: '',
@@ -171,6 +191,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const getWizardTitle = () => {
         switch (mode) {
             case 'service': return 'Add New Service';
+            case 'product': return 'Add New Product';
+            case 'department': return 'Configure Department';
             case 'staff': return 'Add Team Member';
             case 'protocol': return 'Create Scenario';
             case 'transfer': return 'Add Transfer Rule';
@@ -183,6 +205,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
     const getTotalSteps = () => {
         if (mode === 'service') return 3;
+        if (mode === 'product') return 1;
+        if (mode === 'department') return 1;
         if (mode === 'policy') return 1;
         if (mode === 'faq') return 1;
         // All other wizards have 3 steps
@@ -313,7 +337,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                 </div>
                             </div>
 
-                            {!['policy', 'faq'].includes(mode) && (
+                            {!['policy', 'faq', 'product', 'department'].includes(mode) && (
                                 <div className={`flex flex-wrap items-center gap-3 px-1 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>
                                     {(
                                         {
@@ -369,7 +393,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-full md:w-auto">
                                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">{getWizardTitle()}</h2>
-                                {!['policy', 'faq'].includes(mode) && (
+                                {!['policy', 'faq', 'product', 'department'].includes(mode) && (
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
                                             {

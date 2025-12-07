@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import ServicesView from '@/features/views/ServicesView';
+import ProductsView from '@/features/views/ProductsView';
 import StaffView from '@/features/views/StaffView';
 import ScenariosView from '@/features/views/ScenariosView';
 import TransfersView from '@/features/views/TransfersView';
@@ -26,6 +27,7 @@ function App() {
                     <Route index element={<Navigate to="/overview" replace />} />
                     <Route path="overview" element={<OverviewView />} />
                     <Route path="services" element={<ServicesView />} />
+                    <Route path="products" element={<ProductsView />} />
                     <Route path="staff" element={<StaffView />} />
                     <Route path="scenarios" element={<ScenariosView />} />
                     <Route path="transfers" element={<TransfersView />} />

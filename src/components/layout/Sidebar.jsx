@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Headset, Mail, Users, Wrench, ListChecks, ArrowRightLeft,
     Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown,
-    LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders, Sun, Moon
+    LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders, Sun, Moon,
+    ShoppingBag
 } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { Switch } from '@/components/ui/switch';
@@ -110,11 +111,12 @@ export default function Sidebar() {
                                     <SidebarItem icon={<LayoutGrid />} label="Overview" active={currentPath === 'overview'} onClick={() => { navigate('/overview'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => { navigate('/business-info'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => { navigate('/services'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<ShoppingBag />} label="Products" active={currentPath === 'products'} onClick={() => { navigate('/products'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => { navigate('/knowledge'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => { navigate('/policies'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => { navigate('/faqs'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<ShieldAlert />} label="Scenarios & Restrictions" active={currentPath === 'scenarios'} onClick={() => { navigate('/scenarios'); setIsMobileMenuOpen(false); }} />
-                                    <SidebarItem icon={<Users />} label="Team" active={currentPath === 'staff'} onClick={() => { navigate('/staff'); setIsMobileMenuOpen(false); }} />
+                                    <SidebarItem icon={<Users />} label="Staff & Departments" active={currentPath === 'staff'} onClick={() => { navigate('/staff'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => { navigate('/transfers'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => { navigate('/notifications'); setIsMobileMenuOpen(false); }} />
                                     <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => { navigate('/tags'); setIsMobileMenuOpen(false); }} />
@@ -237,6 +239,7 @@ export default function Sidebar() {
                     <SidebarGroup title="Knowledge Base">
                         <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => navigate('/business-info')} />
                         <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => navigate('/services')} />
+                        <SidebarItem icon={<ShoppingBag />} label="Products" active={currentPath === 'products'} onClick={() => navigate('/products')} />
                         <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => navigate('/knowledge')} />
                         <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => navigate('/policies')} />
                         <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => navigate('/faqs')} />
@@ -244,7 +247,7 @@ export default function Sidebar() {
                     </SidebarGroup>
 
                     <SidebarGroup title="Team & Routing">
-                        <SidebarItem icon={<Users />} label="Team" active={currentPath === 'staff'} onClick={() => navigate('/staff')} />
+                        <SidebarItem icon={<Users />} label="Staff & Departments" active={currentPath === 'staff'} onClick={() => navigate('/staff')} />
                         <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => navigate('/transfers')} />
                         <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => navigate('/notifications')} />
                         <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => navigate('/tags')} />

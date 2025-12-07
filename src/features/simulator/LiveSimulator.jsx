@@ -276,8 +276,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         // Use Gemini for Dynamic Chat Simulation
         const systemPrompt = `You are Sophiie, an AI receptionist for a company.
           Current Configuration Context:
-          - Service being configured: ${formData.serviceName || 'Unknown'} (${formData.description || 'No description'})
-          - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
+          - Service/Product: ${formData.serviceName || formData.productName || 'Unknown'} (${formData.description || 'No description'})
+          - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.productPrice ? '$' + formData.productPrice : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
           - Staff: ${formData.staffName || 'Unknown'} (${formData.staffRole || 'Staff'})
           - Transfer Rule: ${formData.transferName || 'None'} -> ${formData.transferSummary || 'Standard transfer'}
           - Questions: ${formData.questions?.map(q => q.text + (q.options ? ' (Options: ' + q.options.map(o => o.text).join(', ') + ')' : '')).join('; ') || 'None'}

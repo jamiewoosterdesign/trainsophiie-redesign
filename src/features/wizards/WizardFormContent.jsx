@@ -14,6 +14,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
+import WizardFormContentDepartment from './WizardFormContent_Department';
 export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
 
     // Unified State
@@ -297,7 +298,278 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         );
     }
 
+    // --- DEPARTMENT WIZARD ---
+    if (mode === 'department') {
+        return (
+            <WizardFormContentDepartment
+                mode={mode}
+                step={step}
+                formData={formData}
+                onChange={onChange}
+                activeField={activeField}
+            />
+        );
+    }
+
     // --- SERVICE WIZARD ---
+    // --- PRODUCT WIZARD ---
+    if (mode === 'product') {
+        const handleKnowledgeSelect = (type) => {
+            setIsLoading(true);
+            // Simulate analysis delay
+            setTimeout(() => {
+                setIsLoading(false);
+                onChange('isContextActive', true);
+                onChange('contextFileName', 'Product_Catalog.pdf');
+                // Auto-fill data
+                onChange('productName', "Solar Panel System");
+                onChange('description', "High-efficiency monocrystalline solar panels with 25-year warranty. Includes inverter and installation hardware.");
+                onChange('productPrice', "2999.99");
+                onChange('priceMode', 'fixed');
+                // Set auto-filled flags
+                onChange('autoFilledFields', { productName: true, description: true, price: true, priceMode: true });
+            }, 1500);
+        };
+
+        return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
+
+                {/* 1. Product Name (Moved to Top) */}
+                <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                        <Label className="block">Product Name *</Label>
+                        {formData.autoFilledFields?.productName && (
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                <Sparkles className="w-3 h-3" />
+                            </div>
+                        )}
+                    </div>
+                    <Input
+                        placeholder="e.g., Solar Panel"
+                        value={formData.productName}
+                        onChange={(e) => {
+                            onChange('productName', e.target.value);
+                            if (formData.autoFilledFields?.productName) {
+                                onChange('autoFilledFields', { ...formData.autoFilledFields, productName: false });
+                            }
+                        }}
+                        highlight={(activeField === 'productName')?.toString()}
+                        className={`transition-all duration-500 ${formData.autoFilledFields?.productName ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                    />
+                </div>
+
+                {/* Knowledge Found Banner (Displayed if Active) */}
+                {formData.isContextActive && (
+                    <div className="bg-emerald-50/95 dark:bg-emerald-900/20 backdrop-blur-sm flex items-center justify-between px-4 py-3 rounded-xl border border-emerald-100 dark:border-emerald-800 animate-in fade-in zoom-in-95 duration-300 mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-white dark:bg-emerald-800/50 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-sm">
+                                <FileCheck className="w-4 h-4" />
+                            </div>
+                            <div>
+                                <div className="text-sm font-bold text-emerald-900 dark:text-emerald-100">Active Context</div>
+                                <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">{formData.contextFileName}</div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onChange('isContextActive', false);
+                                onChange('contextFileName', '');
+                                onChange('productName', '');
+                                onChange('description', '');
+                                onChange('productPrice', '');
+                                onChange('priceMode', 'fixed');
+                                onChange('autoFilledFields', {});
+                            }}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-200 transition-colors"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                            Remove Context
+                        </button>
+                    </div>
+                )}
+
+                {/* 2. Knowledge Source Selection (Only show if not active) */}
+                {!formData.isContextActive && (
+                    <div className="mb-6">
+                        <Label className="mb-3 block">Auto-fill from Document (Optional)</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                            <div
+                                onClick={() => handleKnowledgeSelect('upload')}
+                                className="group border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all"
+                            >
+                                <div className="w-8 h-8 mb-2 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    <UploadCloud className="w-5 h-5" />
+                                </div>
+                                <div className="font-semibold text-sm text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 text-center">Upload Specification</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">PDF, Details</div>
+                            </div>
+                            <div
+                                onClick={() => handleKnowledgeSelect('kb')}
+                                className="group border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all"
+                            >
+                                <div className="w-8 h-8 mb-2 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    <Book className="w-5 h-5" />
+                                </div>
+                                <div className="font-semibold text-sm text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 text-center">Select from KB</div>
+                            </div>
+
+                            {/* Loading Overlay */}
+                            {isLoading && (
+                                <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100 dark:border-slate-800">
+                                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
+                                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400 animate-pulse">Reading Document...</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {/* 3. Pricing Section (Stacked) */}
+                <div>
+                    <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
+                        <Label className="flex items-center gap-2">
+                            Pricing Mode *
+                            <TooltipProvider>
+                                <Tooltip delayDuration={0} open={tooltipOpen['priceMode']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, priceMode: open }))}>
+                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('priceMode', e)}>
+                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>How you charge for this product.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </Label>
+                        {formData.autoFilledFields?.priceMode && (
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                <Sparkles className="w-3 h-3" />
+                            </div>
+                        )}
+                    </div>
+                    <div className={`flex gap-2 mb-4 overflow-x-auto pb-2 p-1 -mx-1 ${formData.autoFilledFields?.priceMode ? 'bg-emerald-50/30 dark:bg-emerald-900/10 rounded-xl' : ''}`}>
+                        {['fixed', 'hourly', 'range', 'na'].map(m => (
+                            <div key={m}
+                                onClick={() => {
+                                    onChange('priceMode', m);
+                                    if (formData.autoFilledFields?.priceMode) {
+                                        onChange('autoFilledFields', { ...formData.autoFilledFields, priceMode: false });
+                                    }
+                                }}
+                                className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m ? (formData.autoFilledFields?.priceMode ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-medium ring-1 ring-emerald-500' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400 font-medium ring-1 ring-blue-500') : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}`}
+                            >
+                                {m === 'fixed' ? 'Fixed' : m === 'hourly' ? 'Hourly' : m === 'range' ? 'Range' : 'Not Applicable'}
+                            </div>
+                        ))}
+                    </div>
+
+                    {formData.priceMode !== 'na' ? (
+                        <div className="animate-in fade-in">
+                            {formData.priceMode === 'range' ? (
+                                <div className="flex gap-4">
+                                    <div className="relative flex-1">
+                                        <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                        <Input
+                                            className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                            placeholder="Min"
+                                            value={formData.minPrice || ''}
+                                            onChange={(e) => {
+                                                onChange('minPrice', e.target.value);
+                                                if (formData.autoFilledFields?.price) {
+                                                    onChange('autoFilledFields', { ...formData.autoFilledFields, price: false });
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="flex items-center text-slate-400">-</div>
+                                    <div className="relative flex-1">
+                                        <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                        <Input
+                                            className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                            placeholder="Max"
+                                            value={formData.maxPrice || ''}
+                                            onChange={(e) => {
+                                                onChange('maxPrice', e.target.value);
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                    <Input
+                                        className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                        placeholder="0.00"
+                                        value={formData.productPrice}
+                                        onChange={(e) => {
+                                            onChange('productPrice', e.target.value);
+                                            if (formData.autoFilledFields?.price) {
+                                                onChange('autoFilledFields', { ...formData.autoFilledFields, price: false });
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="text-sm text-slate-500 italic p-2 bg-slate-50 rounded dark:bg-slate-800/50">
+                            Pricing will be communicated as "Contact for pricing" or handled via custom message.
+                        </div>
+                    )}
+                </div>
+
+                {/* 4. Description (Stacked & Enhanced UI) */}
+                <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                        <Label className="flex items-center gap-2">
+                            Description *
+                            <TooltipProvider>
+                                <Tooltip delayDuration={0} open={tooltipOpen['description']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, description: open }))}>
+                                    <TooltipTrigger asChild onClick={(e) => toggleTooltip('description', e)}>
+                                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                        <p>A detailed explanation of the product features.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </Label>
+                        {formData.autoFilledFields?.description && (
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                <Sparkles className="w-3 h-3" />
+                            </div>
+                        )}
+                    </div>
+                    <div className="relative">
+                        <Textarea
+                            placeholder="Describe the product features and specs..."
+                            className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.autoFilledFields?.description ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                            value={formData.description}
+                            onChange={(e) => {
+                                onChange('description', e.target.value);
+                                if (formData.autoFilledFields?.description) {
+                                    onChange('autoFilledFields', { ...formData.autoFilledFields, description: false });
+                                }
+                            }}
+                            highlight={(activeField === 'description')?.toString()}
+                        />
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                <Mic className="w-4 h-4" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
+                                <Wand2 className="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     // --- SERVICE WIZARD ---
     if (mode === 'service') {
         // Validation Helpers
@@ -498,35 +770,67 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                         {formData.priceMode !== 'na' ? (
                             <div className="animate-in fade-in">
-                                <div className="relative">
-                                    <span className="absolute left-3 top-2.5 text-slate-500">$</span>
-                                    <Input
-                                        className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
-                                        placeholder="0.00"
-                                        value={formData.price}
-                                        onChange={(e) => {
-                                            onChange('price', e.target.value);
-                                            if (formData.autoFilledFields?.price) {
-                                                onChange('autoFilledFields', { ...formData.autoFilledFields, price: false });
-                                            }
-                                            if (isError('price')) onChange('errors', { ...formData.errors, price: false });
-                                        }}
-                                    />
-                                    {isError('price') && <p className="text-xs text-red-500 mt-1">Price is required.</p>}
-                                </div>
+                                {formData.priceMode === 'range' ? (
+                                    <div className="flex gap-4">
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                            <Input
+                                                className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                                                placeholder="Min"
+                                                value={formData.minPrice || ''}
+                                                onChange={(e) => {
+                                                    onChange('minPrice', e.target.value);
+                                                    // Update main price field for validation simplifiction if needed, or handle separately
+                                                    if (formData.autoFilledFields?.price) {
+                                                        onChange('autoFilledFields', { ...formData.autoFilledFields, price: false });
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex items-center text-slate-400">-</div>
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                            <Input
+                                                className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                                placeholder="Max"
+                                                value={formData.maxPrice || ''}
+                                                onChange={(e) => {
+                                                    onChange('maxPrice', e.target.value);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-slate-500">$</span>
+                                        <Input
+                                            className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                                            placeholder="0.00"
+                                            value={formData.price}
+                                            onChange={(e) => {
+                                                onChange('price', e.target.value);
+                                                if (formData.autoFilledFields?.price) {
+                                                    onChange('autoFilledFields', { ...formData.autoFilledFields, price: false });
+                                                }
+                                                if (isError('price')) onChange('errors', { ...formData.errors, price: false });
+                                            }}
+                                        />
+                                        {isError('price') && <p className="text-xs text-red-500 mt-1">Price is required.</p>}
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="animate-in fade-in space-y-4 pt-2">
                                 {/* Global Default Message Section */}
                                 <div className="flex justify-between items-center">
-                                    <div className="flex items-center gap-2 text-slate-600">
+                                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                                         <Info className="w-4 h-4" />
                                         <span className="text-sm font-medium">Using global default message</span>
                                     </div>
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="h-8 text-xs bg-white"
+                                        className="h-8 text-xs bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
                                         onClick={() => setShowGlobalDefaultModal(true)}
                                     >
                                         Edit Global Default
@@ -534,7 +838,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 </div>
 
                                 {/* Read-only Default Message Display */}
-                                <div className="p-4 bg-slate-50/50 border border-slate-200 rounded-lg text-slate-500 italic text-sm">
+                                <div className="p-4 bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500 dark:text-slate-400 italic text-sm">
                                     {formData.globalDefaultPriceMessage || "No default message set"}
                                 </div>
 
@@ -546,7 +850,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             checked={formData.useCustomPriceMessage}
                                             onCheckedChange={(checked) => onChange('useCustomPriceMessage', checked)}
                                         />
-                                        <Label htmlFor="use-custom-message" className="cursor-pointer font-medium text-slate-900">
+                                        <Label htmlFor="use-custom-message" className="cursor-pointer font-medium text-slate-900 dark:text-slate-200">
                                             Use custom message response for this service
                                         </Label>
                                     </div>
@@ -554,7 +858,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     {/* Custom Message Input */}
                                     {formData.useCustomPriceMessage && (
                                         <div className="animate-in fade-in slide-in-from-top-2">
-                                            <Label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-900">
+                                            <Label className="mb-1.5 flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-200">
                                                 Custom Message
                                                 <TooltipProvider>
                                                     <Tooltip delayDuration={0} open={tooltipOpen['customPrice']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, customPrice: open }))}>
