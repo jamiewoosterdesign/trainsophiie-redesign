@@ -98,13 +98,17 @@ export default function StaffView() {
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <Button variant="outline" className="w-full md:w-auto bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700" onClick={() => openWizard('department')}>
+                    <Button
+                        variant="secondary"
+                        className="w-full md:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+                        onClick={() => openWizard('department')}
+                    >
                         <Plus className="w-4 h-4 mr-2" /> Add Department
                     </Button>
                     <Button onClick={() => openWizard('staff')} className="w-full md:w-auto">
                         <Plus className="w-4 h-4 mr-2" /> Add New Staff
                     </Button>
-                    <Button variant="outline" size="icon" onClick={openSettings} className="hidden md:flex w-full md:w-auto" title="Global Settings">
+                    <Button variant="outline" size="icon" onClick={openSettings} className="hidden md:flex" title="Global Settings">
                         <Settings className="w-4 h-4" />
                     </Button>
                 </div>
