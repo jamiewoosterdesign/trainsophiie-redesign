@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { UploadCloud, Plus, Settings, FileText, Globe, ArrowLeft, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -309,11 +310,13 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
 export default function KnowledgeBaseView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const scrollRef = useRef(null);
+    const scrollDirection = useScrollDirection(scrollRef);
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0">
-                <div className="flex items-start gap-4">
+            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
+                <div className={`flex items-start gap-4 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 md:max-h-[500px] md:opacity-100' : 'max-h-[500px] opacity-100'}`}>
                     <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mt-1 shrink-0">
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
@@ -327,7 +330,7 @@ export default function KnowledgeBaseView() {
                 </Button>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-12">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 

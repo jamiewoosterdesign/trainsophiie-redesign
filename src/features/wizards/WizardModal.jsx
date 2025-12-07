@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { X, ChevronRight, Check, ArrowLeft, MessageSquare, Mic, MicOff, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WizardFormContent from './WizardFormContent';
@@ -20,6 +21,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const [simulatorTab, setSimulatorTab] = useState('preview'); // Default to preview
     const [activeField, setActiveField] = useState(null);
     const [mobileTab, setMobileTab] = useState('wizard'); // 'wizard' | 'preview'
+    const formScrollRef = useRef(null);
+    const scrollDirection = useScrollDirection(formScrollRef);
 
     // Entry Modal State
     const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference);
@@ -276,60 +279,62 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                 {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
                 <div className="md:hidden flex-none">
                     <div className="px-4 py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 gap-4">
-                        <div className="flex items-center gap-3 w-full justify-between">
-                            <div className="flex items-center gap-3">
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{getWizardTitle()}</h2>
-                            </div>
-
-                            {/* Mobile Controls (Voice & Close) */}
-                            <div className="flex items-center gap-2">
-                                {/* Mobile Voice Toggle */}
-                                <div className="relative">
-                                    {showVoiceTooltip && (
-                                        <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-40 text-center pointer-events-none">
-                                            <div className="absolute -top-1 right-8 w-2 h-2 bg-slate-900 rotate-45" />
-                                            Tap to toggle Voice
-                                        </div>
-                                    )}
-                                    <button
-                                        onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
-                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
-                                            ? 'bg-purple-600 text-white shadow-md'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                                            }`}
-                                    >
-                                        {simulatorTab === 'voice' ? <Mic className="w-3.5 h-3.5 animate-pulse" /> : <Mic className="w-3.5 h-3.5" />}
-                                        {simulatorTab === 'voice' ? 'On' : 'Off'}
-                                    </button>
+                        <div className={`transition-all duration-300 overflow-hidden ${scrollDirection === 'down' && mobileTab === 'wizard' ? 'max-h-0 opacity-0' : 'max-h-[500px] opacity-100'}`}>
+                            <div className="flex items-center gap-3 w-full justify-between">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{getWizardTitle()}</h2>
                                 </div>
 
-                                <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                        </div>
-
-                        {!['policy', 'faq'].includes(mode) && (
-                            <div className="flex flex-wrap items-center gap-3 mt-1 px-1">
-                                {(
-                                    {
-                                        service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                        staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
-                                        protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
-                                        transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                        document: ['Upload', 'Analyzing', 'Extraction Lab'],
-                                    }[mode] || ['Step 1', 'Step 2', 'Step 3']
-                                ).map((label, idx) => (
-                                    <div key={idx} className="flex items-center gap-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
-                                            <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden' : ''}`}>{label}</span>
-                                        </div>
-                                        {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
+                                {/* Mobile Controls (Voice & Close) */}
+                                <div className="flex items-center gap-2">
+                                    {/* Mobile Voice Toggle */}
+                                    <div className="relative">
+                                        {showVoiceTooltip && (
+                                            <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-40 text-center pointer-events-none">
+                                                <div className="absolute -top-1 right-8 w-2 h-2 bg-slate-900 rotate-45" />
+                                                Tap to toggle Voice
+                                            </div>
+                                        )}
+                                        <button
+                                            onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
+                                                ? 'bg-purple-600 text-white shadow-md'
+                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                                                }`}
+                                        >
+                                            {simulatorTab === 'voice' ? <Mic className="w-3.5 h-3.5 animate-pulse" /> : <Mic className="w-3.5 h-3.5" />}
+                                            {simulatorTab === 'voice' ? 'On' : 'Off'}
+                                        </button>
                                     </div>
-                                ))}
+
+                                    <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
                             </div>
-                        )}
+
+                            {!['policy', 'faq'].includes(mode) && (
+                                <div className="flex flex-wrap items-center gap-3 mt-1 px-1">
+                                    {(
+                                        {
+                                            service: ['Service Details', 'Conversation Flow', 'Outcome'],
+                                            staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
+                                            protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
+                                            transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
+                                            document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                        }[mode] || ['Step 1', 'Step 2', 'Step 3']
+                                    ).map((label, idx) => (
+                                        <div key={idx} className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200'}`} />
+                                                <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700' : 'text-slate-400'} ${step !== idx + 1 ? 'hidden' : ''}`}>{label}</span>
+                                            </div>
+                                            {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200" />}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Mobile Tabs */}
                         <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full mt-2">
@@ -393,7 +398,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                     </div>
 
                     {/* Form Content */}
-                    <div className="flex-1 overflow-y-auto p-4 pb-32 md:p-8">
+                    <div ref={formScrollRef} className="flex-1 overflow-y-auto p-4 pb-32 md:p-8">
                         <WizardFormContent
                             mode={mode}
                             step={step}
