@@ -163,6 +163,19 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                         <span className="font-medium">{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
                     </button>
 
+                    {/* Mobile Add Button - Always Visible on Grid (Top) */}
+                    {currentPage === 1 && (
+                        <div className="md:hidden">
+                            <button onClick={() => openWizard('document')}
+                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
+                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Plus className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <span>{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
+                            </button>
+                        </div>
+                    )}
+
                     {paginatedData.map(item => (
                         <Card key={item.id} className="p-6 group hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
                             <div className="flex justify-between items-start mb-4">
@@ -183,13 +196,7 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                         </Card>
                     ))}
 
-                    {/* Mobile Add Button - Always Visible on Grid */}
-                    <div className="md:hidden">
-                        <button onClick={() => openWizard('document')}
-                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                            <Plus className="w-5 h-5" /> {type === 'library' ? 'Upload Document' : 'Add Web Source'}
-                        </button>
-                    </div>
+
                 </div>
             )}
 
@@ -242,8 +249,11 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                     <>
                         {currentPage === 1 && (
                             <button onClick={() => openWizard('document')}
-                                className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                <Plus className="w-5 h-5" /> {type === 'library' ? 'Upload Document' : 'Add Web Source'}
+                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
+                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Plus className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <span>{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
                             </button>
                         )}
                         {paginatedData.map(item => (

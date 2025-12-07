@@ -155,6 +155,16 @@ export default function NotificationsView() {
                                 <span className="font-medium">Assign New Team Member</span>
                             </button>
 
+                            {/* Mobile Add Button (Top) */}
+                            {currentPage === 1 && (
+                                <div className="md:hidden mb-2">
+                                    <button onClick={() => setShowAssignModal(true)}
+                                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
+                                        <Plus className="w-5 h-5" /> Assign New Team Member
+                                    </button>
+                                </div>
+                            )}
+
                             {paginatedAssignments.map((assignment) => (
                                 <Card key={assignment.id} className="p-6 transition-all hover:shadow-md group dark:bg-slate-900 dark:border-slate-800">
                                     <div className="flex flex-col md:flex-row justify-between md:items-center gap-6">
@@ -217,13 +227,7 @@ export default function NotificationsView() {
                                 </Card>
                             ))}
 
-                            {/* Mobile Add Button */}
-                            <div className="md:hidden">
-                                <button onClick={() => setShowAssignModal(true)}
-                                    className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                    <Plus className="w-5 h-5" /> Assign New Team Member
-                                </button>
-                            </div>
+
                         </div>
                     )}
 

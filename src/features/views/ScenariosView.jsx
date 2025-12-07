@@ -143,6 +143,16 @@ export default function ScenariosView() {
                                     <Plus className="w-5 h-5 mb-2" />
                                     <span className="text-sm font-medium">Create Scenario</span>
                                 </button>
+                                {/* Mobile Add Button (Top) */}
+                                {currentPage === 1 && (
+                                    <div className="md:hidden">
+                                        <button onClick={() => openWizard('protocol')}
+                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
+                                            <Plus className="w-5 h-5" /> Create Scenario
+                                        </button>
+                                    </div>
+                                )}
+
                                 {paginatedScenarios.map(proto => (
                                     <Card key={proto.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
                                         <div className="flex justify-between items-start mb-4">
@@ -156,13 +166,7 @@ export default function ScenariosView() {
                                         </div>
                                     </Card>
                                 ))}
-                                {/* Mobile Add Button */}
-                                <div className="md:hidden">
-                                    <button onClick={() => openWizard('protocol')}
-                                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                        <Plus className="w-5 h-5" /> Create Scenario
-                                    </button>
-                                </div>
+
                             </div>
                         )}
 

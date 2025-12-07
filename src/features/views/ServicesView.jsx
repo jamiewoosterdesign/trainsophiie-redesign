@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, Clock, Share2, Sparkles, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Clock, Share2, Sparkles, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +47,56 @@ const MOCK_BUILDERS = [
     { id: 'build-4', name: 'Pergola Construction', desc: 'Custom designed pergolas and patios for outdoor entertaining.', time: '4 Days', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
     { id: 'build-5', name: 'Structural Wall Removal', desc: 'Removal of load-bearing walls and installation of support beams.', time: '5 Days', action: 'Transfer', active: false, icon: <Hammer className="w-5 h-5 text-slate-500" /> }
 ];
+
+function AddServiceDropdown({ onAdd }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = React.useRef(null);
+
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [wrapperRef]);
+
+    const categories = ["Electricians", "Builders"];
+
+    return (
+        <div className="relative w-full md:w-auto" ref={wrapperRef}>
+            <Button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full md:w-auto justify-between gap-2"
+            >
+                <span className="flex items-center"><Plus className="w-4 h-4 mr-2" /> Add Service</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </Button>
+
+            {isOpen && (
+                <div className="absolute top-full right-0 mt-1 w-full md:w-56 bg-white border border-slate-200 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100 dark:bg-slate-900 dark:border-slate-800">
+                    <div className="p-1">
+                        <div className="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Select Category</div>
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className="w-full text-left px-3 py-2.5 text-sm rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-2 text-slate-700 dark:text-slate-200"
+                                onClick={() => {
+                                    onAdd(cat);
+                                    setIsOpen(false);
+                                }}
+                            >
+                                {cat === "Electricians" ? <Zap className="w-4 h-4 text-amber-500" /> : <Hammer className="w-4 h-4 text-slate-500" />}
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function ServiceSection({ title, services, openWizard, icon: Icon }) {
     const [view, setView] = useState('grid');
@@ -156,6 +206,19 @@ function ServiceSection({ title, services, openWizard, icon: Icon }) {
                         <span className="font-medium">Create New Service</span>
                     </button>
 
+                    {/* Mobile Add Button - Squashed Card Style (Top) */}
+                    {currentPage === 1 && (
+                        <div className="md:hidden">
+                            <button onClick={() => openWizard('service')}
+                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
+                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Plus className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <span>Create New Service</span>
+                            </button>
+                        </div>
+                    )}
+
                     {paginatedServices.map(service => (
                         <Card key={service.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between">
                             <div>
@@ -177,13 +240,7 @@ function ServiceSection({ title, services, openWizard, icon: Icon }) {
                         </Card>
                     ))}
 
-                    {/* Mobile Add Button */}
-                    <div className="md:hidden">
-                        <button onClick={() => openWizard('service')}
-                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                            <Plus className="w-5 h-5" /> Create New Service
-                        </button>
-                    </div>
+
                 </div>
             )}
 
@@ -227,8 +284,11 @@ function ServiceSection({ title, services, openWizard, icon: Icon }) {
                     <>
                         {currentPage === 1 && (
                             <button onClick={() => openWizard('service')}
-                                className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                <Plus className="w-5 h-5" /> Create New Service
+                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
+                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <Plus className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <span>Create New Service</span>
                             </button>
                         )}
                         {paginatedServices.map(service => (
@@ -304,9 +364,7 @@ export default function ServicesView() {
                 </div>
                 <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
                     <CategorySelector usedCategories={["Electricians", "Builders"]} />
-                    <Button onClick={() => openWizard('service')} className="w-full md:w-auto">
-                        <Plus className="w-4 h-4 mr-2" /> Add Service
-                    </Button>
+                    <AddServiceDropdown onAdd={(cat) => openWizard('service')} />
                 </div>
             </header>
 
