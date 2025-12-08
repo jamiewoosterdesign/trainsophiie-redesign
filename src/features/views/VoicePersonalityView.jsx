@@ -275,7 +275,7 @@ export default function VoicePersonalityView() {
                             Choose a short, professional name your customers will see when the AI introduces itself. This is a premium feature available on higher tiers.
                         </p>
 
-                        <div className="max-w-md bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
+                        <div className="w-full bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
                             <label className="text-xs font-bold text-slate-900 dark:text-slate-300 mb-1.5 block flex items-center gap-1">
                                 Current Agent Name <Info className="w-3 h-3 text-slate-400" />
                             </label>

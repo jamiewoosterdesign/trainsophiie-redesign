@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic } from 'lucide-react';
+import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -42,6 +42,7 @@ export default function BusinessInfoView() {
 
     const [serviceTypes, setServiceTypes] = useState(['Domestic', 'Commercial']);
     const [experience, setExperience] = useState(15);
+    const [locationType, setLocationType] = useState('fixed');
 
     // --- Logic ---
 
@@ -287,6 +288,131 @@ export default function BusinessInfoView() {
                         </div>
                     </Card>
 
+                    {/* Location Selection */}
+                    <Card className="p-6 dark:bg-slate-900 dark:border-slate-800">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                <MapPin className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Location</h2>
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <Label className="text-base font-semibold mb-3 block text-slate-900 dark:text-white">Do you work from a fixed location or are you mobile?</Label>
+                            <div className="flex p-1 bg-slate-100 dark:bg-slate-800/50 rounded-lg w-full">
+                                {['Fixed Location', 'Mobile Business', 'Remote/Online Business'].map((type) => {
+                                    let typeValue = 'fixed';
+                                    if (type.includes('Mobile')) typeValue = 'mobile';
+                                    if (type.includes('Remote')) typeValue = 'remote';
+
+                                    return (
+                                        <button
+                                            key={typeValue}
+                                            onClick={() => setLocationType(typeValue)}
+                                            className={cn(
+                                                "flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all",
+                                                locationType === typeValue
+                                                    ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm"
+                                                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                                            )}
+                                        >
+                                            {type}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        {locationType === 'fixed' && (
+                            <div className="space-y-6 animate-in fade-in">
+                                <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-lg p-3 flex gap-3 text-sm text-blue-700 dark:text-blue-300">
+                                    <Info className="w-5 h-5 shrink-0" />
+                                    <p>You can search your address above or drag the pin on the map to select your exact location. The address field will update automatically.</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Business Address</Label>
+                                    <div className="relative">
+                                        <Input defaultValue="17-19 Ereton Dr, Arundel QLD 4214, Australia" className="bg-white dark:bg-slate-800 dark:border-slate-700" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Landmark</Label>
+                                    <Input placeholder="Enter a nearby landmark or building name" className="bg-white dark:bg-slate-800 dark:border-slate-700" />
+                                </div>
+
+                                <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 h-[300px] bg-slate-100 dark:bg-slate-800 relative group">
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-lg shadow-sm font-medium text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                            <MapPin className="w-4 h-4" /> Map Integration Placeholder
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {locationType === 'mobile' && (
+                            <div className="space-y-6 animate-in fade-in">
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Base Location</Label>
+                                    <Input defaultValue="17-19 Ereton Dr, Arundel QLD 4214, Australia" className="bg-white dark:bg-slate-800 dark:border-slate-700" />
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Enter the primary address where your business is located</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Travel Radius (km)</Label>
+                                    <Input placeholder="Enter radius in km" className="bg-white dark:bg-slate-800 dark:border-slate-700" />
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Maximum distance you're willing to travel from your base location</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Service Areas</Label>
+                                    <div className="relative">
+                                        <Textarea
+                                            className="min-h-[100px] pb-10 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                                            defaultValue={"Gold Coast\nTweed Heads\nBrisbane City\nSurfers Paradise\nBroadbeach\nBroadbeach Waters\nMermaid Beach"}
+                                        />
+                                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                <Mic className="w-4 h-4" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">List the specific areas you service (one per line)</p>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="dark:text-slate-300">Exceptions</Label>
+                                    <div className="relative">
+                                        <Textarea
+                                            className="min-h-[100px] pb-10 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                                            placeholder="Enter regions, towns, or suburbs that are not serviced (one per line)"
+                                        />
+                                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                <Mic className="w-4 h-4" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">List any areas within your radius that you don't service (one per line)</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {locationType === 'remote' && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in">
+                                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400 dark:text-slate-500">
+                                    <MapPin className="w-8 h-8" />
+                                </div>
+                                <h3 className="font-medium text-slate-900 dark:text-white">Remote/Online Business</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">No physical location configuration needed.</p>
+                            </div>
+                        )}
+                    </Card>
+
                     {/* Additional Details */}
                     <Card className="p-6 dark:bg-slate-900 dark:border-slate-800">
                         <div className="flex items-center gap-3 mb-6">
@@ -502,21 +628,7 @@ export default function BusinessInfoView() {
                                 </div>
                             )}
 
-                            {/* Outside Business Hours Rule */}
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4">
-                                <a href="#" className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                                            <Settings className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <div className="text-sm font-medium text-slate-900 dark:text-white">Outside Business Hours</div>
-                                            <div className="text-xs text-slate-500 dark:text-slate-400">Configure how calls are handled when closed</div>
-                                        </div>
-                                    </div>
-                                    <ArrowRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
-                                </a>
-                            </div>
+
                         </div>
                     </Card>
 

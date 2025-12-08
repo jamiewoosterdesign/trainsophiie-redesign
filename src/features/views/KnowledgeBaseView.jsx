@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { UploadCloud, Plus, Settings, FileText, Globe, ArrowLeft, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { UploadCloud, Plus, Settings, FileText, Globe, ArrowLeft, Search, ChevronLeft, ChevronRight, Book, Link as LinkIcon, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,52 +16,47 @@ import {
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
-// Expanded Mock Data - Docs
-const MOCK_DOCS = [
-    { id: 1, name: "SOP_Manual_2024.pdf", size: "2.4MB", date: "2 days ago", type: "pdf", status: "Active" },
-    { id: 2, name: "Pricing_Guide_Q3.docx", size: "1.1MB", date: "1 week ago", type: "doc", status: "Active" },
-    { id: 3, name: "Employee_Handbook.pdf", size: "3.5MB", date: "2 weeks ago", type: "pdf", status: "Active" },
-    { id: 4, name: "Product_Catalog.pdf", size: "5.0MB", date: "1 month ago", type: "pdf", status: "Active" },
-    { id: 5, name: "Safety_Procedures.docx", size: "500KB", date: "1 month ago", type: "doc", status: "Archived" },
-    { id: 6, name: "Marketing_Plan.pptx", size: "8.2MB", date: "2 months ago", type: "ppt", status: "Active" },
-    { id: 7, name: "Customer_Service_Scripts.docx", size: "800KB", date: "3 months ago", type: "doc", status: "Active" },
-    { id: 8, name: "Technical_Specs.pdf", size: "1.2MB", date: "3 months ago", type: "pdf", status: "Active" },
-    { id: 9, name: "Meeting_Minutes_Oct.docx", size: "150KB", date: "4 months ago", type: "doc", status: "Archived" },
-    { id: 10, name: "Financial_Report_Q2.xlsx", size: "200KB", date: "5 months ago", type: "xls", status: "Confidential" },
-    { id: 11, name: "Onboarding_Checklist.pdf", size: "300KB", date: "6 months ago", type: "pdf", status: "Active" },
-    { id: 12, name: "Brand_Guidelines.pdf", size: "10MB", date: "1 year ago", type: "pdf", status: "Active" },
-    { id: 13, name: "Training_Video_1.mp4", size: "150MB", date: "1 year ago", type: "video", status: "Active" },
-    { id: 14, name: "Logo_Pack.zip", size: "25MB", date: "1 year ago", type: "archive", status: "Active" },
-    { id: 15, name: "Legal_Contracts.pdf", size: "1.5MB", date: "2 years ago", type: "pdf", status: "Confidential" },
+// Consolidated Mock Data
+const ALL_KNOWLEDGE = [
+    { id: 1, name: "SOP_Manual_2024.pdf", size: "2.4MB", date: "2 days ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 2, name: "Pricing_Guide_Q3.docx", size: "1.1MB", date: "1 week ago", type: "doc", status: "Active", source: "upload" },
+    { id: 3, name: "Employee_Handbook.pdf", size: "3.5MB", date: "2 weeks ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 101, name: "Website FAQs", url: "company.com/faq", status: "Synced", source: "web" },
+    { id: 102, name: "Contact Page", url: "company.com/contact", status: "Synced", source: "web" },
+    { id: 4, name: "Product_Catalog.pdf", size: "5.0MB", date: "1 month ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 5, name: "Safety_Procedures.docx", size: "500KB", date: "1 month ago", type: "doc", status: "Archived", source: "upload" },
+    { id: 103, name: "About Us", url: "company.com/about", status: "Synced", source: "web" },
+    { id: 104, name: "Services Overview", url: "company.com/services", status: "Pending", source: "web" },
+    { id: 6, name: "Marketing_Plan.pptx", size: "8.2MB", date: "2 months ago", type: "ppt", status: "Active", source: "upload" },
+    { id: 7, name: "Customer_Service_Scripts.docx", size: "800KB", date: "3 months ago", type: "doc", status: "Active", source: "upload" },
+    { id: 105, name: "Pricing Page", url: "company.com/pricing", status: "Synced", source: "web" },
+    { id: 8, name: "Technical_Specs.pdf", size: "1.2MB", date: "3 months ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 106, name: "Blog: Industry Trends", url: "company.com/blog/trends", status: "Synced", source: "web" },
+    { id: 107, name: "Blog: Tips & Tricks", url: "company.com/blog/tips", status: "Synced", source: "web" },
+    { id: 9, name: "Meeting_Minutes_Oct.docx", size: "150KB", date: "4 months ago", type: "doc", status: "Archived", source: "upload" },
+    { id: 108, name: "Support Portal", url: "support.company.com", status: "Error", source: "web" },
+    { id: 109, name: "Careers Page", url: "company.com/careers", status: "Synced", source: "web" },
+    { id: 10, name: "Financial_Report_Q2.xlsx", size: "200KB", date: "5 months ago", type: "xls", status: "Confidential", source: "upload" },
+    { id: 110, name: "Terms of Service", url: "company.com/terms", status: "Synced", source: "web" },
+    { id: 111, name: "Privacy Policy", url: "company.com/privacy", status: "Synced", source: "web" },
+    { id: 11, name: "Onboarding_Checklist.pdf", size: "300KB", date: "6 months ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 112, name: "Case Studies", url: "company.com/case-studies", status: "Pending", source: "web" },
+    { id: 12, name: "Brand_Guidelines.pdf", size: "10MB", date: "1 year ago", type: "pdf", status: "Active", source: "upload" },
+    { id: 113, name: "Team Bios", url: "company.com/team", status: "Synced", source: "web" },
+    { id: 13, name: "Training_Video_1.mp4", size: "150MB", date: "1 year ago", type: "video", status: "Active", source: "upload" },
+    { id: 114, name: "Landing Page A", url: "company.com/promo-a", status: "Inactive", source: "web" },
+    { id: 14, name: "Logo_Pack.zip", size: "25MB", date: "1 year ago", type: "archive", status: "Active", source: "upload" },
+    { id: 115, name: "Landing Page B", url: "company.com/promo-b", status: "Inactive", source: "web" },
+    { id: 15, name: "Legal_Contracts.pdf", size: "1.5MB", date: "2 years ago", type: "pdf", status: "Confidential", source: "upload" },
 ];
 
-// Expanded Mock Data - Web
-const MOCK_WEB = [
-    { id: 1, name: "Website FAQs", url: "company.com/faq", status: "Synced" },
-    { id: 2, name: "Contact Page", url: "company.com/contact", status: "Synced" },
-    { id: 3, name: "About Us", url: "company.com/about", status: "Synced" },
-    { id: 4, name: "Services Overview", url: "company.com/services", status: "Pending" },
-    { id: 5, name: "Pricing Page", url: "company.com/pricing", status: "Synced" },
-    { id: 6, name: "Blog: Industry Trends", url: "company.com/blog/trends", status: "Synced" },
-    { id: 7, name: "Blog: Tips & Tricks", url: "company.com/blog/tips", status: "Synced" },
-    { id: 8, name: "Support Portal", url: "support.company.com", status: "Error" },
-    { id: 9, name: "Careers Page", url: "company.com/careers", status: "Synced" },
-    { id: 10, name: "Terms of Service", url: "company.com/terms", status: "Synced" },
-    { id: 11, name: "Privacy Policy", url: "company.com/privacy", status: "Synced" },
-    { id: 12, name: "Case Studies", url: "company.com/case-studies", status: "Pending" },
-    { id: 13, name: "Team Bios", url: "company.com/team", status: "Synced" },
-    { id: 14, name: "Landing Page A", url: "company.com/promo-a", status: "Inactive" },
-    { id: 15, name: "Landing Page B", url: "company.com/promo-b", status: "Inactive" },
-];
-
-function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
+function KnowledgeSection({ title, icon: Icon, data, openWizard }) {
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
-    const [filterType, setFilterType] = useState('all');
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterSource, setFilterSource] = useState('all');
     const [sortBy, setSortBy] = useState('name');
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 11;
+    const ITEMS_PER_PAGE = 12; // Adjusted for better grid fit
 
     // Filter & Sort Logic
     const filteredData = data
@@ -70,13 +65,8 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
             (item.url && item.url.toLowerCase().includes(searchQuery.toLowerCase()))
         )
         .filter(item => {
-            if (type === 'library') {
-                if (filterType === 'all') return true;
-                return item.type === filterType;
-            } else {
-                if (filterStatus === 'all') return true;
-                return item.status === filterStatus;
-            }
+            if (filterSource === 'all') return true;
+            return item.source === filterSource;
         })
         .sort((a, b) => {
             return a.name.localeCompare(b.name);
@@ -91,7 +81,7 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
 
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, filterType, filterStatus, sortBy, view]);
+    }, [searchQuery, filterSource, sortBy, view]);
 
     return (
         <div className="space-y-4">
@@ -109,37 +99,24 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <Input
-                            placeholder={type === 'library' ? "Search documents..." : "Search web pages..."}
+                            placeholder="Search documents and sources..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 w-full"
                         />
                     </div>
                     <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
-                        {type === 'library' && (
-                            <Select value={filterType} onValueChange={setFilterType}>
-                                <SelectTrigger className="w-[130px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
-                                    <SelectValue placeholder="Type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Types</SelectItem>
-                                    <SelectItem value="pdf">PDF</SelectItem>
-                                    <SelectItem value="doc">DOC/DOCX</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        )}
-                        {type === 'web' && (
-                            <Select value={filterStatus} onValueChange={setFilterStatus}>
-                                <SelectTrigger className="w-[130px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
-                                    <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">All Status</SelectItem>
-                                    <SelectItem value="Synced">Synced</SelectItem>
-                                    <SelectItem value="Pending">Pending</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        )}
+                        <Select value={filterSource} onValueChange={setFilterSource}>
+                            <SelectTrigger className="w-[150px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                <SelectValue placeholder="Source Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Sources</SelectItem>
+                                <SelectItem value="upload">Uploads</SelectItem>
+                                <SelectItem value="web">Web Links</SelectItem>
+                            </SelectContent>
+                        </Select>
+
                         <Select value={sortBy} onValueChange={setSortBy}>
                             <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
                                 <SelectValue placeholder="Sort by" />
@@ -161,7 +138,7 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                         <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>
-                        <span className="font-medium">{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
+                        <span className="font-medium">Add New Source</span>
                     </button>
 
                     {/* Mobile Add Button - Always Visible on Grid (Top) */}
@@ -172,32 +149,44 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                                 <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Plus className="w-5 h-5 text-blue-500" />
                                 </div>
-                                <span>{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
+                                <span>Add New Source</span>
                             </button>
                         </div>
                     )}
 
                     {paginatedData.map(item => (
-                        <Card key={item.id} className="p-6 group hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
+                        <Card key={item.id} className="p-6 group hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 relative overflow-hidden">
+                            {/* Accent Line Removed */}
+
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
-                                    {type === 'library' ? <FileText className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
+                                <div className={`p-2 rounded-lg ${item.source === 'upload' ? 'bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400' : 'bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400'}`}>
+                                    {item.source === 'upload' ? <FileText className="w-5 h-5" /> : <Globe className="w-5 h-5" />}
                                 </div>
                                 <div className="text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 cursor-pointer">
                                     <Settings className="w-4 h-4" />
                                 </div>
                             </div>
-                            <h3 className="font-bold text-slate-800 dark:text-white line-clamp-1">{item.name}</h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                {type === 'library' ? `${item.date} • ${item.size}` : item.url}
-                            </p>
-                            <div className="mt-auto pt-4 flex gap-2">
+
+                            <h3 className="font-bold text-slate-800 dark:text-white line-clamp-1 mb-1">{item.name}</h3>
+
+                            {item.source === 'upload' ? (
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+                                    <File className="w-3 h-3" /> {item.type.toUpperCase()} • {item.size}
+                                </p>
+                            ) : (
+                                <p className="text-xs text-blue-500 dark:text-blue-400 mt-1 flex items-center gap-1.5 line-clamp-1 hover:underline">
+                                    <LinkIcon className="w-3 h-3" /> {item.url}
+                                </p>
+                            )}
+
+                            <div className="mt-auto pt-4 flex gap-2 items-center justify-between">
                                 <Badge variant={item.status === 'Synced' || item.status === 'Active' ? 'success' : 'outline'}>{item.status}</Badge>
+                                <span className={`text-[10px] uppercase font-bold tracking-wider ${item.source === 'upload' ? 'text-orange-300' : 'text-blue-300'}`}>
+                                    {item.source === 'upload' ? 'FILE' : 'WEB'}
+                                </span>
                             </div>
                         </Card>
                     ))}
-
-
                 </div>
             )}
 
@@ -205,8 +194,8 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
             {view === 'table' && (
                 <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                     <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        <div className="col-span-4">Name</div>
-                        <div className="col-span-5">{type === 'library' ? 'Details' : 'URL'}</div>
+                        <div className="col-span-5">Name</div>
+                        <div className="col-span-4">Type / URL</div>
                         <div className="col-span-2">Status</div>
                         <div className="col-span-1 text-right">Actions</div>
                     </div>
@@ -217,18 +206,22 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                                     <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                         <Plus className="w-4 h-4" />
                                     </div>
-                                    {type === 'library' ? 'Upload Document' : 'Add Web Source'}
+                                    Add New Source
                                 </div>
                             </div>
                         )}
                         {paginatedData.map(item => (
                             <div key={item.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => openWizard('document')}>
-                                <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                    {type === 'library' ? <FileText className="w-4 h-4 text-slate-400" /> : <Globe className="w-4 h-4 text-slate-400" />}
-                                    {item.name}
+                                <div className="col-span-5 flex items-center gap-3">
+                                    <div className={`p-1.5 rounded ${item.source === 'upload' ? 'bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-400' : 'bg-blue-50 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400'}`}>
+                                        {item.source === 'upload' ? <FileText className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+                                    </div>
+                                    <div className="font-medium text-slate-900 dark:text-white">
+                                        {item.name}
+                                    </div>
                                 </div>
-                                <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">
-                                    {type === 'library' ? `${item.date} • ${item.size}` : item.url}
+                                <div className="col-span-4 text-sm text-slate-500 dark:text-slate-400 truncate">
+                                    {item.source === 'upload' ? `${item.date} • ${item.size}` : item.url}
                                 </div>
                                 <div className="col-span-2">
                                     <Badge variant={item.status === 'Synced' || item.status === 'Active' ? 'success' : 'outline'}>{item.status}</Badge>
@@ -254,17 +247,18 @@ function KnowledgeSection({ title, icon: Icon, data, type, openWizard }) {
                                 <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <Plus className="w-5 h-5 text-blue-500" />
                                 </div>
-                                <span>{type === 'library' ? 'Upload Document' : 'Add Web Source'}</span>
+                                <span>Add New Source</span>
                             </button>
                         )}
                         {paginatedData.map(item => (
-                            <div key={item.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => openWizard('document')}>
-                                <div className="flex justify-between items-start mb-2">
+                            <div key={item.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden" onClick={() => openWizard('document')}>
+                                <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.source === 'upload' ? 'bg-orange-400' : 'bg-blue-400'}`} />
+                                <div className="flex justify-between items-start mb-2 pl-2">
                                     <h3 className="font-bold text-slate-900 dark:text-white line-clamp-1">{item.name}</h3>
                                     <Badge variant={item.status === 'Synced' || item.status === 'Active' ? 'success' : 'outline'} className="text-[10px] h-5">{item.status}</Badge>
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">
-                                    {type === 'library' ? `${item.date} • ${item.size}` : item.url}
+                                <p className="text-sm text-slate-500 dark:text-slate-400 pl-2">
+                                    {item.source === 'upload' ? `${item.date} • ${item.size}` : item.url}
                                 </p>
                             </div>
                         ))}
@@ -326,7 +320,7 @@ export default function KnowledgeBaseView() {
                     </div>
                 </div>
                 <Button onClick={() => openWizard('document')} className="w-full md:w-auto">
-                    <UploadCloud className="w-4 h-4 mr-2" /> Add Document
+                    <UploadCloud className="w-4 h-4 mr-2" /> Add Source
                 </Button>
             </header>
 
@@ -335,18 +329,9 @@ export default function KnowledgeBaseView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     <KnowledgeSection
-                        title="Library (Files)"
-                        icon={FileText}
-                        data={MOCK_DOCS}
-                        type="library"
-                        openWizard={openWizard}
-                    />
-
-                    <KnowledgeSection
-                        title="Web Sources"
-                        icon={Globe}
-                        data={MOCK_WEB}
-                        type="web"
+                        title="Documents & Sources"
+                        icon={Book}
+                        data={ALL_KNOWLEDGE}
                         openWizard={openWizard}
                     />
                 </div>

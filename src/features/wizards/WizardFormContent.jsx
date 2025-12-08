@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, RotateCcw, Loader2, FileCheck, Book, CheckCircle2, Wrench, Shield, AlertTriangle, Wand2, Clock, Edit2, Copy, Mic, GripVertical, ArrowRight, CornerDownRight, ChevronRight, ChevronDown, Info } from 'lucide-react';
+import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, Loader2, FileCheck, Book, Shield, AlertTriangle, Wand2, Mic, Settings, Search, Filter, Info, Wrench } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +19,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
     // Unified State
     const [isLoading, setIsLoading] = React.useState(false);
+    const [uploadStatus, setUploadStatus] = React.useState('idle'); // idle, uploading, processing, done
 
     // Mobile Tooltip State
     const [tooltipOpen, setTooltipOpen] = React.useState({});
@@ -30,18 +31,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
     // --- FAQ WIZARD ---
     if (mode === 'faq') {
-        const handleKnowledgeSelect = (type) => {
-            setIsLoading(true);
-            // Simulate analysis delay
-            setTimeout(() => {
-                setIsLoading(false);
-                onChange('isContextActive', true);
-                onChange('contextFileName', 'Website_FAQ.pdf');
-                // Auto-fill data
-                onChange('faqQuestion', "What is your return policy?");
-                onChange('faqAnswer', "You can return any item within 30 days of purchase for a full refund, provided it is in its original condition.");
-            }, 1500);
-        };
+
 
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
@@ -82,43 +72,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     />
                 </div>
 
-                <div>
-                    <Label className="mb-3 block">Knowledge Source</Label>
-                    <div className="relative">
-                        {/* Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div
-                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200 dark:border-slate-800' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'}`}
-                            >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
-                                    <UploadCloud className="w-5 h-5" />
-                                </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400 dark:text-slate-600' : 'text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`}>Upload Doc</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">PDF, DOCX</div>
-                            </div>
 
-                            <div
-                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200 dark:border-slate-800' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10'}`}
-                            >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`}>
-                                    <Book className="w-5 h-5" />
-                                </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400 dark:text-slate-600' : 'text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400'}`}>Select from KB</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">Existing Files</div>
-                            </div>
-                        </div>
-
-                        {/* Loading Overlay */}
-                        {isLoading && (
-                            <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100 dark:border-slate-800">
-                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                                <span className="text-sm font-medium text-blue-600 dark:text-blue-400 animate-pulse">Reading Document...</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
 
                 <div>
                     <div className="flex justify-between items-center mb-1.5">
@@ -166,17 +120,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
     // --- POLICY WIZARD ---
     if (mode === 'policy') {
-        const handleKnowledgeSelect = (type) => {
-            setIsLoading(true);
-            // Simulate analysis delay
-            setTimeout(() => {
-                setIsLoading(false);
-                onChange('isContextActive', true);
-                onChange('contextFileName', 'Employee_Handbook.pdf');
-                // Auto-fill data
-                onChange('policyContent', "All employees are entitled to 4 weeks of paid annual leave per year. Leave requests must be submitted at least 2 weeks in advance.");
-            }, 1500);
-        };
+
 
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
@@ -216,43 +160,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     />
                 </div>
 
-                <div>
-                    <Label className="mb-3 block">Knowledge Source</Label>
-                    <div className="relative">
-                        {/* Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div
-                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('upload')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
-                            >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
-                                    <UploadCloud className="w-5 h-5" />
-                                </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Upload Doc</div>
-                                <div className="text-xs text-slate-500">PDF, DOCX</div>
-                            </div>
 
-                            <div
-                                onClick={() => !formData.isContextActive && handleKnowledgeSelect('kb')}
-                                className={`group border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-all ${formData.isContextActive ? 'opacity-50 pointer-events-none border-slate-200' : 'border-slate-200 hover:border-blue-400 hover:bg-blue-50/30'}`}
-                            >
-                                <div className={`w-8 h-8 mb-2 flex items-center justify-center rounded-lg transition-colors ${formData.isContextActive ? 'bg-slate-100 text-slate-300' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
-                                    <Book className="w-5 h-5" />
-                                </div>
-                                <div className={`font-semibold text-sm transition-colors ${formData.isContextActive ? 'text-slate-400' : 'text-slate-900 group-hover:text-blue-700'}`}>Select from KB</div>
-                                <div className="text-xs text-slate-500">Existing Files</div>
-                            </div>
-                        </div>
-
-                        {/* Loading Overlay */}
-                        {isLoading && (
-                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100">
-                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                                <span className="text-sm font-medium text-blue-600 animate-pulse">Reading Document...</span>
-                            </div>
-                        )}
-                    </div>
-                </div>
 
                 <div>
                     <div className="flex justify-between items-center mb-1.5">
@@ -314,22 +222,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
     // --- SERVICE WIZARD ---
     // --- PRODUCT WIZARD ---
     if (mode === 'product') {
-        const handleKnowledgeSelect = (type) => {
-            setIsLoading(true);
-            // Simulate analysis delay
-            setTimeout(() => {
-                setIsLoading(false);
-                onChange('isContextActive', true);
-                onChange('contextFileName', 'Product_Catalog.pdf');
-                // Auto-fill data
-                onChange('productName', "Solar Panel System");
-                onChange('description', "High-efficiency monocrystalline solar panels with 25-year warranty. Includes inverter and installation hardware.");
-                onChange('productPrice', "2999.99");
-                onChange('priceMode', 'fixed');
-                // Set auto-filled flags
-                onChange('autoFilledFields', { productName: true, description: true, price: true, priceMode: true });
-            }, 1500);
-        };
+
 
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
@@ -347,7 +240,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     </div>
                     <Input
                         placeholder="e.g., Solar Panel"
-                        value={formData.productName}
+                        value={formData.productName || ''}
                         onChange={(e) => {
                             onChange('productName', e.target.value);
                             if (formData.autoFilledFields?.productName) {
@@ -390,41 +283,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     </div>
                 )}
 
-                {/* 2. Knowledge Source Selection (Only show if not active) */}
-                {!formData.isContextActive && (
-                    <div className="mb-6">
-                        <Label className="mb-3 block">Auto-fill from Document (Optional)</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
-                            <div
-                                onClick={() => handleKnowledgeSelect('upload')}
-                                className="group border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all"
-                            >
-                                <div className="w-8 h-8 mb-2 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    <UploadCloud className="w-5 h-5" />
-                                </div>
-                                <div className="font-semibold text-sm text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 text-center">Upload Specification</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">PDF, Details</div>
-                            </div>
-                            <div
-                                onClick={() => handleKnowledgeSelect('kb')}
-                                className="group border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-blue-400 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all"
-                            >
-                                <div className="w-8 h-8 mb-2 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                    <Book className="w-5 h-5" />
-                                </div>
-                                <div className="font-semibold text-sm text-slate-900 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 text-center">Select from KB</div>
-                            </div>
 
-                            {/* Loading Overlay */}
-                            {isLoading && (
-                                <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-slate-100 dark:border-slate-800">
-                                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
-                                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400 animate-pulse">Reading Document...</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
 
                 {/* 3. Pricing Section (Stacked) */}
                 <div>
@@ -502,7 +361,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     <Input
                                         className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
                                         placeholder="0.00"
-                                        value={formData.productPrice}
+                                        value={formData.productPrice || ''}
                                         onChange={(e) => {
                                             onChange('productPrice', e.target.value);
                                             if (formData.autoFilledFields?.price) {
@@ -547,7 +406,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <Textarea
                             placeholder="Describe the product features and specs..."
                             className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.autoFilledFields?.description ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
-                            value={formData.description}
+                            value={formData.description || ''}
                             onChange={(e) => {
                                 onChange('description', e.target.value);
                                 if (formData.autoFilledFields?.description) {
@@ -1716,90 +1575,228 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         }
     }
 
+
     // --- DOCUMENT WIZARD ---
     if (mode === 'document') {
         if (step === 1) {
-            return (
-                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl h-48 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer">
-                        <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full shadow-sm flex items-center justify-center mb-3">
-                            <UploadCloud className="w-6 h-6 text-blue-500" />
-                        </div>
-                        <div className="text-sm font-medium text-slate-700 dark:text-slate-200">Click to upload or drag and drop</div>
-                        <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">PDF, DOCX, TXT (Max 10MB)</div>
-                    </div>
+            const handleMockUpload = (type) => {
+                setUploadStatus('uploading');
 
-                    <div>
-                        <Label className="mb-1.5 block">Or Add URL</Label>
-                        <div className="flex gap-2">
-                            <Input placeholder="https://..." />
-                            <Button variant="secondary">Fetch</Button>
+                // 1. Simulate Upload
+                setTimeout(() => {
+                    setUploadStatus('processing');
+
+                    // 2. Simulate Analysis
+                    setTimeout(() => {
+                        setUploadStatus('done');
+                        // Mock Data Update
+                        onChange('isContextActive', true);
+                        onChange('contextFileName', type === 'upload' ? 'SOP_V2.pdf' : 'Knowledge_Base_Export.pdf');
+                    }, 2000);
+                }, 1500);
+            };
+
+            return (
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 min-h-[400px]">
+                    {uploadStatus === 'idle' && (
+                        <React.Fragment>
+                            <Label className="mb-3 block">Select Source</Label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div
+                                    onClick={() => handleMockUpload('upload')}
+                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-600 transition-all cursor-pointer h-40"
+                                >
+                                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                        <UploadCloud className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-blue-500" />
+                                    </div>
+                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Upload Document</div>
+                                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">PDF, DOCX</div>
+                                </div>
+
+                                <div
+                                    onClick={() => handleMockUpload('kb')}
+                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-purple-400 dark:hover:border-purple-600 transition-all cursor-pointer h-40"
+                                >
+                                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                        <Book className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-purple-500" />
+                                    </div>
+                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Select from KB</div>
+                                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">Existing Files</div>
+                                </div>
+                            </div>
+
+                            <div className="pt-2">
+                                <Label className="mb-2 block">Or Add URL</Label>
+                                <div className="flex gap-2">
+                                    <Input placeholder="https://..." className="bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100" />
+                                    <Button variant="secondary" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Fetch</Button>
+                                </div>
+                            </div>
+                        </React.Fragment>
+                    )}
+
+                    {uploadStatus === 'uploading' && (
+                        <div className="flex flex-col items-center justify-center h-64 animate-in fade-in zoom-in-95 duration-300">
+                            <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-4 relative">
+                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                            </div>
+                            <h4 className="text-lg font-semibold text-slate-800 dark:text-white">Uploading Document...</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Securely transferring your file.</p>
                         </div>
-                    </div>
+                    )}
+
+                    {uploadStatus === 'processing' && (
+                        <div className="flex flex-col items-center justify-center h-64 animate-in fade-in zoom-in-95 duration-300">
+                            <div className="w-16 h-16 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center mb-4 relative">
+                                <Sparkles className="w-8 h-8 text-purple-500 animate-pulse" />
+                            </div>
+                            <h4 className="text-lg font-semibold text-slate-800 dark:text-white">Analyzing Content...</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">I'm scanning for entities, policies, and pricing.</p>
+                        </div>
+                    )}
+
+                    {uploadStatus === 'done' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <Label className="mb-3 block">Selected Source</Label>
+                            <div className="relative border-2 border-emerald-500/50 bg-emerald-50/20 dark:bg-emerald-900/10 rounded-xl p-6 flex flex-col items-center justify-center h-64 shadow-sm">
+                                <div className="absolute top-3 right-3">
+                                    <button onClick={() => { setUploadStatus('idle'); onChange('isContextActive', false); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 shadow-sm animate-in zoom-in spin-in-12 duration-500">
+                                    <FileCheck className="w-7 h-7" />
+                                </div>
+                                <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-1">SOP_V2.pdf</h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">2.4 MB • PDF Document</p>
+                                <div className="flex gap-2">
+                                    <Badge variant="secondary" className="bg-emerald-100/50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Analysis Complete</Badge>
+                                    <Badge variant="secondary" className="bg-emerald-100/50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">12 Findings</Badge>
+                                </div>
+                                <p className="text-xs text-center text-slate-400 dark:text-slate-500 mt-6 max-w-xs">
+                                    Click "Next" to review what I found.
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
+
         if (step === 2) {
             return (
-                <div className="flex flex-col items-center justify-center h-64 animate-in fade-in slide-in-from-right-4 duration-300">
-                    <Loader2 className="w-12 h-12 text-blue-500 animate-spin mb-4" />
-                    <h3 className="text-lg font-semibold text-slate-800">Analyzing Document...</h3>
-                    <p className="text-slate-500 text-sm mt-2">Extracting key topics and entities.</p>
+                <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                    <div className="flex justify-between items-center mb-2">
+                        <div>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Review Findings</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">The AI detected the following potential data points.</p>
+                        </div>
+                        <Button variant="outline" size="sm" className="hidden md:flex gap-2 text-slate-600 dark:text-slate-300">
+                            <Settings className="w-4 h-4" /> Filters
+                        </Button>
+                    </div>
+
+                    <div className="relative mb-6">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        <Input
+                            placeholder="Search found items..."
+                            className="pl-9 bg-white dark:bg-slate-900/50 dark:border-slate-700 dark:text-white"
+                        />
+                    </div>
+
+                    <div className="space-y-4">
+                        {/* Mock Category Header */}
+                        <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">Services</Badge>
+                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">2 Matches</span>
+                        </div>
+
+                        {/* Finding Card 1 */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                                <Sparkles className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">Emergency Gas Repair</h4>
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">98% Match</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"We offer 24/7 gas leak detection and repair services for residential properties..."</p>
+                                <div className="mt-3 flex gap-2">
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">New Service</Badge>
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">$180 Fixed</Badge>
+                                </div>
+                            </div>
+                            <div className="self-center">
+                                <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
+                            </div>
+                        </div>
+
+                        {/* Finding Card 2 */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                                <HelpCircle className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">Payment Policy FAQ</h4>
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">85% Match</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Payment is required upon completion of work. We accept credit cards and extensive..."</p>
+                                <div className="mt-3 flex gap-2">
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Update FAQ</Badge>
+                                </div>
+                            </div>
+                            <div className="self-center">
+                                <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         }
+
         if (step === 3) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                        <h4 className="font-bold text-slate-900 text-sm mb-1">Extraction Complete</h4>
-                        <p className="text-xs text-slate-500">I found 3 actionable items in <strong>New_Policy.pdf</strong>.</p>
+                    <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Extraction Lab</h4>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">Confirm where data should be applied.</p>
+                        </div>
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800">2 Items Selected</Badge>
                     </div>
 
                     <div className="space-y-3">
-                        {/* Item 1 */}
-                        <div className="border border-blue-200 bg-blue-50/30 rounded-xl p-4 flex gap-4 items-start">
-                            <div className="w-10 h-10 bg-white border border-slate-100 rounded-lg flex items-center justify-center text-blue-500 shadow-sm flex-shrink-0">
+                        {/* Item 1 - Service */}
+                        <div className="border border-blue-200 bg-blue-50/20 dark:bg-blue-900/10 dark:border-blue-800/50 rounded-xl p-4 flex gap-4 items-start">
+                            <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-blue-500 dark:text-blue-400 shadow-sm flex-shrink-0">
                                 <Wrench className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
-                                    <h5 className="font-bold text-slate-900 text-sm">Found Service: "Emergency Gas"</h5>
+                                    <h5 className="font-bold text-slate-900 dark:text-white text-sm">Create Service: "Emergency Gas"</h5>
                                     <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
                                 </div>
-                                <p className="text-xs text-slate-500 mt-1 mb-3">Detected pricing ($180/hr) and description.</p>
-                                <Button size="sm" className="h-8 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-none">Review & Add</Button>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Detected pricing (<strong className="text-slate-700 dark:text-slate-300">$180/hr</strong>) and description.</p>
+                                <Button size="sm" className="h-8 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-none dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/60">Review & Add</Button>
                             </div>
                         </div>
 
-                        {/* Item 2 */}
-                        <div className="border border-slate-200 rounded-xl p-4 flex gap-4 items-start">
-                            <div className="w-10 h-10 bg-white border border-slate-100 rounded-lg flex items-center justify-center text-purple-500 shadow-sm flex-shrink-0">
-                                <Shield className="w-5 h-5" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between items-start">
-                                    <h5 className="font-bold text-slate-900 text-sm">Found Protocol: "Payment Terms"</h5>
-                                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
-                                </div>
-                                <p className="text-xs text-slate-500 mt-1">"Payment required upon completion" rule found.</p>
-                            </div>
-                        </div>
-
-                        {/* Item 3 */}
-                        <div className="border border-orange-200 bg-orange-50/30 rounded-xl p-4 flex gap-4 items-start">
-                            <div className="w-10 h-10 bg-white border border-slate-100 rounded-lg flex items-center justify-center text-orange-500 shadow-sm flex-shrink-0">
+                        {/* Item 3 - Conflict */}
+                        <div className="border border-orange-200 bg-orange-50/30 dark:bg-orange-900/10 dark:border-orange-800/50 rounded-xl p-4 flex gap-4 items-start">
+                            <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-orange-500 shadow-sm flex-shrink-0">
                                 <AlertTriangle className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
-                                    <h5 className="font-bold text-slate-900 text-sm">Conflict Detected</h5>
+                                    <h5 className="font-bold text-slate-900 dark:text-white text-sm">Conflict Detected</h5>
                                     <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                                 </div>
-                                <p className="text-xs text-slate-500 mt-1 mb-3">Doc says <strong>$150 call-out</strong>, but "General Plumbing" service is set to <strong>$99</strong>.</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Doc says <strong className="text-slate-800 dark:text-slate-200">$150 call-out</strong>, but "General Plumbing" service is set to <strong className="text-slate-800 dark:text-slate-200">$99</strong>.</p>
                                 <div className="flex gap-2">
-                                    <Button size="sm" className="h-8 bg-orange-100 text-orange-800 hover:bg-orange-200 border border-orange-200 shadow-none">Overwrite Old Price</Button>
-                                    <Button size="sm" variant="ghost" className="h-8 text-slate-500 hover:text-slate-700">Ignore</Button>
+                                    <Button size="sm" className="h-8 bg-orange-100 text-orange-800 hover:bg-orange-200 border border-orange-200 shadow-none dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900/60">Overwrite Old Price</Button>
+                                    <Button size="sm" variant="ghost" className="h-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">Ignore</Button>
                                 </div>
                             </div>
                         </div>
