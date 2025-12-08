@@ -51,6 +51,9 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         maxPrice: '',
         durationValue: '',
         durationUnit: 'minutes',
+        callOutFee: '',
+        plusGst: false,
+        plusMaterials: false,
         customPriceMessage: '',
         useCustomPriceMessage: false,
         globalDefaultPriceMessage: "Prices vary based on complexity. We can provide a quote on site.",
@@ -120,7 +123,21 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         // FAQ Mode
         faqQuestion: '',
         faqAnswer: '',
+        // FAQ Mode
+        faqQuestion: '',
+        faqAnswer: '',
         faqs: [{ question: '', answer: '' }],
+
+        // Notification Assignment Mode
+        assignMemberId: '',
+        assignMethodSms: false,
+        assignMethodEmail: false,
+        assignTags: [],
+        assignSourceCall: false,
+        assignSourceWebform: false,
+        assignSourceChatbot: false,
+        assignSourceSms: false,
+        assignSourceEmail: false,
     });
 
     const updateFormData = (field, value) => {
@@ -200,6 +217,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
             case 'document': return 'Upload Document';
             case 'policy': return 'Add Policy';
             case 'faq': return 'Add FAQ';
+            case 'notification_assignment': return 'Assign Team Member';
             default: return 'Configuration';
         }
     };
@@ -210,6 +228,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         if (mode === 'department') return 1;
         if (mode === 'policy') return 1;
         if (mode === 'faq') return 1;
+        if (mode === 'notification_assignment') return 1;
         // All other wizards have 3 steps
         return 3;
     };
@@ -338,7 +357,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                 </div>
                             </div>
 
-                            {!['policy', 'faq', 'product', 'department'].includes(mode) && (
+                            {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
                                 <div className={`flex flex-wrap items-center gap-3 px-1 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>
                                     {(
                                         {
@@ -394,7 +413,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-full md:w-auto">
                                 <h2 className="text-xl font-bold text-slate-900 dark:text-white">{getWizardTitle()}</h2>
-                                {!['policy', 'faq', 'product', 'department'].includes(mode) && (
+                                {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
                                             {

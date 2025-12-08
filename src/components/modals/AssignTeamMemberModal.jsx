@@ -67,11 +67,11 @@ export default function AssignTeamMemberModal({ onClose }) {
 
     return (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200">
-            <div className="bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 border border-transparent dark:border-slate-800">
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
-                    <h2 className="text-lg font-bold text-slate-900">Assign a Member</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Assign a Member</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -89,8 +89,8 @@ export default function AssignTeamMemberModal({ onClose }) {
                                 {TEAM_MEMBERS.map((member) => (
                                     <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>
                                 ))}
-                                <div className="h-px bg-slate-100 my-1"></div>
-                                <SelectItem value="add-new" className="text-blue-600 font-medium cursor-pointer focus:bg-blue-50 focus:text-blue-700">
+                                <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
+                                <SelectItem value="add-new" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-900/20 focus:text-blue-700 dark:focus:text-blue-300">
                                     + Add New Team Member
                                 </SelectItem>
                             </SelectContent>
@@ -107,7 +107,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={methods.sms}
                                     onCheckedChange={(checked) => setMethods(prev => ({ ...prev, sms: checked }))}
                                 />
-                                <label htmlFor="method-sms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="method-sms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Text Message
                                 </label>
                             </div>
@@ -117,7 +117,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={methods.email}
                                     onCheckedChange={(checked) => setMethods(prev => ({ ...prev, email: checked }))}
                                 />
-                                <label htmlFor="method-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="method-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Email
                                 </label>
                             </div>
@@ -145,7 +145,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={sources.call}
                                     onCheckedChange={(checked) => setSources(prev => ({ ...prev, call: checked }))}
                                 />
-                                <label htmlFor="source-call" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="source-call" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Call
                                 </label>
                             </div>
@@ -155,7 +155,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={sources.webform}
                                     onCheckedChange={(checked) => setSources(prev => ({ ...prev, webform: checked }))}
                                 />
-                                <label htmlFor="source-webform" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="source-webform" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Webform
                                 </label>
                             </div>
@@ -165,7 +165,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={sources.chatbot}
                                     onCheckedChange={(checked) => setSources(prev => ({ ...prev, chatbot: checked }))}
                                 />
-                                <label htmlFor="source-chatbot" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="source-chatbot" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Chatbot
                                 </label>
                             </div>
@@ -175,7 +175,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={sources.sms}
                                     onCheckedChange={(checked) => setSources(prev => ({ ...prev, sms: checked }))}
                                 />
-                                <label htmlFor="source-sms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="source-sms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     SMS
                                 </label>
                             </div>
@@ -185,7 +185,7 @@ export default function AssignTeamMemberModal({ onClose }) {
                                     checked={sources.email}
                                     onCheckedChange={(checked) => setSources(prev => ({ ...prev, email: checked }))}
                                 />
-                                <label htmlFor="source-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                <label htmlFor="source-email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-200">
                                     Email
                                 </label>
                             </div>
@@ -194,8 +194,8 @@ export default function AssignTeamMemberModal({ onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
-                    <Button variant="outline" onClick={onClose}>
+                <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+                    <Button variant="outline" onClick={onClose} className="dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                         Cancel
                     </Button>
                     <Button onClick={handleAssign} disabled={!selectedMember}>

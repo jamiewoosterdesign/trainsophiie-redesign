@@ -14,7 +14,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import AssignTeamMemberModal from '@/components/modals/AssignTeamMemberModal';
+import WizardModal from '@/features/wizards/WizardModal';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
@@ -347,7 +347,13 @@ export default function NotificationsView() {
 
             {/* Modal */}
             {showAssignModal && (
-                <AssignTeamMemberModal onClose={() => setShowAssignModal(false)} />
+                <div className="fixed inset-0 z-50">
+                    <WizardModal
+                        mode="notification_assignment"
+                        onSwitchMode={() => { }}
+                        onClose={() => setShowAssignModal(false)}
+                    />
+                </div>
             )}
         </div>
     );
