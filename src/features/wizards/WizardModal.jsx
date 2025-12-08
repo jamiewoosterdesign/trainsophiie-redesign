@@ -309,7 +309,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">You have unsaved changes. How would you like to proceed?</p>
                         <div className="flex flex-col gap-3">
                             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11" onClick={handleSaveAndExit}>Save & Exit</Button>
-                            <Button variant="danger" className="w-full h-11 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700" onClick={onClose}>Discard Changes</Button>
+                            <Button variant="danger" className="w-full h-11 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700" onClick={() => onClose()}>Discard Changes</Button>
                             <button
                                 className="w-full text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-2 transition-colors"
                                 onClick={() => setShowSaveConfirm(false)}

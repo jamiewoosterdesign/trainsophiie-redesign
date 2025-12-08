@@ -145,7 +145,9 @@ export default function MainLayout() {
 
     const handleWizardClose = (data) => {
         setIsWizardOpen(false);
-        if (data && wizardCallback) {
+        // Ensure data is not a DOM event (which happens if onClose is passed directly to onClick)
+        const isEvent = data && (data.nativeEvent || data.preventDefault || data.stopPropagation);
+        if (data && !isEvent && wizardCallback) {
             wizardCallback(data);
         }
         setWizardCallback(null);
