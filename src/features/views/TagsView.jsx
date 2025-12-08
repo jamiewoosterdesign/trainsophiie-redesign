@@ -55,11 +55,14 @@ const MOCK_AUTO_TAGS = [
 ];
 
 const TagCard = ({ tag, onEdit }) => (
-    <Card className="p-6 flex flex-col gap-3 dark:bg-slate-900 dark:border-slate-800 hover:shadow-md transition-all hover:-translate-y-1 group h-full justify-between">
+    <Card
+        className="p-6 flex flex-col gap-3 dark:bg-slate-900 dark:border-slate-800 hover:shadow-md transition-all hover:-translate-y-1 group h-full justify-between"
+        style={{ borderTop: `4px solid ${tag.colorHex}` }}
+    >
         <div>
             <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${tag.color} shrink-0`}></div>
+                    <div className={`w-4 h-4 rounded-md ${tag.color} shrink-0`}></div>
                     <div>
                         <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
                             {tag.name}
@@ -103,12 +106,12 @@ const TagCard = ({ tag, onEdit }) => (
         </div>
         <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-50 dark:border-slate-800">
             {onEdit && (
-                <Button size="sm" variant="ghost" className="h-8 text-slate-500 dark:text-slate-400" onClick={() => onEdit(tag)}>
-                    <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 dark:text-slate-400" onClick={() => onEdit(tag)}>
+                    <Pencil className="w-4 h-4" />
                 </Button>
             )}
-            <Button size="sm" variant="ghost" className="h-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Delete
+            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
+                <Trash2 className="w-4 h-4" />
             </Button>
         </div>
     </Card>

@@ -4,6 +4,7 @@ import { ArrowLeft, MessageSquare, Phone, MessageCircle, Play, Mic, Plus, Wand2,
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
@@ -62,7 +63,7 @@ export default function GreetingsView() {
 
                     {activeTab === 'phone' && (
                         <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
-                            <div className="flex flex-col md:flex-row gap-6">
+                            <div className="flex flex-col gap-6">
                                 {/* Greeting Section */}
                                 <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
                                     <div className="flex justify-between items-start mb-4">
@@ -93,16 +94,25 @@ export default function GreetingsView() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-end gap-2 pt-2">
+                                    <div className="mt-3 flex flex-wrap gap-2 animate-in fade-in mb-4">
+                                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1 mt-0.5">Vars:</span>
+                                        {['{Customer First Name}', '{Customer Last Name}', '{Business Name}', '{Agent Name}'].map(v => (
+                                            <Badge
+                                                key={v}
+                                                variant="outline"
+                                                className="bg-white dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-colors"
+                                                onClick={() => setPhoneGreeting(phoneGreeting + ' ' + v)}
+                                            >
+                                                {v}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <div className="flex items-center justify-end gap-2">
                                         <Button size="sm" variant="secondary" className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">
                                             <Play className="w-3 h-3" /> Preview Audio
                                         </Button>
                                         <Button size="sm" variant="outline" className="gap-2 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
                                             <Mic className="w-3 h-3" /> Record Custom
-                                        </Button>
-                                        <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-1" />
-                                        <Button size="sm" variant="ghost" className="gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                                            <Plus className="w-3 h-3" /> Variable
                                         </Button>
                                     </div>
                                 </section>
@@ -130,7 +140,20 @@ export default function GreetingsView() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-end gap-2 pt-2">
+                                    <div className="mt-3 flex flex-wrap gap-2 animate-in fade-in mb-4">
+                                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1 mt-0.5">Vars:</span>
+                                        {['{Customer First Name}', '{Customer Last Name}', '{Business Name}', '{Agent Name}'].map(v => (
+                                            <Badge
+                                                key={v}
+                                                variant="outline"
+                                                className="bg-white dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-colors"
+                                                onClick={() => setPhoneClosing(phoneClosing + ' ' + v)}
+                                            >
+                                                {v}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                    <div className="flex items-center justify-end gap-2">
                                         <Button size="sm" variant="secondary" className="gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700">
                                             <Play className="w-3 h-3" /> Preview Audio
                                         </Button>

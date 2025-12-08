@@ -12,7 +12,7 @@ const USE_GLOBAL_VOICE_UI = true;
 // Module-level variable to persist preference across modal opens but reset on page refresh
 let skipEntryModalPreference = false;
 
-export default function WizardModal({ mode, onSwitchMode, onClose }) {
+export default function WizardModal({ mode, onSwitchMode, onClose, initialData }) {
     const [step, setStep] = useState(1);
     const [returnToMode, setReturnToMode] = useState(null);
     const [lastStepCache, setLastStepCache] = useState({ service: 1, transfer: 1, protocol: 1 });
@@ -25,7 +25,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
     const scrollDirection = useScrollDirection(formScrollRef);
 
     // Entry Modal State
-    const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference);
+    const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference && !initialData);
     const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
     const [showToast, setShowToast] = useState(null);
 
@@ -138,6 +138,9 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         assignSourceChatbot: false,
         assignSourceSms: false,
         assignSourceEmail: false,
+
+        // Merge Initial Data
+        ...initialData
     });
 
     const updateFormData = (field, value) => {
@@ -266,7 +269,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
 
     const handleFinish = () => {
         if (validateStep(step)) {
-            onClose();
+            onClose(formData);
         }
     };
 

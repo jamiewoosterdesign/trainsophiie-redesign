@@ -9,6 +9,8 @@ import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
 export default function MainLayout() {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [wizardMode, setWizardMode] = useState('service');
+    const [initialWizardData, setInitialWizardData] = useState(null);
+    const [wizardCallback, setWizardCallback] = useState(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     // Global Voice Flow State
@@ -130,13 +132,24 @@ export default function MainLayout() {
         }
     };
 
-    const openWizard = (mode) => {
+    const openWizard = (mode, initialData = null, onFinish = null) => {
         setWizardMode(mode);
+        setInitialWizardData(initialData);
+        setWizardCallback(() => onFinish);
         setIsWizardOpen(true);
     };
 
     const openSettings = () => {
         setIsSettingsOpen(true);
+    };
+
+    const handleWizardClose = (data) => {
+        setIsWizardOpen(false);
+        if (data && wizardCallback) {
+            wizardCallback(data);
+        }
+        setWizardCallback(null);
+        setInitialWizardData(null);
     };
 
     return (
@@ -167,8 +180,9 @@ export default function MainLayout() {
             {isWizardOpen && (
                 <WizardModal
                     mode={wizardMode}
+                    initialData={initialWizardData}
                     onSwitchMode={setWizardMode}
-                    onClose={() => setIsWizardOpen(false)}
+                    onClose={handleWizardClose}
                 />
             )}
 
