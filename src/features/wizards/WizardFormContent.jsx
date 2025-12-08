@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, Loader2, FileCheck, Book, Shield, AlertTriangle, Wand2, Mic, Settings, Search, Filter, Info, Wrench } from 'lucide-react';
+import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, Loader2, FileCheck, Book, Shield, AlertTriangle, Wand2, Mic, Settings, Search, Filter, Info, Wrench, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,12 +31,89 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
     // --- FAQ WIZARD ---
     if (mode === 'faq') {
+        const faqs = formData.faqs && formData.faqs.length > 0
+            ? formData.faqs
+            : [{ question: formData.faqQuestion || '', answer: formData.faqAnswer || '' }];
 
+        const firstQuestion = faqs[0]?.question || '';
+        const showAutoFillBanner = firstQuestion && (firstQuestion.toLowerCase().includes('heater') || firstQuestion.toLowerCase().includes('hot water')) && !formData.isContextActive && !formData.autoFillDismissed;
+
+        const updateFaq = (index, field, value) => {
+            const newFaqs = [...faqs];
+            newFaqs[index] = { ...newFaqs[index], [field]: value };
+            // Clear auto-fill flag on edit
+            if (newFaqs[index].isAutoFilled) newFaqs[index].isAutoFilled = false;
+
+            onChange('faqs', newFaqs);
+
+            // Sync legacy fields for first item
+            if (index === 0) {
+                if (field === 'question') onChange('faqQuestion', value);
+                if (field === 'answer') onChange('faqAnswer', value);
+            }
+        };
+
+        const addFaq = () => {
+            onChange('faqs', [...faqs, { question: '', answer: '' }]);
+        };
+
+        const removeFaq = (index) => {
+            const newFaqs = faqs.filter((_, i) => i !== index);
+            onChange('faqs', newFaqs);
+            // Sync legacy
+            if (index === 0 && newFaqs.length > 0) {
+                onChange('faqQuestion', newFaqs[0].question);
+                onChange('faqAnswer', newFaqs[0].answer);
+            }
+        };
 
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
 
-                {/* Knowledge Found Banner */}
+                {/* Knowledge Found Banner (Auto-fill Suggestion) */}
+                {showAutoFillBanner && (
+                    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2 mb-4">
+                        <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Found</h4>
+                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I found 5 relevant FAQs for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill them?</p>
+                            <div className="flex gap-3 items-center">
+                                <Button
+                                    size="sm"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white h-8 shadow-sm"
+                                    onClick={() => {
+                                        const mockFaqs = [
+                                            { question: "How often should I service my heater?", answer: "Heaters should be serviced annually to ensure safety and efficiency.", isAutoFilled: true },
+                                            { question: "What should I do if my hot water stops?", answer: "Check your pilot light first. If it's out, try relighting it following the manufacturer's instructions.", isAutoFilled: true },
+                                            { question: "Do you install tankless systems?", answer: "Yes, we specialize in high-efficiency tankless hot water systems.", isAutoFilled: true },
+                                            { question: "How long is the warranty on new installs?", answer: "Our standard labor warranty is 12 months, plus the manufacturer's warranty on the unit (usually 5-10 years).", isAutoFilled: true },
+                                            { question: "Is my heater covered by insurance?", answer: "Damage from sudden events may be covered, but wear and tear usually isn't. Check with your provider.", isAutoFilled: true }
+                                        ];
+
+                                        onChange('isContextActive', true);
+                                        onChange('contextFileName', 'SOP_Manual.pdf');
+                                        onChange('faqs', mockFaqs);
+                                        onChange('faqQuestion', mockFaqs[0].question);
+                                        onChange('faqAnswer', mockFaqs[0].answer);
+                                        onChange('autoFilledFields', {}); // Clear old method
+                                    }}
+                                >
+                                    Yes, Auto-fill All
+                                </Button>
+                                <button
+                                    onClick={() => onChange('autoFillDismissed', true)}
+                                    className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Knowledge Extracted Banner (Context Active) */}
                 {formData.isContextActive && (
                     <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2">
                         <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
@@ -44,14 +121,16 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         </div>
                         <div className="flex-1">
                             <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Extracted</h4>
-                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I've extracted the FAQ details from <strong>{formData.contextFileName}</strong>.</p>
+                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I've extracted {faqs.length} FAQs from <strong>{formData.contextFileName}</strong>.</p>
                             <div className="flex gap-3 items-center">
                                 <button
                                     onClick={() => {
                                         onChange('isContextActive', false);
                                         onChange('contextFileName', '');
+                                        onChange('faqs', [{ question: '', answer: '' }]);
                                         onChange('faqQuestion', '');
                                         onChange('faqAnswer', '');
+                                        onChange('autoFilledFields', {});
                                     }}
                                     className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
                                 >
@@ -62,57 +141,104 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     </div>
                 )}
 
-                <div>
-                    <Label className="mb-1.5 block">Question</Label>
-                    <Input
-                        placeholder="e.g., What are your opening hours?"
-                        value={formData.faqQuestion}
-                        onChange={(e) => onChange('faqQuestion', e.target.value)}
-                        highlight={(activeField === 'faqQuestion').toString()}
-                    />
+                <div className="space-y-8">
+                    {faqs.map((faq, index) => (
+                        <div key={index} className="relative animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            {index > 0 && <div className="absolute -top-4 left-0 right-0 h-px bg-slate-100 dark:bg-slate-800" />}
+
+                            <div className="flex justify-between items-start mb-4">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">FAQ #{index + 1}</span>
+                                {index > 0 && (
+                                    <button
+                                        onClick={() => removeFaq(index)}
+                                        className="text-slate-400 hover:text-red-500 transition-colors"
+                                        title="Remove FAQ"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <Label className="block">Question</Label>
+                                        {faq.isAutoFilled && (
+                                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                                <Sparkles className="w-3 h-3" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Input
+                                        placeholder="e.g., What are your opening hours?"
+                                        value={faq.question}
+                                        onChange={(e) => updateFaq(index, 'question', e.target.value)}
+                                        highlight={(activeField === 'faqQuestion' && index === 0).toString()}
+                                        className={`transition-all duration-500 ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                    />
+                                </div>
+
+                                <div>
+                                    <div className="flex justify-between items-center mb-1.5">
+                                        <Label className="block">Answer</Label>
+                                        {faq.isAutoFilled && (
+                                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                                                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
+                                                <Sparkles className="w-3 h-3" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="relative">
+                                        <Textarea
+                                            placeholder="Write the answer here..."
+                                            className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                            value={faq.answer}
+                                            onChange={(e) => updateFaq(index, 'answer', e.target.value)}
+                                            highlight={(activeField === 'faqAnswer' && index === 0).toString()}
+                                        />
+                                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                            <TooltipProvider>
+                                                <Tooltip delayDuration={300}>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                                                            <Mic className="w-4 h-4" />
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                        <p>Voice Input</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                            <TooltipProvider>
+                                                <Tooltip delayDuration={300}>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                                                            <Wand2 className="w-4 h-4" />
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                        <p>Generate with AI</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
-
-
-                <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                        <Label className="block">Answer</Label>
-                    </div>
-                    <div className="relative">
-                        <Textarea
-                            placeholder="Write the answer here..."
-                            className={`min-h-[200px] pb-10 resize-y transition-all duration-500 ${formData.isContextActive ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
-                            value={formData.faqAnswer}
-                            onChange={(e) => onChange('faqAnswer', e.target.value)}
-                            highlight={(activeField === 'faqAnswer').toString()}
-                        />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <TooltipProvider>
-                                <Tooltip delayDuration={300}>
-                                    <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
-                                            <Mic className="w-4 h-4" />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                        <p>Voice Input</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                                <Tooltip delayDuration={300}>
-                                    <TooltipTrigger asChild>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
-                                            <Wand2 className="w-4 h-4" />
-                                        </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                        <p>Generate with AI</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                    </div>
+                <div className="pt-2">
+                    <Button
+                        variant="outline"
+                        onClick={addFaq}
+                        className="w-full border-dashed border-2 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Another FAQ
+                    </Button>
                 </div>
             </div>
         );
@@ -222,10 +348,45 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
     // --- SERVICE WIZARD ---
     // --- PRODUCT WIZARD ---
     if (mode === 'product') {
-
+        const showAutoFillBanner = formData.productName && (formData.productName.toLowerCase().includes('heater') || formData.productName.toLowerCase().includes('hot water')) && !formData.isContextActive && !formData.autoFillDismissed;
 
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
+                {/* Knowledge Found Banner (Auto-fill Suggestion) */}
+                {showAutoFillBanner && (
+                    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-4 flex gap-4 animate-in slide-in-from-top-2 mb-4">
+                        <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-bold text-purple-900 dark:text-purple-100 text-sm">Knowledge Found</h4>
+                            <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 mb-3">I found product details for "Heater" in your <strong>Product_Catalog.pdf</strong>. Want me to auto-fill this?</p>
+                            <div className="flex gap-3 items-center">
+                                <Button
+                                    size="sm"
+                                    className="bg-purple-600 hover:bg-purple-700 text-white h-8 shadow-sm"
+                                    onClick={() => {
+                                        onChange('isContextActive', true);
+                                        onChange('contextFileName', 'Product_Catalog.pdf');
+                                        onChange('productName', "Premium Gas Heater 3000");
+                                        onChange('description', "Top-tier efficient gas heater with advanced safety features, remote control, and 5-year warranty. Suitable for large living areas.");
+                                        onChange('priceMode', 'fixed');
+                                        onChange('productPrice', "899.00");
+                                        onChange('autoFilledFields', { productName: true, description: true, priceMode: true, price: true });
+                                    }}
+                                >
+                                    Yes, Auto-fill
+                                </Button>
+                                <button
+                                    onClick={() => onChange('autoFillDismissed', true)}
+                                    className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* 1. Product Name (Moved to Top) */}
                 <div>
@@ -442,7 +603,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
         // --- STEP 1: SERVICE DETAILS ---
         if (step === 1) {
-            const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isContextActive;
+            const showAutoFillBanner = formData.serviceName && (formData.serviceName.toLowerCase().includes('heater') || formData.serviceName.toLowerCase().includes('hot water')) && !formData.isContextActive && !formData.autoFillDismissed;
 
             return (
                 <div className="space-y-6 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300 relative">
@@ -478,7 +639,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     >
                                         Yes, Auto-fill
                                     </Button>
-                                    <button className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium">Dismiss</button>
+                                    <button
+                                        onClick={() => onChange('autoFillDismissed', true)}
+                                        className="text-xs text-purple-500 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-200 font-medium"
+                                    >
+                                        Dismiss
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1601,35 +1767,40 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     {uploadStatus === 'idle' && (
                         <React.Fragment>
                             <Label className="mb-3 block">Select Source</Label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                            {/* Stacked Layout as requested */}
+                            <div className="flex flex-col gap-4">
                                 <div
                                     onClick={() => handleMockUpload('upload')}
-                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-600 transition-all cursor-pointer h-40"
+                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex items-center gap-4 bg-slate-50 dark:bg-slate-900/50 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:border-blue-400 dark:hover:border-blue-600 transition-all cursor-pointer h-24"
                                 >
-                                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                                         <UploadCloud className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-blue-500" />
                                     </div>
-                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Upload Document</div>
-                                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">PDF, DOCX</div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Upload Document</div>
+                                        <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">PDF, DOCX, TXT</div>
+                                    </div>
                                 </div>
 
                                 <div
-                                    onClick={() => handleMockUpload('kb')}
-                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900/50 hover:bg-purple-50 dark:hover:bg-purple-900/10 hover:border-purple-400 dark:hover:border-purple-600 transition-all cursor-pointer h-40"
+                                    className="group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex flex-col gap-3 bg-slate-50 dark:bg-slate-900/50 hover:border-purple-400 dark:hover:border-purple-600 transition-all"
                                 >
-                                    <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                        <Book className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-purple-500" />
+                                    <div className="flex items-center gap-4 cursor-pointer" onClick={() => handleMockUpload('web')}>
+                                        <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                                            <Globe className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-purple-500" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Web Source / Paste Link</div>
+                                            <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">Import from URL</div>
+                                        </div>
                                     </div>
-                                    <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Select from KB</div>
-                                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">Existing Files</div>
-                                </div>
-                            </div>
 
-                            <div className="pt-2">
-                                <Label className="mb-2 block">Or Add URL</Label>
-                                <div className="flex gap-2">
-                                    <Input placeholder="https://..." className="bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100" />
-                                    <Button variant="secondary" className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">Fetch</Button>
+                                    {/* Inline Input for Web Source */}
+                                    <div className="flex gap-2 mt-2 pl-[64px]">
+                                        <Input placeholder="https://..." className="bg-white dark:bg-slate-800 dark:border-slate-700 text-slate-900 dark:text-slate-100 flex-1 h-9" />
+                                        <Button size="sm" variant="secondary" onClick={() => handleMockUpload('web')} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 h-9">Fetch</Button>
+                                    </div>
                                 </div>
                             </div>
                         </React.Fragment>
@@ -1689,14 +1860,11 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     <div className="flex justify-between items-center mb-2">
                         <div>
                             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Review Findings</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">The AI detected the following potential data points.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-[90%]">Please check if the following info is correct or relevant, on the next step you can decide where to apply it to Sophiie's training data.</p>
                         </div>
-                        <Button variant="outline" size="sm" className="hidden md:flex gap-2 text-slate-600 dark:text-slate-300">
-                            <Settings className="w-4 h-4" /> Filters
-                        </Button>
                     </div>
 
-                    <div className="relative mb-6">
+                    <div className="relative mb-4">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <Input
                             placeholder="Search found items..."
@@ -1705,13 +1873,15 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                     </div>
 
                     <div className="space-y-4">
-                        {/* Mock Category Header */}
-                        <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">Services</Badge>
-                            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">2 Matches</span>
+                        {/* Filter Pills */}
+                        <div className="flex flex-wrap gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                            <Badge variant="secondary" className="cursor-pointer bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">Show All</Badge>
+                            <Badge variant="outline" className="cursor-pointer bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800">2 Services</Badge>
+                            <Badge variant="outline" className="cursor-pointer bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800">2 FAQs</Badge>
+                            <Badge variant="outline" className="cursor-pointer bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800">1 Policy</Badge>
                         </div>
 
-                        {/* Finding Card 1 */}
+                        {/* Finding Card 1 - Service 1 */}
                         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
                             <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
                                 <Sparkles className="w-5 h-5" />
@@ -1732,7 +1902,28 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             </div>
                         </div>
 
-                        {/* Finding Card 2 */}
+                        {/* Finding Card 2 - Service 2 */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                                <Wrench className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">Boiler Installation</h4>
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">92% Match</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Full boiler installation and certification with 5-year warranty..."</p>
+                                <div className="mt-3 flex gap-2">
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">New Service</Badge>
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">From $2500</Badge>
+                                </div>
+                            </div>
+                            <div className="self-center">
+                                <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
+                            </div>
+                        </div>
+
+                        {/* Finding Card 3 - FAQ 1 */}
                         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
                             <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
                                 <HelpCircle className="w-5 h-5" />
@@ -1751,6 +1942,47 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                             </div>
                         </div>
+
+                        {/* Finding Card 4 - FAQ 2 */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                                <HelpCircle className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">Warranty Questions</h4>
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">88% Match</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"All boiler installations come with a default 5-year warranty, provided annual service is..."</p>
+                                <div className="mt-3 flex gap-2">
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">New FAQ</Badge>
+                                </div>
+                            </div>
+                            <div className="self-center">
+                                <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            </div>
+                        </div>
+
+                        {/* Finding Card 5 - Policy */}
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex gap-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer group">
+                            <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center text-orange-600 dark:text-orange-400 flex-shrink-0">
+                                <ShieldAlert className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-sm">Safety Protocol: Gas Leaks</h4>
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">95% Match</span>
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Immediate evacuation required if gas smell exceeds threshold. Do not use electrical switches..."</p>
+                                <div className="mt-3 flex gap-2">
+                                    <Badge variant="secondary" className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">New Policy</Badge>
+                                </div>
+                            </div>
+                            <div className="self-center">
+                                <input type="checkbox" className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             );
@@ -1761,17 +1993,17 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                     <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4 flex justify-between items-center">
                         <div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Extraction Lab</h4>
+                            <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Apply Data</h4>
                             <p className="text-xs text-slate-500 dark:text-slate-400">Confirm where data should be applied.</p>
                         </div>
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800">2 Items Selected</Badge>
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800">5 Items Selected</Badge>
                     </div>
 
                     <div className="space-y-3">
-                        {/* Item 1 - Service */}
+                        {/* Service 1 */}
                         <div className="border border-blue-200 bg-blue-50/20 dark:bg-blue-900/10 dark:border-blue-800/50 rounded-xl p-4 flex gap-4 items-start">
                             <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-blue-500 dark:text-blue-400 shadow-sm flex-shrink-0">
-                                <Wrench className="w-5 h-5" />
+                                <Sparkles className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
                                 <div className="flex justify-between items-start">
@@ -1783,9 +2015,41 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             </div>
                         </div>
 
-                        {/* Item 3 - Conflict */}
+                        {/* Service 2 */}
+                        <div className="border border-blue-200 bg-blue-50/20 dark:bg-blue-900/10 dark:border-blue-800/50 rounded-xl p-4 flex gap-4 items-start">
+                            <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-blue-500 dark:text-blue-400 shadow-sm flex-shrink-0">
+                                <Wrench className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h5 className="font-bold text-slate-900 dark:text-white text-sm">Create Service: "Boiler Install"</h5>
+                                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" defaultChecked />
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Detected pricing (<strong className="text-slate-700 dark:text-slate-300">$2500+</strong>).</p>
+                                <Button size="sm" className="h-8 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 shadow-none dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/60">Review & Add</Button>
+                            </div>
+                        </div>
+
+                        {/* Policy */}
                         <div className="border border-orange-200 bg-orange-50/30 dark:bg-orange-900/10 dark:border-orange-800/50 rounded-xl p-4 flex gap-4 items-start">
                             <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-orange-500 shadow-sm flex-shrink-0">
+                                <ShieldAlert className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start">
+                                    <h5 className="font-bold text-slate-900 dark:text-white text-sm">Add Policy: "Gas Safety"</h5>
+                                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Important safety protocol for gas leaks.</p>
+                                <div className="flex gap-2">
+                                    <Button size="sm" className="h-8 bg-orange-100 text-orange-800 hover:bg-orange-200 border border-orange-200 shadow-none dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900/60">View Details</Button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Conflict Detected - Re-added as requested */}
+                        <div className="border border-red-200 bg-red-50/30 dark:bg-red-900/10 dark:border-red-800/50 rounded-xl p-4 flex gap-4 items-start">
+                            <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-red-500 shadow-sm flex-shrink-0">
                                 <AlertTriangle className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
@@ -1795,9 +2059,23 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 </div>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-3">Doc says <strong className="text-slate-800 dark:text-slate-200">$150 call-out</strong>, but "General Plumbing" service is set to <strong className="text-slate-800 dark:text-slate-200">$99</strong>.</p>
                                 <div className="flex gap-2">
-                                    <Button size="sm" className="h-8 bg-orange-100 text-orange-800 hover:bg-orange-200 border border-orange-200 shadow-none dark:bg-orange-900/40 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900/60">Overwrite Old Price</Button>
+                                    <Button size="sm" className="h-8 bg-red-100 text-red-800 hover:bg-red-200 border border-red-200 shadow-none dark:bg-red-900/40 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/60">Overwrite Old Price</Button>
                                     <Button size="sm" variant="ghost" className="h-8 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">Ignore</Button>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* FAQs Summary */}
+                        <div className="border border-purple-200 bg-purple-50/30 dark:bg-purple-900/10 dark:border-purple-800/50 rounded-xl p-4 flex gap-4 items-start">
+                            <div className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg flex items-center justify-center text-purple-500 shadow-sm flex-shrink-0">
+                                <HelpCircle className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-center">
+                                    <h5 className="font-bold text-slate-900 dark:text-white text-sm">2 New FAQs Detected</h5>
+                                    <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                </div>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Payment Policy and Warranty Questions.</p>
                             </div>
                         </div>
                     </div>

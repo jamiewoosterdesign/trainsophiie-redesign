@@ -120,6 +120,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
         // FAQ Mode
         faqQuestion: '',
         faqAnswer: '',
+        faqs: [{ question: '', answer: '' }],
     });
 
     const updateFormData = (field, value) => {
@@ -345,7 +346,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                             staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                            document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                            document: ['Upload', 'Review', 'Apply'],
                                         }[mode] || ['Step 1', 'Step 2', 'Step 3']
                                     ).map((label, idx) => (
                                         <div key={idx} className="flex items-center gap-3">
@@ -401,7 +402,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose }) {
                                                 staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
                                                 protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                                document: ['Upload', 'Analyzing', 'Extraction Lab'],
+                                                document: ['Upload', 'Review', 'Apply'],
                                             }[mode] || ['Step 1', 'Step 2', 'Step 3']
                                         ).map((label, idx) => (
                                             <div key={idx} className="flex items-center gap-3">
