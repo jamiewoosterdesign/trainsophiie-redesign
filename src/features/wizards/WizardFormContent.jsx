@@ -744,7 +744,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                         <div className="relative">
                             <Textarea
                                 placeholder="Describe what this service entails..."
-                                className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.autoFilledFields?.description ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('description') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                                className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.autoFilledFields?.description && activeField !== 'description' ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('description') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                 value={formData.description}
                                 onChange={(e) => {
                                     onChange('description', e.target.value);
@@ -791,7 +791,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             onChange('autoFilledFields', { ...formData.autoFilledFields, duration: false });
                                         }
                                     }}
-                                    className={`transition-all duration-500 ${formData.autoFilledFields?.duration ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
+                                    className={`transition-all duration-500 ${formData.autoFilledFields?.duration && activeField !== 'durationValue' ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''}`}
                                 />
                             </div>
                             <div className="w-[140px]">
@@ -863,7 +863,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                         <div className="relative flex-1">
                                             <span className="absolute left-3 top-2.5 text-slate-500">$</span>
                                             <Input
-                                                className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                                                className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price && activeField !== 'minPrice' ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                                 placeholder="Min"
                                                 value={formData.minPrice || ''}
                                                 onChange={(e) => {
@@ -892,7 +892,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                     <div className="relative">
                                         <span className="absolute left-3 top-2.5 text-slate-500">$</span>
                                         <Input
-                                            className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                                            className={`pl-7 transition-all duration-500 ${formData.autoFilledFields?.price && activeField !== 'price' ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('price') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                             placeholder="0.00"
                                             value={formData.price}
                                             onChange={(e) => {

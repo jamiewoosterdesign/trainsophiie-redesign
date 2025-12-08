@@ -25,7 +25,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
     const scrollDirection = useScrollDirection(formScrollRef);
 
     // Entry Modal State
-    const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference && !initialData);
+    const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference && (!initialData || !initialData.id));
     const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
     const [showToast, setShowToast] = useState(null);
 
