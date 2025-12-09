@@ -171,6 +171,7 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>
                         <span className="font-medium">Create New Product</span>
+                        <p className="text-xs text-center mt-2 opacity-70 font-normal">Add items you sell or install</p>
                     </button>
 
                     {/* Mobile Add Button - Squashed Card Style (Top) */}

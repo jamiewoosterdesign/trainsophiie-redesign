@@ -132,6 +132,7 @@ export default function PoliciesView() {
                                     <Plus className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <span className="font-medium">Add New Policy</span>
+                                <p className="text-xs text-center mt-2 opacity-70 font-normal">Set rules for cancellations & terms</p>
                             </button>
                             {/* Mobile Add Button (Top) */}
                             {currentPage === 1 && (

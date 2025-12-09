@@ -142,12 +142,12 @@ export default function ScenariosView() {
                         {view === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 <button onClick={() => openWizard('protocol')}
-                                    className="hidden md:flex group border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-500 dark:text-slate-400 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px]">
-                                    <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-                                        <Plus className="w-6 h-6 text-blue-500 dark:text-blue-400" />
+                                    className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
+                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                        <Plus className="w-6 h-6 text-blue-500" />
                                     </div>
-                                    <span className="font-semibold text-lg">Create Scenario</span>
-                                    <p className="text-xs text-center mt-2 opacity-70">Define new handling logic</p>
+                                    <span className="font-medium">Create Scenario</span>
+                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Handle refunds, complaints & more</p>
                                 </button>
                                 {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (

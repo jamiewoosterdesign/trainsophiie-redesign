@@ -203,6 +203,7 @@ export default function NotificationsView() {
                                     <Plus className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <span className="font-medium">Assign New Team Member</span>
+                                <p className="text-xs text-center opacity-70 font-normal">Set up alerts for a team member</p>
                             </button>
 
                             {/* Mobile Add Button (Top) */}

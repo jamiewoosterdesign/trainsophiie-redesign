@@ -155,6 +155,7 @@ export default function TransfersView() {
                                     <Plus className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <span className="font-medium">Add Transfer Rule</span>
+                                <p className="text-xs text-center mt-2 opacity-70 font-normal">Route calls to specific numbers</p>
                             </button>
                             {/* Mobile Add Button (Top) */}
                             {currentPage === 1 && (

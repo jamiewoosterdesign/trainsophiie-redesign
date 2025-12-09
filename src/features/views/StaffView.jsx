@@ -135,6 +135,7 @@ export default function StaffView() {
                                         <Plus className="w-6 h-6 text-blue-500" />
                                     </div>
                                     <span className="font-medium">Add Department</span>
+                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Group staff members together</p>
                                 </button>
                                 {/* Mobile Add Button (Top) */}
                                 <div className="md:hidden">
@@ -302,6 +303,7 @@ export default function StaffView() {
                                         <Plus className="w-6 h-6 text-blue-500" />
                                     </div>
                                     <span className="font-medium">Add New Staff</span>
+                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Invite a new user to the team</p>
                                 </button>
                                 {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (

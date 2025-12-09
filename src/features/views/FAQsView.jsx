@@ -132,6 +132,7 @@ export default function FAQsView() {
                                     <Plus className="w-6 h-6 text-blue-500" />
                                 </div>
                                 <span className="font-medium">Add New FAQ</span>
+                                <p className="text-xs text-center mt-2 opacity-70 font-normal">Add common Q&A for the AI</p>
                             </button>
                             {/* Mobile Add Button (Top) */}
                             {currentPage === 1 && (

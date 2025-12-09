@@ -117,7 +117,7 @@ const TagCard = ({ tag, onEdit }) => (
     </Card>
 );
 
-function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange, icon: Icon, onEdit, view, onViewChange }) {
+function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, onSearchChange, icon: Icon, onEdit, view, onViewChange }) {
     const [sortBy, setSortBy] = useState('name'); // 'name' | 'status'
     const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'active' | 'inactive'
     const [filterType, setFilterType] = useState('all'); // 'all' | 'preset' | 'custom'
@@ -331,6 +331,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
                                 <Plus className="w-6 h-6 text-blue-500" />
                             </div>
                             <span>{addLabel}</span>
+                            {addSubtitle && <p className="text-xs text-center mt-2 opacity-70 font-normal">{addSubtitle}</p>}
                         </button>
                     )}
                     {paginatedTags.map(tag => (
@@ -407,7 +408,7 @@ function TagSection({ title, tags, onAdd, addLabel, searchQuery, onSearchChange,
 export default function TagsView() {
     const navigate = useNavigate();
     const { startGlobalVoiceFlow } = useOutletContext();
-    const [view, setView] = useState('table'); // 'table' | 'grid'
+    const [view, setView] = useState('grid'); // 'table' | 'grid'
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
@@ -457,6 +458,7 @@ export default function TagsView() {
                         title="Customer Tags"
                         tags={MOCK_CUSTOMER_TAGS}
                         addLabel="Add new customer tag"
+                        addSubtitle="Create tags for call categorization"
                         onAdd={openCustomerModal}
                         onEdit={openCustomerModal}
                         searchQuery={customerSearch}
@@ -470,6 +472,7 @@ export default function TagsView() {
                         title="Inquiry Tags"
                         tags={MOCK_INQUIRY_TAGS}
                         addLabel="Add new inquiry tag"
+                        addSubtitle="Create tags for call categorization"
                         onAdd={openInquiryModal}
                         onEdit={openInquiryModal}
                         searchQuery={inquirySearch}

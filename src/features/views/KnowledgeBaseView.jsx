@@ -139,6 +139,7 @@ function KnowledgeSection({ title, icon: Icon, data, openWizard }) {
                             <Plus className="w-6 h-6 text-blue-500" />
                         </div>
                         <span className="font-medium">Add New Source</span>
+                        <p className="text-xs text-center mt-2 opacity-70 font-normal">Upload PDFs or text files for knowledge</p>
                     </button>
 
                     {/* Mobile Add Button - Always Visible on Grid (Top) */}
