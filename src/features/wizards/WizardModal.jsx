@@ -269,7 +269,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
 
     const handleFinish = () => {
         if (validateStep(step)) {
-            onClose(formData);
+            if (returnToMode) {
+                // If we are in a nested wizard (e.g. adding staff from service wizard),
+                // we should "save" and go back instead of closing.
+                // For prototype, we trigger handleBack which restores the previous mode.
+                handleBack();
+                // Optionally show a toast that item was added
+                setShowToast({ message: "Added successfully" });
+                setTimeout(() => setShowToast(null), 3000);
+            } else {
+                onClose(formData);
+            }
         }
     };
 
@@ -365,7 +375,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                     {(
                                         {
                                             service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                            staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
+                                            staff: ['Service Details', 'Conversation Flow', 'Outcome'],
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                             document: ['Upload', 'Review', 'Apply'],
@@ -421,7 +431,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                         {(
                                             {
                                                 service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                                staff: ['Personal Details', 'Role & Responsibilities', 'Transfer Logic'],
+                                                staff: ['Service Details', 'Conversation Flow', 'Outcome'],
                                                 protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                                 document: ['Upload', 'Review', 'Apply'],
@@ -452,6 +462,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             formData={formData}
                             onChange={updateFormData}
                             activeField={activeField}
+                            onSwitchMode={handleSwitchMode}
                         />
                     </div>
 

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
-import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, Loader2, FileCheck, Book, Shield, AlertTriangle, Wand2, Mic, Settings, Search, Filter, Info, Wrench, Globe, Copy, Edit2, Check, MessageSquare, Phone } from 'lucide-react';
+import { UploadCloud, Plus, Trash2, HelpCircle, ClipboardList, PhoneForwarded, Calendar, Mail, Sparkles, X, ShieldAlert, ScrollText, Zap, Loader2, FileCheck, Book, Shield, AlertTriangle, Wand2, Mic, Settings, Search, Filter, Info, Wrench, Globe, Copy, Edit2, Check, MessageSquare, Phone, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,7 +17,34 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
 import WizardFormContentDepartment from './WizardFormContent_Department';
-export default function WizardFormContent({ mode, step, formData, onChange, activeField }) {
+
+// Mock Data (Consistent with StaffView)
+const MOCK_STAFF = [
+    { id: 1, name: "Sarah Jenkins", role: "Sales", deptId: 'dept-3', status: "Available", initials: "SJ", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Handles new customer inquiries and pricing.", ext: "101" },
+    { id: 2, name: "Mike Ross", role: "Support", deptId: 'dept-2', status: "Busy", initials: "MR", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Technical support for existing clients.", ext: "102" },
+    { id: 3, name: "Jessica Pearson", role: "Manager", deptId: 'dept-1', status: "Available", initials: "JP", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Operations manager and escalations.", ext: "103" },
+    { id: 4, name: "Louis Litt", role: "Legal", deptId: 'dept-1', status: "Away", initials: "LL", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Legal counsel and contract review.", ext: "104" },
+    { id: 5, name: "Donna Paulsen", role: "Admin", deptId: 'dept-1', status: "Available", initials: "DP", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Executive assistant and office management.", ext: "105" },
+    { id: 6, name: "Harvey Specter", role: "Sales", deptId: 'dept-3', status: "In Meeting", initials: "HS", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Senior closer and strategic accounts.", ext: "106" },
+    { id: 7, name: "Rachel Zane", role: "Support", deptId: 'dept-2', status: "Available", initials: "RZ", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Paralegal and research support.", ext: "107" },
+    { id: 8, name: "Alex Williams", role: "Technician", deptId: 'dept-2', status: "Offline", initials: "AW", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Field technician for on-site repairs.", ext: "108" },
+    { id: 9, name: "Katrina Bennett", role: "Legal", deptId: 'dept-1', status: "Busy", initials: "KB", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Associate attorney handling overflow.", ext: "109" },
+    { id: 10, name: "Robert Zane", role: "Manager", deptId: 'dept-1', status: "Available", initials: "RZ", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Managing partner.", ext: "110" },
+    { id: 11, name: "Samantha Wheeler", role: "Sales", deptId: 'dept-3', status: "Away", initials: "SW", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Aggressive sales tactics specialist.", ext: "111" },
+    { id: 12, name: "Daniel Hardman", role: "Manager", deptId: 'dept-1', status: "Offline", initials: "DH", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Former managing partner.", ext: "112" },
+    { id: 13, name: "Sheila Sazs", role: "Admin", deptId: 'dept-1', status: "Available", initials: "SS", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Head of admissions and recruiting.", ext: "113" },
+    { id: 14, name: "Harold Gunderson", role: "Support", deptId: 'dept-2', status: "Busy", initials: "HG", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Junior associate, prone to errors.", ext: "114" },
+    { id: 15, name: "Jenny Griffith", role: "Support", deptId: 'dept-2', status: "Available", initials: "JG", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Consultant and paralegal.", ext: "115" },
+];
+
+const MOCK_DEPARTMENTS = [
+    { id: 'dept-1', name: 'Accounts & Legal' }, // Merged for simplicity based on role
+    { id: 'dept-2', name: 'Support' },
+    { id: 'dept-3', name: 'Sales' },
+];
+
+
+export default function WizardFormContent({ mode, step, formData, onChange, activeField, onSwitchMode }) {
 
     // Unified State
     const [isLoading, setIsLoading] = React.useState(false);
@@ -1224,7 +1251,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                             value={formData.serviceDestinationValue}
                                             onChangeType={(t) => onChange('serviceDestinationType', t)}
                                             onChangeValue={(v) => onChange('serviceDestinationValue', v)}
-                                            onAddNew={() => console.log("Add new staff")}
+                                            onAddNew={() => onSwitchMode('staff')}
                                         />
                                     </div>
                                 </div>
@@ -1619,7 +1646,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                                 value={formData.protocolDestinationValue}
                                 onChangeType={(val) => onChange('protocolDestinationType', val)}
                                 onChangeValue={(val) => onChange('protocolDestinationValue', val)}
-                                onAddNew={() => { }}
+                                onAddNew={() => onSwitchMode('staff')}
                             />
                         </div>
                     )}
@@ -1850,7 +1877,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
                             value={formData.transferDestinationValue}
                             onChangeType={(val) => onChange('transferDestinationType', val)}
                             onChangeValue={(val) => onChange('transferDestinationValue', val)}
-                            onAddNew={() => { }}
+                            onAddNew={() => onSwitchMode('staff')}
                         />
 
                         <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
@@ -2384,23 +2411,116 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
 
 const TeamMemberSelector = ({ value, onChange, onAddNew }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const dropdownRef = useRef(null);
+
+    // Close on click outside
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [dropdownRef]);
+
+    const filteredStaff = MOCK_STAFF.filter(staff =>
+        staff.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        staff.role.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const selectedStaff = MOCK_STAFF.find(s => s.id.toString() === value || s.name.toLowerCase() === value?.toLowerCase()) || (value ? { name: value } : null);
+
     return (
-        <div className="space-y-2">
-            <select
-                className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 dark:text-slate-100"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
+        <div className="relative space-y-2" ref={dropdownRef}>
+            <div
+                className={`flex h-10 w-full items-center justify-between rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer ${isOpen ? 'ring-2 ring-blue-500 ring-offset-2 border-blue-500' : ''}`}
+                onClick={() => setIsOpen(!isOpen)}
             >
-                <option value="">Select Team Member...</option>
-                <option value="sarah">Sarah (Reception)</option>
-                <option value="mike">Mike (Sales)</option>
-                <option value="support">Support Team</option>
-            </select>
-            <div className="flex justify-end">
-                <button onClick={onAddNew} className="text-xs text-blue-600 hover:underline font-medium flex items-center">
-                    <Plus className="w-3 h-3 mr-1" /> Add New Member
-                </button>
+                <div className="flex items-center gap-2">
+                    {selectedStaff ? (
+                        <>
+                            {selectedStaff.initials && (
+                                <div className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold ${selectedStaff.color || 'bg-slate-100 text-slate-600'}`}>
+                                    {selectedStaff.initials}
+                                </div>
+                            )}
+                            <span className="text-slate-900 dark:text-slate-100">{selectedStaff.name}</span>
+                            {selectedStaff.role && <span className="text-slate-400 dark:text-slate-500 text-xs">({selectedStaff.role})</span>}
+                        </>
+                    ) : (
+                        <span className="text-slate-500 dark:text-slate-400">Select Team Member...</span>
+                    )}
+                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
             </div>
+
+            {isOpen && (
+                <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <div className="p-2 border-b border-slate-100 dark:border-slate-800">
+                        <div className="relative">
+                            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                            <input
+                                placeholder="Search staff..."
+                                className="w-full pl-8 pr-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-800 rounded-md outline-none text-slate-900 dark:text-slate-100 placeholder:text-slate-400"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                autoFocus
+                                onClick={(e) => e.stopPropagation()}
+                            />
+                        </div>
+                    </div>
+                    <div className="max-h-[250px] overflow-y-auto p-1 space-y-1">
+                        {MOCK_DEPARTMENTS.map(dept => {
+                            const departmentStaff = filteredStaff.filter(s => s.deptId === dept.id || (!s.deptId && dept.id === 'dept-2')); // Fallback for safety
+                            if (departmentStaff.length === 0) return null;
+
+                            return (
+                                <div key={dept.id}>
+                                    <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">{dept.name}</div>
+                                    {departmentStaff.map(staff => (
+                                        <div
+                                            key={staff.id}
+                                            className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors ${value === staff.id.toString() || value === staff.name ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'}`}
+                                            onClick={() => {
+                                                onChange(staff.name); // Using name as value to match simple select behavior
+                                                setIsOpen(false);
+                                            }}
+                                        >
+                                            <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${staff.color}`}>
+                                                {staff.initials}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="text-sm font-medium">{staff.name}</div>
+                                                <div className="text-xs opacity-70">{staff.role} • {staff.status}</div>
+                                            </div>
+                                            {value === staff.name && <Check className="w-4 h-4" />}
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                        {filteredStaff.length === 0 && (
+                            <div className="p-4 text-center text-slate-400 text-xs">No results found.</div>
+                        )}
+                    </div>
+                    <div className="p-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+                        <Button
+                            variant="default"
+                            size="sm"
+                            className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200"
+                            onClick={() => {
+                                setIsOpen(false);
+                                onAddNew();
+                            }}
+                        >
+                            <Plus className="w-3.5 h-3.5 mr-2" /> Add New Staff
+                        </Button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
