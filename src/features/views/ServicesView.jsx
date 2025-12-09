@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, Clock, Share2, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, X } from 'lucide-react';
+import { Plus, Clock, Share2, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, X, MoreHorizontal, Copy, Power, Trash2, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +19,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MOCK_ELECTRICIANS = [
     { id: 'elec-1', name: 'Switchboard Upgrade', desc: 'Upgrade old fuse box to modern circuit breaker panel with RCD protection.', time: '4 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1 },
@@ -101,7 +109,7 @@ function AddServiceDropdown({ onAdd }) {
     );
 }
 
-function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, highlightedId }) {
+function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId }) {
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -230,23 +238,53 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
 
                     {paginatedServices.map(service => (
                         <Card key={service.id}
-                            className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between ${service.id === highlightedId ? 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50' : ''}`}
+                            className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between ${(service.isDraft || service.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${service.id === highlightedId ? (service.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}
+                            onClick={onCreate}
                         >
                             <div>
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">{service.icon}</div>
-                                    {service.active && <Badge variant="success">Active</Badge>}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenuItem onClick={() => onCreate()}>
+                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onDuplicate(service)}>
+                                                <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onToggle(service.id)}>
+                                                <Power className={`w-4 h-4 mr-2 ${service.active ? "text-green-500" : "text-slate-400"}`} /> {service.active ? 'Disable' : 'Enable'}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(service.id)}>
+                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                                 <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">{service.name}</h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">{service.desc}</p>
                             </div>
                             <div className="flex items-center justify-between text-sm text-slate-400 dark:text-slate-500 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" /> {service.time}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                    <Share2 className="w-3 h-3" /> {service.action}
-                                </span>
+                                <div>
+                                    <div>
+                                        {service.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                        {!service.isDraft && (service.active ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>)}
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="flex items-center gap-1">
+                                        <Clock className="w-3 h-3" /> {service.time}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <Share2 className="w-3 h-3" /> {service.action}
+                                    </span>
+                                </div>
                             </div>
                         </Card>
                     ))}
@@ -260,10 +298,11 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
                 <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                     <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                         <div className="col-span-1">Icon</div>
-                        <div className="col-span-4">Service</div>
+                        <div className="col-span-3">Service</div>
                         <div className="col-span-4">Description</div>
                         <div className="col-span-2">Duration</div>
                         <div className="col-span-1 text-right">Status</div>
+                        <div className="col-span-1 text-right">Actions</div>
                     </div>
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                         {currentPage === 1 && (
@@ -275,13 +314,37 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
                             </div>
                         )}
                         {paginatedServices.map(service => (
-                            <div key={service.id} onClick={onCreate} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${service.id === highlightedId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`}>
+                            <div key={service.id} onClick={onCreate} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${(service.isDraft || service.active === false) ? 'opacity-70' : ''} ${service.id === highlightedId ? (service.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`}>
                                 <div className="col-span-1 text-slate-600 dark:text-slate-400">{service.icon}</div>
-                                <div className="col-span-4 font-medium text-slate-900 dark:text-white">{service.name}</div>
+                                <div className="col-span-3 font-medium text-slate-900 dark:text-white">{service.name}</div>
                                 <div className="col-span-4 text-sm text-slate-500 dark:text-slate-400 truncate">{service.desc}</div>
                                 <div className="col-span-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1"><Clock className="w-3 h-3" /> {service.time}</div>
                                 <div className="col-span-1 text-right">
                                     {service.active && <Badge variant="success" className="justify-end">Active</Badge>}
+                                </div>
+                                <div className="col-span-1 text-right flex justify-end">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenuItem onClick={() => onCreate()}>
+                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onDuplicate(service)}>
+                                                <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onToggle(service.id)}>
+                                                <Power className={`w-4 h-4 mr-2 ${service.active ? "text-green-500" : "text-slate-400"}`} /> {service.active ? 'Disable' : 'Enable'}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(service.id)}>
+                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
                         ))}
@@ -301,7 +364,7 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
                             />
                         )}
                         {paginatedServices.map(service => (
-                            <Card key={service.id} className={`p-4 hover:shadow-md transition-all cursor-pointer dark:bg-slate-900 dark:border-slate-800 ${service.id === highlightedId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`} onClick={onCreate}>
+                            <Card key={service.id} className={`p-4 hover:shadow-md transition-all cursor-pointer dark:bg-slate-900 dark:border-slate-800 ${(service.isDraft || service.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${service.id === highlightedId ? (service.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={onCreate}>
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">{service.icon}</div>
                                     <div className="flex-1">
@@ -364,7 +427,7 @@ export default function ServicesView() {
     // State for services
     const [elecServices, setElecServices] = useState(MOCK_ELECTRICIANS);
     const [buildServices, setBuildServices] = useState(MOCK_BUILDERS);
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
     const [highlightedServiceId, setHighlightedServiceId] = useState(null);
 
     const handleCreateService = (data, category) => {
@@ -376,7 +439,8 @@ export default function ServicesView() {
             desc: data.description || 'No description',
             time: data.durationValue ? `${data.durationValue} ${data.durationUnit || 'mins'}` : 'Varies',
             action: data.serviceOutcome === 'transfer' ? 'Transfer' : 'Book',
-            active: true,
+            active: data.status !== 'draft',
+            isDraft: data.status === 'draft',
             icon: category === 'Electricians' ? <Zap className="w-5 h-5 text-amber-500" /> : <Hammer className="w-5 h-5 text-slate-500" />,
             createdAt: Date.now(),
         };
@@ -387,39 +451,70 @@ export default function ServicesView() {
             setBuildServices(prev => [newService, ...prev]);
         }
 
-        // Show success modal
-        setShowSuccess(true);
+        // Show success/saved modal
+        setShowSuccess({ show: true, type: data.status === 'draft' ? 'saved' : 'created' });
         setHighlightedServiceId(newServiceId);
 
         // Auto-dismiss modal after 3 seconds
-        setTimeout(() => setShowSuccess(false), 3000);
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
 
         // Remove highlight after 6 seconds (3s modal + 3s fade out)
         setTimeout(() => setHighlightedServiceId(null), 6000);
     };
 
+    const handleDuplicateService = (service, category) => {
+        const newService = {
+            ...service,
+            id: `dup-${Date.now()}`,
+            name: `${service.name} 2`,
+            active: false,
+            isDraft: false,
+            createdAt: Date.now()
+        };
+        if (category === 'Electricians') {
+            setElecServices(prev => [newService, ...prev]);
+        } else {
+            setBuildServices(prev => [newService, ...prev]);
+        }
+        setShowSuccess({ show: true, type: 'created', message: 'Service Duplicated' });
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+    };
+
+    const handleToggleServiceStatus = (id, category) => {
+        const updater = prev => prev.map(s => s.id === id ? { ...s, active: s.active === false ? true : false } : s);
+        if (category === 'Electricians') setElecServices(updater);
+        else setBuildServices(updater);
+    };
+
+    const handleDeleteService = (id, category) => {
+        const updater = prev => prev.filter(s => s.id !== id);
+        if (category === 'Electricians') setElecServices(updater);
+        else setBuildServices(updater);
+    };
+
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
             {/* Success Modal Overlay - Updated Style */}
-            {showSuccess && (
+            {/* Success Modal Overlay - Updated Style */}
+            {showSuccess.show && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
                         <button
-                            onClick={() => setShowSuccess(false)}
+                            onClick={() => setShowSuccess({ show: false, type: 'created' })}
                             className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <X className="w-4 h-4" />
                         </button>
-                        <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 animate-in zoom-in duration-300">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${showSuccess.type === 'saved' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
                             <CheckCircle className="w-6 h-6" />
                         </div>
                         <div className="text-center space-y-0.5">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Service Created!</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Added to your list.</p>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{showSuccess.type === 'saved' ? 'Service Saved' : 'Service Created!'}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{showSuccess.type === 'saved' ? 'You can finish it later.' : 'Added to your list.'}</p>
                         </div>
                         {/* Progress bar to show auto-dismiss */}
                         <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
-                            <div className="h-full bg-green-500 rounded-full animate-progress" style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
+                            <div className={`h-full rounded-full animate-progress ${showSuccess.type === 'saved' ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
                         </div>
                     </div>
                 </div>
@@ -452,6 +547,9 @@ export default function ServicesView() {
                         openWizard={openWizard}
                         highlightedId={highlightedServiceId}
                         onCreate={() => openWizard('service', { category: 'Electricians' }, (data) => handleCreateService(data, 'Electricians'))}
+                        onDuplicate={(s) => handleDuplicateService(s, 'Electricians')}
+                        onToggle={(id) => handleToggleServiceStatus(id, 'Electricians')}
+                        onDelete={(id) => handleDeleteService(id, 'Electricians')}
                     />
 
                     <ServiceSection
@@ -461,6 +559,9 @@ export default function ServicesView() {
                         openWizard={openWizard}
                         highlightedId={highlightedServiceId}
                         onCreate={() => openWizard('service', { category: 'Builders' }, (data) => handleCreateService(data, 'Builders'))}
+                        onDuplicate={(s) => handleDuplicateService(s, 'Builders')}
+                        onToggle={(id) => handleToggleServiceStatus(id, 'Builders')}
+                        onDelete={(id) => handleDeleteService(id, 'Builders')}
                     />
                 </div>
             </div>

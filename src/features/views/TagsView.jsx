@@ -2,10 +2,11 @@ import React, { useState, useRef } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
-import { Tag, Plus, ArrowLeft, Search, Pencil, Trash2, Filter, Info, AlertCircle, Sparkles, Bot, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Tag, Plus, ArrowLeft, Search, Pencil, Trash2, Filter, Info, AlertCircle, Sparkles, Bot, ChevronLeft, ChevronRight, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import {
     Tooltip,
@@ -20,6 +21,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Power, Copy } from 'lucide-react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import CreateCustomerTagModal from '@/components/modals/CreateCustomerTagModal';
 import CreateInquiriesTagModal from '@/components/modals/CreateInquiriesTagModal';
@@ -27,16 +37,16 @@ import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import ViewToggle from '@/components/shared/ViewToggle';
 
 const MOCK_CUSTOMER_TAGS = [
-    { id: 1, name: 'VIP', color: 'bg-purple-500', colorHex: '#a855f7', description: 'Very Important Person', enabled: true },
-    { id: 2, name: 'New Customer', color: 'bg-green-500', colorHex: '#22c55e', description: 'First time customer', enabled: true },
-    { id: 3, name: 'Late Payer', color: 'bg-red-500', colorHex: '#ef4444', description: 'Historically pays late', enabled: true },
+    { id: 1, name: 'VIP', color: 'bg-purple-500', colorHex: '#a855f7', description: 'Very Important Person', enabled: true, createdAt: 1700000000000 },
+    { id: 2, name: 'New Customer', color: 'bg-green-500', colorHex: '#22c55e', description: 'First time customer', enabled: true, createdAt: 1700000000001 },
+    { id: 3, name: 'Late Payer', color: 'bg-red-500', colorHex: '#ef4444', description: 'Historically pays late', enabled: true, createdAt: 1700000000002 },
 ];
 
 const MOCK_INQUIRY_TAGS = [
-    { id: 1, name: 'standard-job', color: 'bg-purple-100', colorHex: '#f3e8ff', description: 'Wants to book or schedule a service', enabled: true, isPreset: true },
-    { id: 2, name: 'complaint', color: 'bg-red-100', colorHex: '#fee2e2', description: 'Expresses dissatisfaction', enabled: true, isPreset: true },
-    { id: 3, name: 'urgent', color: 'bg-slate-200', colorHex: '#e2e8f0', description: 'Explicitly mentions urgency', enabled: true, isPreset: true },
-    { id: 4, name: 'Quote Request', color: 'bg-blue-500', colorHex: '#3b82f6', description: 'Looking for pricing', enabled: true },
+    { id: 1, name: 'standard-job', color: 'bg-purple-100', colorHex: '#f3e8ff', description: 'Wants to book or schedule a service', enabled: true, isPreset: true, createdAt: 1700000000000 },
+    { id: 2, name: 'complaint', color: 'bg-red-100', colorHex: '#fee2e2', description: 'Expresses dissatisfaction', enabled: true, isPreset: true, createdAt: 1700000000001 },
+    { id: 3, name: 'urgent', color: 'bg-slate-200', colorHex: '#e2e8f0', description: 'Explicitly mentions urgency', enabled: true, isPreset: true, createdAt: 1700000000002 },
+    { id: 4, name: 'Quote Request', color: 'bg-blue-500', colorHex: '#3b82f6', description: 'Looking for pricing', enabled: true, createdAt: 1700000000003 },
     // Mocking more items for pagination (total 20)
     ...Array.from({ length: 16 }).map((_, i) => ({
         id: 5 + i,
@@ -56,71 +66,104 @@ const MOCK_AUTO_TAGS = [
     { id: 4, name: 'Air Conditioning', color: 'bg-orange-500', colorHex: '#f97316', description: 'End-to-end design, supply and installation of air conditioning systems', enabled: true, isAuto: true },
 ];
 
-const TagCard = ({ tag, onEdit }) => (
+const TagCard = ({ tag, onEdit, onDuplicate, onToggle, onDelete }) => (
     <Card
-        className="p-6 flex flex-col gap-3 dark:bg-slate-900 dark:border-slate-800 hover:shadow-md transition-all hover:-translate-y-1 group h-full justify-between"
+        className={`p-6 flex flex-col gap-3 dark:bg-slate-900 dark:border-slate-800 hover:shadow-md transition-all hover:-translate-y-1 group h-full justify-between ${tag.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''}`}
         style={{ borderTop: `4px solid ${tag.colorHex}` }}
+        onClick={() => onEdit && onEdit(tag)}
     >
-        <div>
-            <div className="flex justify-between items-start mb-2">
+        <div className="flex flex-col h-full">
+            <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                     <div className={`w-4 h-4 rounded-md ${tag.color} shrink-0`}></div>
-                    <div>
-                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
-                            {tag.name}
-                            {tag.isPreset && (
-                                <TooltipProvider>
-                                    <Tooltip delayDuration={300}>
-                                        <TooltipTrigger asChild>
-                                            <div className="p-1 bg-blue-50 text-blue-600 rounded-md border border-blue-100 flex items-center justify-center">
-                                                <Sparkles className="w-3.5 h-3.5" />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                            <p>Built-in tag provided by Sophiie</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            )}
-                            {tag.isAuto && (
-                                <TooltipProvider>
-                                    <Tooltip delayDuration={300}>
-                                        <TooltipTrigger asChild>
-                                            <div className="p-1 bg-sky-50 text-sky-600 rounded-md border border-sky-100 flex items-center justify-center">
-                                                <Bot className="w-3.5 h-3.5" />
-                                            </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                            <p>This tag has been automatically added and managed by Sophiie</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            )}
-                        </div>
-                        <p className="text-xs text-slate-400 mt-0.5">Enabled</p>
-                    </div>
                 </div>
-                <Switch checked={tag.enabled} />
+                <div onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => onEdit && onEdit(tag)}>
+                                <Edit2 className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            {onDuplicate && (
+                                <DropdownMenuItem onClick={() => onDuplicate(tag)}>
+                                    <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                </DropdownMenuItem>
+                            )}
+                            {onToggle && (
+                                <DropdownMenuItem onClick={() => onToggle(tag.id)}>
+                                    <Power className="mr-2 h-4 w-4" />
+                                    {tag.enabled ? 'Disable' : 'Enable'}
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            {onDelete && (
+                                <DropdownMenuItem className="text-red-600" onClick={() => onDelete(tag.id)}>
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800 p-3 rounded-lg mb-4">
+
+            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap mb-2">
+                {tag.name}
+                {tag.isPreset && (
+                    <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                                <div className="p-1 bg-blue-50 text-blue-600 rounded-md border border-blue-100 flex items-center justify-center">
+                                    <Sparkles className="w-3.5 h-3.5" />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                <p>Built-in tag provided by Sophiie</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+                {tag.isAuto && (
+                    <TooltipProvider>
+                        <Tooltip delayDuration={300}>
+                            <TooltipTrigger asChild>
+                                <div className="p-1 bg-sky-50 text-sky-600 rounded-md border border-sky-100 flex items-center justify-center">
+                                    <Bot className="w-3.5 h-3.5" />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                <p>This tag has been automatically added and managed by Sophiie</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
+            </div>
+
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800 p-3 rounded-lg mb-4 flex-grow">
                 {tag.description}
             </p>
-        </div>
-        <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-50 dark:border-slate-800">
-            {onEdit && (
-                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-500 dark:text-slate-400" onClick={() => onEdit(tag)}>
-                    <Pencil className="w-4 h-4" />
-                </Button>
-            )}
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20">
-                <Trash2 className="w-4 h-4" />
-            </Button>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
+                <div className="flex flex-col gap-1">
+                    {tag.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                    {tag.enabled ? (
+                        <Badge variant="success" className="w-fit">Active</Badge>
+                    ) : (
+                        <Badge variant="secondary" className="w-fit">Inactive</Badge>
+                    )}
+                </div>
+            </div>
         </div>
     </Card>
 );
 
-function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, onSearchChange, icon: Icon, onEdit, view, onViewChange }) {
-    const [sortBy, setSortBy] = useState('name'); // 'name' | 'status'
+function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, onSearchChange, icon: Icon, onEdit, view, onViewChange, onDuplicate, onToggle, onDelete }) {
+    const [sortBy, setSortBy] = useState('date'); // 'date' | 'name' | 'status'
     const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'active' | 'inactive'
     const [filterType, setFilterType] = useState('all'); // 'all' | 'preset' | 'custom'
     const [currentPage, setCurrentPage] = useState(1);
@@ -146,6 +189,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
             return true;
         })
         .sort((a, b) => {
+            if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0); // Newest first
             if (sortBy === 'status') {
                 // Active first
                 if (a.enabled === b.enabled) return 0;
@@ -224,6 +268,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                                 <SelectValue placeholder="Sort by" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="date">Date Added</SelectItem>
                                 <SelectItem value="name">Name (A-Z)</SelectItem>
                                 <SelectItem value="status">Active First</SelectItem>
                             </SelectContent>
@@ -258,7 +303,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                         )}
 
                         {paginatedTags.map((tag) => (
-                            <div key={tag.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                            <div key={tag.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${tag.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''}`}>
                                 <div className="col-span-1">
                                     <div className={`w-6 h-6 rounded ${tag.color}`}></div>
                                 </div>
@@ -297,17 +342,37 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                                     {tag.description}
                                 </div>
                                 <div className="col-span-2 flex items-center justify-end gap-3">
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
-                                        {onEdit && (
-                                            <button onClick={() => onEdit(tag)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                                                <Pencil className="w-3.5 h-3.5" />
-                                            </button>
-                                        )}
-                                        <button className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded text-slate-400 hover:text-red-500 dark:hover:text-red-400">
-                                            <Trash2 className="w-3.5 h-3.5" />
-                                        </button>
-                                    </div>
-                                    <Switch checked={tag.enabled} />
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                <span className="sr-only">Open menu</span>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                            <DropdownMenuItem onClick={() => onEdit && onEdit(tag)}>
+                                                <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                            </DropdownMenuItem>
+                                            {onDuplicate && (
+                                                <DropdownMenuItem onClick={() => onDuplicate(tag)}>
+                                                    <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                </DropdownMenuItem>
+                                            )}
+                                            {onToggle && (
+                                                <DropdownMenuItem onClick={() => onToggle(tag.id)}>
+                                                    <Power className="mr-2 h-4 w-4" />
+                                                    {tag.enabled ? 'Disable' : 'Enable'}
+                                                </DropdownMenuItem>
+                                            )}
+                                            <DropdownMenuSeparator />
+                                            {onDelete && (
+                                                <DropdownMenuItem className="text-red-600" onClick={() => onDelete(tag.id)}>
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                </DropdownMenuItem>
+                                            )}
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </div>
                         ))}
@@ -333,7 +398,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                         />
                     )}
                     {paginatedTags.map(tag => (
-                        <TagCard key={tag.id} tag={tag} onEdit={onEdit} />
+                        <TagCard key={tag.id} tag={tag} onEdit={onEdit} onDuplicate={onDuplicate} onToggle={onToggle} onDelete={onDelete} />
                     ))}
                     {filteredTags.length === 0 && !onAdd && (
                         <div className="col-span-full p-8 text-center text-slate-500 dark:text-slate-400 text-sm bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
@@ -354,7 +419,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                 )}
 
                 {paginatedTags.map((tag) => (
-                    <TagCard key={tag.id} tag={tag} onEdit={onEdit} />
+                    <TagCard key={tag.id} tag={tag} onEdit={onEdit} onDuplicate={onDuplicate} onToggle={onToggle} onDelete={onDelete} />
                 ))}
 
                 {filteredTags.length === 0 && !onAdd && (
@@ -406,6 +471,10 @@ export default function TagsView() {
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
+    // State for tags
+    const [customerTags, setCustomerTags] = useState(MOCK_CUSTOMER_TAGS);
+    const [inquiryTags, setInquiryTags] = useState(MOCK_INQUIRY_TAGS);
+
     // Modal Stats
     const [customerState, setCustomerState] = useState({ open: false, editData: null });
     const [inquiryState, setInquiryState] = useState({ open: false, editData: null });
@@ -417,6 +486,44 @@ export default function TagsView() {
 
     const openCustomerModal = (data = null) => setCustomerState({ open: true, editData: data });
     const openInquiryModal = (data = null) => setInquiryState({ open: true, editData: data });
+
+    const handleCustomerClose = (data) => {
+        if (data && data.name) {
+            setCustomerTags(prev => [data, ...prev]);
+        }
+        setCustomerState({ open: false, editData: null });
+    };
+
+    const handleInquiryClose = (data) => {
+        if (data && data.name) {
+            setInquiryTags(prev => [data, ...prev]);
+        }
+        setInquiryState({ open: false, editData: null });
+    };
+
+    // Cust Handlers
+    const handleDuplicateCustomerTag = (tag) => {
+        const newTag = { ...tag, id: Date.now(), name: `${tag.name} 2`, enabled: false, createdAt: Date.now() };
+        setCustomerTags(prev => [newTag, ...prev]);
+    };
+    const handleToggleCustomerTag = (id) => {
+        setCustomerTags(prev => prev.map(t => t.id === id ? { ...t, enabled: t.enabled === false ? true : false } : t));
+    };
+    const handleDeleteCustomerTag = (id) => {
+        setCustomerTags(prev => prev.filter(t => t.id !== id));
+    };
+
+    // Inquiry Handlers
+    const handleDuplicateInquiryTag = (tag) => {
+        const newTag = { ...tag, id: Date.now(), name: `${tag.name} 2`, enabled: false, createdAt: Date.now() };
+        setInquiryTags(prev => [newTag, ...prev]);
+    };
+    const handleToggleInquiryTag = (id) => {
+        setInquiryTags(prev => prev.map(t => t.id === id ? { ...t, enabled: t.enabled === false ? true : false } : t));
+    };
+    const handleDeleteInquiryTag = (id) => {
+        setInquiryTags(prev => prev.filter(t => t.id !== id));
+    };
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
@@ -442,7 +549,7 @@ export default function TagsView() {
 
                     <TagSection
                         title="Customer Tags"
-                        tags={MOCK_CUSTOMER_TAGS}
+                        tags={customerTags}
                         addLabel="Add new customer tag"
                         addSubtitle="Create tags for call categorization"
                         onAdd={openCustomerModal}
@@ -452,11 +559,14 @@ export default function TagsView() {
                         icon={Tag}
                         view={view}
                         onViewChange={setView}
+                        onDuplicate={handleDuplicateCustomerTag}
+                        onToggle={handleToggleCustomerTag}
+                        onDelete={handleDeleteCustomerTag}
                     />
 
                     <TagSection
                         title="Inquiry Tags"
-                        tags={MOCK_INQUIRY_TAGS}
+                        tags={inquiryTags}
                         addLabel="Add new inquiry tag"
                         addSubtitle="Create tags for call categorization"
                         onAdd={openInquiryModal}
@@ -466,6 +576,9 @@ export default function TagsView() {
                         icon={Tag}
                         view={view}
                         onViewChange={setView}
+                        onDuplicate={handleDuplicateInquiryTag}
+                        onToggle={handleToggleInquiryTag}
+                        onDelete={handleDeleteInquiryTag}
                     />
 
                     <TagSection
@@ -482,13 +595,13 @@ export default function TagsView() {
             {/* Modals */}
             {customerState.open && (
                 <CreateCustomerTagModal
-                    onClose={() => setCustomerState({ open: false, editData: null })}
+                    onClose={handleCustomerClose}
                     editData={customerState.editData}
                 />
             )}
             {inquiryState.open && (
                 <CreateInquiriesTagModal
-                    onClose={() => setInquiryState({ open: false, editData: null })}
+                    onClose={handleInquiryClose}
                     editData={inquiryState.editData}
                 />
             )}

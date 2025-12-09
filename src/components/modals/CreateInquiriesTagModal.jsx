@@ -26,13 +26,19 @@ export default function CreateInquiriesTagModal({ onClose, editData = null }) {
     const handleAction = () => {
         // Here you would typically save or update the tag
         // If it's a preset, we might be "creating a custom version"
-        console.log({
-            action: isPreset ? 'create_custom_copy' : (editData ? 'update' : 'create'),
-            tagName,
+
+        const newTag = {
+            id: editData ? editData.id : `new-${Date.now()}`,
+            name: tagName,
             description,
-            color: selectedColor
-        });
-        onClose();
+            colorHex: selectedColor,
+            color: 'bg-custom', // Simplified
+            enabled: true,
+            createdAt: Date.now(),
+            isPreset: isPreset // Maintain preset flag if modifying? Or if creating custom copy? Assuming simple create for now.
+        };
+
+        if (onClose) onClose(newTag);
     };
 
     const isEditing = !!editData;
@@ -99,7 +105,7 @@ export default function CreateInquiriesTagModal({ onClose, editData = null }) {
 
                 {/* Footer */}
                 <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3 shrink-0">
-                    <Button variant="outline" onClick={onClose}>
+                    <Button variant="outline" onClick={() => onClose(null)}>
                         Cancel
                     </Button>
                     <Button onClick={handleAction} disabled={!tagName.trim()}>

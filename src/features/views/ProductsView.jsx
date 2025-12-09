@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, ShoppingBag, Sparkles, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { Plus, ShoppingBag, Sparkles, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, X, MoreHorizontal, Copy, Power, Trash2, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,16 +18,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MOCK_ELECTRICIANS_PRODUCTS = [
-    { id: 'prod-elec-1', name: 'Solar Panel', desc: 'Solar panels to harness the suns light and transfer it in clean electricity', price: '$2,999.99', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
-    { id: 'prod-elec-2', name: 'Smart Home Hub', desc: 'Central control unit for all smart home devices and automation.', price: '$199.99', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
-    { id: 'prod-elec-3', name: 'EV Charger (Wallbox)', desc: 'Level 2 electric vehicle charger for rapid home charging.', price: '$899.00', active: true, icon: <Zap className="w-5 h-5 text-amber-500" /> },
+    { id: 'prod-elec-1', name: 'Solar Panel', desc: 'Solar panels to harness the suns light and transfer it in clean electricity', price: '$2,999.99', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1700000000000 },
+    { id: 'prod-elec-2', name: 'Smart Home Hub', desc: 'Central control unit for all smart home devices and automation.', price: '$199.99', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1700000000001 },
+    { id: 'prod-elec-3', name: 'EV Charger (Wallbox)', desc: 'Level 2 electric vehicle charger for rapid home charging.', price: '$899.00', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1700000000002 },
 ];
 
 const MOCK_BUILDERS_PRODUCTS = [
-    { id: 'prod-build-1', name: 'Timber Decking Pack', desc: 'Premium hardwood timber decking boards, treated for outdoor use.', price: '$45.00 / sqm', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
-    { id: 'prod-build-2', name: 'Insulation Batts', desc: 'Thermal and acoustic insulation batts for walls and ceilings.', price: '$85.00 / pack', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" /> },
+    { id: 'prod-build-1', name: 'Timber Decking Pack', desc: 'Premium hardwood timber decking boards, treated for outdoor use.', price: '$45.00 / sqm', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" />, createdAt: 1700000000000 },
+    { id: 'prod-build-2', name: 'Insulation Batts', desc: 'Thermal and acoustic insulation batts for walls and ceilings.', price: '$85.00 / pack', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" />, createdAt: 1700000000001 },
 ];
 
 function AddProductDropdown({ onAdd }) {
@@ -80,11 +88,11 @@ function AddProductDropdown({ onAdd }) {
     );
 }
 
-function ProductSection({ title, products, openWizard, icon: Icon }) {
+function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId }) {
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
-    const [sortBy, setSortBy] = useState('name');
+    const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 11;
     const scrollRef = useRef(null);
@@ -102,6 +110,9 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
             return true;
         })
         .sort((a, b) => {
+            if (sortBy === 'date') {
+                return (b.createdAt || 0) - (a.createdAt || 0); // Newest first
+            }
             if (sortBy === 'active') {
                 return (a.active === b.active) ? 0 : a.active ? -1 : 1;
             }
@@ -156,6 +167,7 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                                 <SelectValue placeholder="Sort by" />
                             </SelectTrigger>
                             <SelectContent>
+                                <SelectItem value="date">Date Added</SelectItem>
                                 <SelectItem value="name">Name (A-Z)</SelectItem>
                                 <SelectItem value="active">Active First</SelectItem>
                             </SelectContent>
@@ -170,7 +182,7 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                     <AddNewCard
                         title="Create New Product"
                         description="Add items you sell or install"
-                        onClick={() => openWizard('product')}
+                        onClick={onCreate}
                     />
 
                     {/* Mobile Add Button - Squashed Card Style (Top) */}
@@ -178,25 +190,49 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                         <div className="md:hidden">
                             <AddNewCard
                                 title="Create New Product"
-                                onClick={() => openWizard('product')}
+                                onClick={onCreate}
                                 variant="compact"
                             />
                         </div>
                     )}
 
                     {paginatedProducts.map(product => (
-                        <Card key={product.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between">
+                        <Card key={product.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between ${(product.isDraft || product.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${product.id === highlightedId ? (product.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`} onClick={onCreate}>
                             <div>
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">{product.icon}</div>
-                                    {product.active && <Badge variant="success">Active</Badge>}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenuItem onClick={() => onCreate()}>
+                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onDuplicate(product)}>
+                                                <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onToggle(product.id)}>
+                                                <Power className={`w-4 h-4 mr-2 ${product.active ? "text-green-500" : "text-slate-400"}`} /> {product.active ? 'Disable' : 'Enable'}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(product.id)}>
+                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                                 <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">{product.name}</h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">{product.desc}</p>
                             </div>
                             <div className="flex items-center justify-between text-sm text-slate-900 dark:text-slate-200 font-semibold pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <div>
+                                    {product.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                    {!product.isDraft && (product.active ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>)}
+                                </div>
                                 <span>{product.price}</span>
-                                <Button variant="ghost" size="sm" className="h-8 text-xs text-slate-500 hover:text-blue-600">Configure</Button>
                             </div>
                         </Card>
                     ))}
@@ -213,13 +249,15 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                 <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                     <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                         <div className="col-span-1">Icon</div>
-                        <div className="col-span-4">Product</div>
-                        <div className="col-span-5">Description</div>
+                        <div className="col-span-3">Product</div>
+                        <div className="col-span-4">Description</div>
                         <div className="col-span-2">Price</div>
+                        <div className="col-span-1 text-right">Status</div>
+                        <div className="col-span-1 text-right">Actions</div>
                     </div>
                     <div className="divide-y divide-slate-100 dark:divide-slate-800">
                         {currentPage === 1 && (
-                            <div onClick={() => openWizard('product')} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                            <div onClick={onCreate} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
                                 <div className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                     <Plus className="w-4 h-4" />
                                 </div>
@@ -227,11 +265,39 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                             </div>
                         )}
                         {paginatedProducts.map(product => (
-                            <div key={product.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => openWizard('product')}>
+                            <div key={product.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${(product.isDraft || product.active === false) ? 'opacity-70' : ''} ${product.id === highlightedId ? (product.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('product')}>
                                 <div className="col-span-1 text-slate-600 dark:text-slate-400">{product.icon}</div>
-                                <div className="col-span-4 font-medium text-slate-900 dark:text-white">{product.name}</div>
-                                <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">{product.desc}</div>
+                                <div className="col-span-3 font-medium text-slate-900 dark:text-white">{product.name}</div>
+                                <div className="col-span-4 text-sm text-slate-500 dark:text-slate-400 truncate">{product.desc}</div>
                                 <div className="col-span-2 text-sm text-slate-900 dark:text-slate-200 font-semibold">{product.price}</div>
+                                <div className="col-span-1 text-right">
+                                    {product.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                    {!product.isDraft && (product.active ? <Badge variant="success" className="w-fit">Active</Badge> : <Badge variant="secondary" className="w-fit">Inactive</Badge>)}
+                                </div>
+                                <div className="col-span-1 text-right flex justify-end" onClick={(e) => e.stopPropagation()}>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenuItem onClick={() => onCreate()}>
+                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onDuplicate(product)}>
+                                                <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => onToggle(product.id)}>
+                                                <Power className={`w-4 h-4 mr-2 ${product.active ? "text-green-500" : "text-slate-400"}`} /> {product.active ? 'Disable' : 'Enable'}
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(product.id)}>
+                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                             </div>
                         ))}
                         {paginatedProducts.length === 0 && (
@@ -250,18 +316,43 @@ function ProductSection({ title, products, openWizard, icon: Icon }) {
                         {currentPage === 1 && (
                             <AddNewCard
                                 title="Create New Product"
-                                onClick={() => openWizard('product')}
+                                onClick={onCreate}
                                 variant="compact"
                             />
                         )}
                         {paginatedProducts.map(product => (
-                            <Card key={product.id} className="p-4 hover:shadow-md transition-all cursor-pointer dark:bg-slate-900 dark:border-slate-800" onClick={() => openWizard('product')}>
+                            <Card key={product.id} className={`p-4 hover:shadow-md transition-all cursor-pointer dark:bg-slate-900 dark:border-slate-800 ${(product.isDraft || product.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${product.id === highlightedId ? (product.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('product')}>
                                 <div className="flex items-center gap-3 mb-2">
                                     <div className="p-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">{product.icon}</div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-slate-900 dark:text-white">{product.name}</h3>
                                     </div>
-                                    {product.active && <Badge variant="success">Active</Badge>}
+                                    <div className="flex items-center gap-2">
+                                        {product.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                        {!product.isDraft && (product.active ? <Badge variant="success" className="w-fit">Active</Badge> : <Badge variant="secondary" className="w-fit">Inactive</Badge>)}
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                    <MoreHorizontal className="w-4 h-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                <DropdownMenuItem onClick={() => onCreate()}>
+                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onDuplicate(product)}>
+                                                    <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => onToggle(product.id)}>
+                                                    <Power className={`w-4 h-4 mr-2 ${product.active ? "text-green-500" : "text-slate-400"}`} /> {product.active ? 'Disable' : 'Enable'}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => onDelete(product.id)}>
+                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
                                 </div>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">{product.desc}</p>
                                 <div className="flex items-center gap-4 text-sm font-semibold text-slate-900 dark:text-slate-200">
@@ -314,15 +405,116 @@ export default function ProductsView() {
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
+    // State for products
+    const [elecProducts, setElecProducts] = useState(MOCK_ELECTRICIANS_PRODUCTS);
+    const [buildProducts, setBuildProducts] = useState(MOCK_BUILDERS_PRODUCTS);
+    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' });
+    const [highlightedProductId, setHighlightedProductId] = useState(null);
+
+    const handleCreateProduct = (data, category) => {
+        // Create new product object from wizard data
+        const newProductId = `new-${Date.now()}`;
+        const newProduct = {
+            id: newProductId,
+            name: data.productName || 'New Product',
+            desc: data.description || 'No description',
+            price: data.priceMode === 'range'
+                ? `$${data.minPrice} - $${data.maxPrice}`
+                : `$${data.productPrice || '0.00'}${data.pricingUnit ? ` / ${data.pricingUnit}` : ''}`,
+            active: data.status !== 'draft',
+            isDraft: data.status === 'draft',
+            icon: category === 'Electricians' ? <Zap className="w-5 h-5 text-amber-500" /> : <Hammer className="w-5 h-5 text-slate-500" />,
+            createdAt: Date.now(),
+        };
+
+        if (category === 'Electricians') {
+            setElecProducts(prev => [newProduct, ...prev]);
+        } else {
+            setBuildProducts(prev => [newProduct, ...prev]);
+        }
+
+        // Show success modal
+        setShowSuccess({ show: true, type: data.status === 'draft' ? 'saved' : 'created' });
+        setHighlightedProductId(newProductId);
+
+        // Auto-dismiss modal after 3 seconds
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+
+        // Remove highlight after 6 seconds (3s modal + 3s fade out)
+        setTimeout(() => setHighlightedProductId(null), 6000);
+    };
+
+    const handleDuplicateProduct = (product, category) => {
+        const newProduct = {
+            ...product,
+            id: `dup-${Date.now()}`,
+            name: `${product.name} 2`,
+            active: false,
+            isDraft: false,
+            createdAt: Date.now()
+        };
+        if (category === 'Electricians') {
+            setElecProducts(prev => [newProduct, ...prev]);
+        } else {
+            setBuildProducts(prev => [newProduct, ...prev]);
+        }
+        setShowSuccess({ show: true, type: 'created', message: 'Product Duplicated' });
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+    };
+
+    const handleToggleProductStatus = (id, category) => {
+        const updater = prev => prev.map(p => p.id === id ? { ...p, active: p.active === false ? true : false } : p);
+        if (category === 'Electricians') setElecProducts(updater);
+        else setBuildProducts(updater);
+    };
+
+    const handleDeleteProduct = (id, category) => {
+        const updater = prev => prev.filter(p => p.id !== id);
+        if (category === 'Electricians') setElecProducts(updater);
+        else setBuildProducts(updater);
+    };
+
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300">
+        <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
+            {/* Success Modal Overlay */}
+            {showSuccess.show && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
+                        <button
+                            onClick={() => setShowSuccess({ show: false, type: 'created' })}
+                            className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${showSuccess.type === 'saved' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div className="text-center space-y-0.5">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{showSuccess.type === 'saved' ? 'Product Saved' : 'Product Created!'}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{showSuccess.type === 'saved' ? 'You can finish it later.' : 'Added to your list.'}</p>
+                        </div>
+                        {/* Progress bar to show auto-dismiss */}
+                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
+                            <div className={`h-full rounded-full animate-progress ${showSuccess.type === 'saved' ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Add keyframes for progress bar locally */}
+            <style>{`
+                @keyframes shrink {
+                    from { width: 100%; }
+                    to { width: 0%; }
+                }
+            `}</style>
+
             <PageHeader
                 title="Products"
                 subtitle="Physical/digital products if applicable"
                 scrollDirection={scrollDirection}
             >
                 <CategorySelector usedCategories={["Electricians", "Builders"]} />
-                <AddProductDropdown onAdd={(cat) => openWizard('product')} />
+                <AddProductDropdown onAdd={(cat) => openWizard('product', { category: cat }, (data) => handleCreateProduct(data, cat))} />
             </PageHeader>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
@@ -332,15 +524,25 @@ export default function ProductsView() {
                     <ProductSection
                         title="Electricians"
                         icon={Zap}
-                        products={MOCK_ELECTRICIANS_PRODUCTS}
+                        products={elecProducts}
                         openWizard={openWizard}
+                        highlightedId={highlightedProductId}
+                        onCreate={() => openWizard('product', { category: 'Electricians' }, (data) => handleCreateProduct(data, 'Electricians'))}
+                        onDuplicate={(p) => handleDuplicateProduct(p, 'Electricians')}
+                        onToggle={(id) => handleToggleProductStatus(id, 'Electricians')}
+                        onDelete={(id) => handleDeleteProduct(id, 'Electricians')}
                     />
 
                     <ProductSection
                         title="Builders"
                         icon={Hammer}
-                        products={MOCK_BUILDERS_PRODUCTS}
+                        products={buildProducts}
                         openWizard={openWizard}
+                        highlightedId={highlightedProductId}
+                        onCreate={() => openWizard('product', { category: 'Builders' }, (data) => handleCreateProduct(data, 'Builders'))}
+                        onDuplicate={(p) => handleDuplicateProduct(p, 'Builders')}
+                        onToggle={(id) => handleToggleProductStatus(id, 'Builders')}
+                        onDelete={(id) => handleDeleteProduct(id, 'Builders')}
                     />
                 </div>
             </div>

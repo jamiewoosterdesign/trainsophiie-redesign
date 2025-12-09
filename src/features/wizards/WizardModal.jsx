@@ -2,6 +2,12 @@ import React, { useState, useRef } from 'react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { X, ChevronRight, Check, ArrowLeft, MessageSquare, Mic, MicOff, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import WizardFormContent from './WizardFormContent';
 import LiveSimulator from '@/features/simulator/LiveSimulator';
 import WizardEntryModal from './WizardEntryModal';
@@ -185,9 +191,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
     };
 
     const handleSaveAndExit = () => {
-        // In a real app, this would save the draft.
-        // For now, we just close.
-        onClose();
+        // Return data with status: 'draft'
+        onClose({ ...formData, status: 'draft' });
     };
 
     const handleEntryModeSelect = (selectedMode, dontShowAgain) => {
@@ -250,15 +255,70 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
             }
             if (currentStep === 3) {
                 if (formData.serviceOutcome === 'send_info') {
+                    // Using field names that match what was currently in the validation block, but maybe I should correct them if they are wrong?
+                    // Actually, WizardFormContent_Service uses 'serviceSendInfoType'
+                    if (formData.serviceSendInfoType === 'sms' && !formData.serviceSmsMessage) newErrors.serviceSmsMessage = true;
+                    if (formData.serviceSendInfoType === 'email' && !formData.serviceEmailSubject) newErrors.serviceEmailSubject = true;
+
+                    // Also support the legacy names if they were used, just in case
                     if (formData.sendInfoType === 'sms' && !formData.smsContent) newErrors.smsContent = true;
                     if (formData.sendInfoType === 'email' && !formData.emailSubject) newErrors.emailSubject = true;
                 }
             }
         }
 
-        // Pass errors to form data so content can display them
+        if (mode === 'product') {
+            if (!formData.productName?.trim()) newErrors.productName = "Product Name is required.";
+            if (!formData.description?.trim()) newErrors.description = "Description is required.";
+            if (formData.priceMode === 'fixed' && !formData.productPrice) newErrors.productPrice = "Price is required.";
+            if (formData.priceMode === 'range') {
+                if (!formData.minPrice) newErrors.minPrice = "Min Price is required.";
+                if (!formData.maxPrice) newErrors.maxPrice = "Max Price is required.";
+            }
+        }
+
+        if (mode === 'policy') {
+            const hasTitle = !!formData.policyTitle?.trim();
+            const hasContent = !!formData.policyContent?.trim();
+
+            if (hasTitle && !hasContent) newErrors.policyContent = "Policy Content is required when Title is present.";
+            if (!hasTitle && hasContent) newErrors.policyTitle = "Policy Title is required when Content is present.";
+            if (!hasTitle && !hasContent) {
+                newErrors.policyTitle = "Policy Title is required.";
+                newErrors.policyContent = "Policy Content is required.";
+            }
+        }
+
+        if (mode === 'faq') {
+            const faqs = formData.faqs || [];
+            const q = formData.faqQuestion?.trim();
+            const a = formData.faqAnswer?.trim();
+
+            if (q && !a) newErrors.faqAnswer = "Answer is required.";
+            if (!q && a) newErrors.faqQuestion = "Question is required.";
+            if (!q && !a && faqs.length === 0) {
+                newErrors.faqQuestion = "Question is required.";
+                newErrors.faqAnswer = "Answer is required.";
+            }
+        }
+
+        if (mode === 'protocol' && currentStep === 1) {
+            if (!formData.scenarioName?.trim()) newErrors.scenarioName = true;
+            if (!formData.protocolTrigger?.trim()) newErrors.protocolTrigger = true;
+        }
+
         setFormData(prev => ({ ...prev, errors: newErrors }));
-        return Object.keys(newErrors).length === 0;
+        return isValid && Object.keys(newErrors).length === 0;
+    };
+
+    const isStepDisabled = () => {
+        if (mode === 'document' && step === 1) {
+            return !formData.contextFileName && !formData.isContextActive;
+        }
+        if (mode === 'transfer' && step === 1) {
+            return !formData.transferName?.trim();
+        }
+        return false;
     };
 
     const handleNext = () => {
@@ -270,11 +330,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
     const handleFinish = () => {
         if (validateStep(step)) {
             if (returnToMode) {
-                // If we are in a nested wizard (e.g. adding staff from service wizard),
-                // we should "save" and go back instead of closing.
-                // For prototype, we trigger handleBack which restores the previous mode.
                 handleBack();
-                // Optionally show a toast that item was added
                 setShowToast({ message: "Added successfully" });
                 setTimeout(() => setShowToast(null), 3000);
             } else {
@@ -478,9 +534,30 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         </Button>
                         <div className="flex gap-3">
                             {step < getTotalSteps() ? (
-                                <Button onClick={handleNext} className="w-32">
-                                    Next <ChevronRight className="w-4 h-4 ml-1" />
-                                </Button>
+                                isStepDisabled() ? (
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild>
+                                                <span tabIndex={0} className="cursor-not-allowed">
+                                                    <Button onClick={handleNext} className="w-32 opacity-50 pointer-events-none">
+                                                        Next <ChevronRight className="w-4 h-4 ml-1" />
+                                                    </Button>
+                                                </span>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-slate-900 text-white border-slate-900 px-3 py-1.5 text-xs font-medium">
+                                                <p>
+                                                    {mode === 'document' ? "Please upload or select a document to continue." :
+                                                        mode === 'transfer' ? "Please name this transfer rule to continue." :
+                                                            "Please complete the required fields."}
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                ) : (
+                                    <Button onClick={handleNext} className="w-32">
+                                        Next <ChevronRight className="w-4 h-4 ml-1" />
+                                    </Button>
+                                )
                             ) : (
                                 <Button className="w-32 bg-green-600 hover:bg-green-700" onClick={handleFinish}>
                                     Finish <Check className="w-4 h-4 ml-1" />

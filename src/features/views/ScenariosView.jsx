@@ -3,7 +3,7 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Plus, ArrowRight, ShieldAlert, Trash2, ArrowLeft, Zap, Waypoints, Search, ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
+import { Plus, ArrowRight, ShieldAlert, Trash2, ArrowLeft, Zap, Waypoints, Search, ChevronLeft, ChevronRight, LayoutGrid, List, CheckCircle, X, MoreHorizontal, Copy, Power, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,14 +15,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
 // Expanded Mock Scenarios
 const MOCK_SCENARIOS = [
-    { id: 1, name: "Refund Request", trigger: "Customer asks for money back", action: "Check eligibility, process if < $50", type: "Refund" },
-    { id: 2, name: "Angry Customer", trigger: "Sentiment is negative/hostile", action: "Apologize, escalate to human manager", type: "Complaint" },
-    { id: 3, name: "Pricing Inquiry", trigger: "Customer asks for price list", action: "Email standard pricing PDF", type: "General" },
+    { id: 1, name: "Refund Request", trigger: "Customer asks for money back", action: "Check eligibility, process if < $50", type: "Refund", createdAt: 1700000000000 },
+    { id: 2, name: "Angry Customer", trigger: "Sentiment is negative/hostile", action: "Apologize, escalate to human manager", type: "Complaint", createdAt: 1700000000001 },
+    { id: 3, name: "Pricing Inquiry", trigger: "Customer asks for price list", action: "Email standard pricing PDF", type: "General", createdAt: 1700000000002 },
     { id: 4, name: "Cancel Subscription", trigger: "Customer wants to cancel", action: "Offer discount, then process cancellation", type: "Booking" },
     { id: 5, name: "Late Delivery", trigger: "Customer complains about delay", action: "Check status, refund shipping fee", type: "Complaint" },
     { id: 6, name: "Change Address", trigger: "Customer wants to change address", action: "Update CRM, confirm via email", type: "Booking" },
@@ -41,17 +49,69 @@ export default function ScenariosView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
 
+    const [scenarios, setScenarios] = useState(MOCK_SCENARIOS);
+    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
+    const [highlightedScenarioId, setHighlightedScenarioId] = useState(null);
+
+    const handleCreateScenario = (data) => {
+        // Create new scenario object
+        const newScenarioId = `new-${Date.now()}`;
+        const newScenario = {
+            id: newScenarioId,
+            name: data.scenarioName || 'New Scenario',
+            trigger: data.protocolTrigger || 'No trigger defined',
+            action: "Standard response", // Or extract from wizard if available
+            type: "General", // Or extract from wizard
+            isDraft: data.status === 'draft',
+            createdAt: Date.now()
+        };
+
+        setScenarios(prev => [newScenario, ...prev]);
+
+        // Show success modal
+        setShowSuccess({ show: true, type: data.status === 'draft' ? 'saved' : 'created' });
+        setHighlightedScenarioId(newScenarioId);
+
+        // Auto-dismiss modal after 3 seconds
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+
+        // Remove highlight after 6 seconds (3s modal + 3s fade out)
+        setTimeout(() => setHighlightedScenarioId(null), 6000);
+    };
+
+    const handleDuplicateScenario = (scenario) => {
+        const newScenario = {
+            ...scenario,
+            id: `dup-${Date.now()}`,
+            name: `${scenario.name} 2`,
+            active: false,
+            isDraft: false,
+            createdAt: Date.now()
+        };
+        setScenarios(prev => [newScenario, ...prev]);
+        setShowSuccess({ show: true, type: 'created', message: 'Scenario Duplicated' });
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+    };
+
+    const handleToggleScenarioStatus = (id) => {
+        setScenarios(prev => prev.map(s => s.id === id ? { ...s, active: s.active === false ? true : false } : s));
+    };
+
+    const handleDeleteScenario = (id) => {
+        setScenarios(prev => prev.filter(s => s.id !== id));
+    };
+
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('all');
-    const [sortBy, setSortBy] = useState('name');
+    const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 11;
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
     // Filter & Sort Logic
-    const filteredScenarios = MOCK_SCENARIOS
+    const filteredScenarios = scenarios
         .filter(scenario =>
             scenario.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             scenario.trigger.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -59,6 +119,7 @@ export default function ScenariosView() {
         )
         .filter(scenario => filterType === 'all' || scenario.type === filterType)
         .sort((a, b) => {
+            if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0);
             // Sort by name (A-Z)
             return a.name.localeCompare(b.name);
         });
@@ -76,13 +137,45 @@ export default function ScenariosView() {
     }, [searchQuery, filterType, sortBy, view]);
 
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300">
+        <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
+            {/* Success Modal Overlay */}
+            {/* Success Modal Overlay */}
+            {showSuccess.show && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
+                        <button
+                            onClick={() => setShowSuccess({ show: false, type: 'created' })}
+                            className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${showSuccess.type === 'saved' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div className="text-center space-y-0.5">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{showSuccess.type === 'saved' ? 'Scenario Saved' : 'Scenario Created!'}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{showSuccess.type === 'saved' ? 'You can finish it later.' : 'Added to your list.'}</p>
+                        </div>
+                        {/* Progress bar to show auto-dismiss */}
+                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
+                            <div className={`h-full rounded-full animate-progress ${showSuccess.type === 'saved' ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Add keyframes for progress bar locally */}
+            <style>{`
+                @keyframes shrink {
+                    from { width: 100%; }
+                    to { width: 0%; }
+                }
+            `}</style>
             <PageHeader
                 title="Scenarios & Restrictions"
                 subtitle="Define handling rules for refunds, complaints, and general inquiries."
                 scrollDirection={scrollDirection}
             >
-                <Button onClick={() => openWizard('protocol')} className="w-full md:w-auto">
+                <Button onClick={() => openWizard('protocol', {}, (data) => handleCreateScenario(data))} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add Scenario
                 </Button>
             </PageHeader>
@@ -128,6 +221,7 @@ export default function ScenariosView() {
                                             <SelectValue placeholder="Sort by" />
                                         </SelectTrigger>
                                         <SelectContent>
+                                            <SelectItem value="date">Date Added</SelectItem>
                                             <SelectItem value="name">Name (A-Z)</SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -141,7 +235,7 @@ export default function ScenariosView() {
                                 <AddNewCard
                                     title="Create Scenario"
                                     description="Handle refunds, complaints & more"
-                                    onClick={() => openWizard('protocol')}
+                                    onClick={() => openWizard('protocol', {}, (data) => handleCreateScenario(data))}
                                 />
                                 {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (
@@ -155,15 +249,48 @@ export default function ScenariosView() {
                                 )}
 
                                 {paginatedScenarios.map(proto => (
-                                    <Card key={proto.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
+                                    <Card key={proto.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer flex flex-col h-full min-h-[290px] dark:bg-slate-900 dark:border-slate-800 group ${(proto.isDraft || proto.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${proto.id === highlightedScenarioId ? (proto.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`} onClick={() => openWizard('protocol')}>
                                         <div className="flex justify-between items-start mb-4">
                                             <Badge variant="default" className="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-800">{proto.type}</Badge>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                        <MoreHorizontal className="w-4 h-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                    <DropdownMenuItem onClick={() => openWizard('protocol')}>
+                                                        <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDuplicateScenario(proto)}>
+                                                        <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleToggleScenarioStatus(proto.id)}>
+                                                        <Power className={`w-4 h-4 mr-2 ${proto.active !== false ? "text-green-500" : "text-slate-400"}`} /> {proto.active !== false ? 'Disable' : 'Enable'}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteScenario(proto.id)}>
+                                                        <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                         <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1">{proto.name}</h4>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 flex-grow">Trigger: {proto.trigger}</p>
-                                        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700 mt-auto">
+                                        <div className="mb-4 flex-grow text-sm">
+                                            <span className="text-slate-500 dark:text-slate-400">Trigger: </span>
+                                            <span className="text-slate-900 dark:text-slate-100">{proto.trigger}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700 mb-4">
                                             <ArrowRight className="w-3 h-3 text-slate-400" />
                                             <span>{proto.action}</span>
+                                        </div>
+
+                                        <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                                            <div>
+                                                {proto.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                {!proto.isDraft && (proto.active !== false ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>)}
+                                            </div>
                                         </div>
                                     </Card>
                                 ))}
@@ -178,11 +305,12 @@ export default function ScenariosView() {
                                     <div className="col-span-3">Scenario</div>
                                     <div className="col-span-1">Type</div>
                                     <div className="col-span-4">Trigger</div>
-                                    <div className="col-span-4">Action</div>
+                                    <div className="col-span-3">Action</div>
+                                    <div className="col-span-1 text-right">Actions</div>
                                 </div>
                                 <div className="divide-y divide-slate-100 dark:divide-slate-800">
                                     {currentPage === 1 && (
-                                        <div onClick={() => openWizard('protocol')} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                        <div onClick={() => openWizard('protocol', {}, (data) => handleCreateScenario(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
                                             <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
                                                 <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                                     <Plus className="w-4 h-4" />
@@ -192,15 +320,42 @@ export default function ScenariosView() {
                                         </div>
                                     )}
                                     {paginatedScenarios.map(proto => (
-                                        <div key={proto.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => openWizard('protocol')}>
-                                            <div className="col-span-3 font-medium text-slate-900 dark:text-white">{proto.name}</div>
+                                        <div key={proto.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${(proto.isDraft || proto.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${proto.id === highlightedScenarioId ? (proto.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('protocol')}>
+                                            <div className="col-span-3 font-medium text-slate-900 dark:text-white flex items-center gap-2">
+                                                {proto.name}
+                                                {proto.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                            </div>
                                             <div className="col-span-1">
                                                 <Badge variant="outline" className="text-[10px] h-5">{proto.type}</Badge>
                                             </div>
                                             <div className="col-span-4 text-sm text-slate-500 dark:text-slate-400 truncate">{proto.trigger}</div>
-                                            <div className="col-span-4 text-sm text-slate-500 dark:text-slate-400 truncate flex items-center gap-2">
+                                            <div className="col-span-3 text-sm text-slate-500 dark:text-slate-400 truncate flex items-center gap-2">
                                                 <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
                                                 {proto.action}
+                                            </div>
+                                            <div className="col-span-1 text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                            <MoreHorizontal className="w-4 h-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                        <DropdownMenuItem onClick={() => openWizard('protocol')}>
+                                                            <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDuplicateScenario(proto)}>
+                                                            <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleToggleScenarioStatus(proto.id)}>
+                                                            <Power className={`w-4 h-4 mr-2 ${proto.active !== false ? "text-green-500" : "text-slate-400"}`} /> {proto.active !== false ? 'Disable' : 'Enable'}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteScenario(proto.id)}>
+                                                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </div>
                                         </div>
                                     ))}
@@ -215,15 +370,18 @@ export default function ScenariosView() {
                                     {currentPage === 1 && (
                                         <AddNewCard
                                             title="Create Scenario"
-                                            onClick={() => openWizard('protocol')}
+                                            onClick={() => openWizard('protocol', {}, (data) => handleCreateScenario(data))}
                                             variant="compact"
                                         />
                                     )}
                                     {paginatedScenarios.map(proto => (
-                                        <div key={proto.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => openWizard('protocol')}>
+                                        <div key={proto.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(proto.isDraft || proto.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${proto.id === highlightedScenarioId ? (proto.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('protocol')}>
                                             <div className="flex justify-between items-start mb-2">
                                                 <h3 className="font-bold text-slate-900 dark:text-white line-clamp-1">{proto.name}</h3>
-                                                <Badge variant="outline" className="text-[10px] h-5">{proto.type}</Badge>
+                                                <div className="flex items-center gap-2">
+                                                    {proto.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                    <Badge variant="outline" className="text-[10px] h-5">{proto.type}</Badge>
+                                                </div>
                                             </div>
                                             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Trigger: {proto.trigger}</p>
                                             <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-2 rounded border border-slate-100 dark:border-slate-700 mt-auto">

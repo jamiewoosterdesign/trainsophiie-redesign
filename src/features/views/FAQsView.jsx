@@ -3,10 +3,11 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, MessageCircle, Edit2, Trash2, HelpCircle, ArrowLeft, Search, ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
+import { Plus, MessageCircle, Edit2, Trash2, HelpCircle, ArrowLeft, Search, ChevronLeft, ChevronRight, LayoutGrid, List, CheckCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
     Select,
     SelectContent,
@@ -14,15 +15,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Power, Copy } from 'lucide-react';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { useNavigate } from 'react-router-dom';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
 // Expanded Mock Data
 const MOCK_FAQS = [
-    { id: 1, question: 'What are your opening hours?', answer: 'We are open Monday to Friday from 9am to 5pm, and Saturdays from 10am to 2pm. We are closed on Sundays and public holidays.' },
-    { id: 2, question: 'Do you offer free quotes?', answer: 'Yes, we provide free, no-obligation quotes for all our services. You can request one online or over the phone.' },
-    { id: 3, question: 'How long does a service take?', answer: 'A standard service typically takes between 45 to 60 minutes, depending on the complexity of the issue.' },
+    { id: 1, question: 'What are your opening hours?', answer: 'We are open Monday to Friday from 9am to 5pm, and Saturdays from 10am to 2pm. We are closed on Sundays and public holidays.', createdAt: 1700000000000 },
+    { id: 2, question: 'Do you offer free quotes?', answer: 'Yes, we provide free, no-obligation quotes for all our services. You can request one online or over the phone.', createdAt: 1700000000001 },
+    { id: 3, question: 'How long does a service take?', answer: 'A standard service typically takes between 45 to 60 minutes, depending on the complexity of the issue.', createdAt: 1700000000002 },
     { id: 4, question: 'What payment methods do you accept?', answer: 'We accept cash, credit cards (Visa, Mastercard), and bank transfers.' },
     { id: 5, question: 'Do you provide warranties?', answer: 'Yes, all our services come with a 30-day satisfaction guarantee and a 1-year warranty on parts.' },
     { id: 6, question: 'Can I cancel my booking?', answer: 'You can cancel your booking up to 24 hours in advance without any cancellation fee.' },
@@ -41,21 +51,73 @@ export default function FAQsView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
 
+    const [faqs, setFaqs] = useState(MOCK_FAQS);
+    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
+    const [highlightedFaqId, setHighlightedFaqId] = useState(null);
+
+    const handleCreateFaq = (data) => {
+        // Create new faq object
+        const newFaqId = `new-${Date.now()}`;
+        const newFaq = {
+            id: newFaqId,
+            question: data.faqQuestion || 'New Question',
+            answer: data.faqAnswer || 'No answer',
+            isDraft: data.status === 'draft',
+            createdAt: Date.now(),
+        };
+
+        setFaqs(prev => [newFaq, ...prev]);
+
+        // Show success modal
+        setShowSuccess({ show: true, type: data.status === 'draft' ? 'saved' : 'created' });
+        setHighlightedFaqId(newFaqId);
+
+        // Auto-dismiss modal after 3 seconds
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+
+        // Remove highlight after 6 seconds (3s modal + 3s fade out)
+        setTimeout(() => setHighlightedFaqId(null), 6000);
+    };
+
+    const handleDuplicateFaq = (faq) => {
+        const newFaq = {
+            ...faq,
+            id: `dup-${Date.now()}`,
+            question: `${faq.question} 2`,
+            active: false,
+            isDraft: false,
+            createdAt: Date.now()
+        };
+        setFaqs(prev => [newFaq, ...prev]);
+        setShowSuccess({ show: true, type: 'created' });
+        setHighlightedFaqId(newFaq.id);
+        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+    };
+
+    const handleToggleFaqStatus = (id) => {
+        setFaqs(prev => prev.map(f => f.id === id ? { ...f, active: f.active === false ? true : false } : f));
+    };
+
+    const handleDeleteFaq = (id) => {
+        setFaqs(prev => prev.filter(f => f.id !== id));
+    };
+
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState('name');
+    const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 11;
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
     // Filter & Sort Logic
-    const filteredFAQs = MOCK_FAQS
+    const filteredFAQs = faqs
         .filter(faq =>
             faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
             faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
         )
         .sort((a, b) => {
+            if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0);
             // Sort by question name (A-Z)
             return a.question.localeCompare(b.question);
         });
@@ -73,13 +135,45 @@ export default function FAQsView() {
     }, [searchQuery, sortBy, view]);
 
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300">
+        <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
+            {/* Success Modal Overlay */}
+            {/* Success Modal Overlay */}
+            {showSuccess.show && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
+                        <button
+                            onClick={() => setShowSuccess({ show: false, type: 'created' })}
+                            className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center animate-in zoom-in duration-300 ${showSuccess.type === 'saved' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}`}>
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div className="text-center space-y-0.5">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{showSuccess.type === 'saved' ? 'FAQ Saved' : 'FAQ Created!'}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{showSuccess.type === 'saved' ? 'You can finish it later.' : 'Added to your list.'}</p>
+                        </div>
+                        {/* Progress bar to show auto-dismiss */}
+                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
+                            <div className={`h-full rounded-full animate-progress ${showSuccess.type === 'saved' ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Add keyframes for progress bar locally */}
+            <style>{`
+                @keyframes shrink {
+                    from { width: 100%; }
+                    to { width: 0%; }
+                }
+            `}</style>
             <PageHeader
                 title="Frequently Asked Questions"
                 subtitle="Train Sophiie to answer common customer questions."
                 scrollDirection={scrollDirection}
             >
-                <Button onClick={() => openWizard('faq')} className="w-full md:w-auto">
+                <Button onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add FAQ
                 </Button>
             </PageHeader>
@@ -113,6 +207,7 @@ export default function FAQsView() {
                                         <SelectValue placeholder="Sort by" />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="date">Date Added</SelectItem>
                                         <SelectItem value="name">Question (A-Z)</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -126,7 +221,7 @@ export default function FAQsView() {
                             <AddNewCard
                                 title="Add New FAQ"
                                 description="Add common Q&A for the AI"
-                                onClick={() => openWizard('faq')}
+                                onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
                             />
                             {/* Mobile Add Button (Top) */}
                             {currentPage === 1 && (
@@ -139,22 +234,45 @@ export default function FAQsView() {
                                 </div>
                             )}
                             {paginatedFAQs.map(faq => (
-                                <Card key={faq.id} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800">
+                                <Card key={faq.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 ${faq.isDraft ? 'opacity-70 grayscale-[0.5]' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}>
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
                                             <MessageCircle className="w-5 h-5" />
                                         </div>
-                                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
-                                                <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500 dark:hover:text-red-400">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+                                        <div onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
+                                                        <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
+                                                        <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
+                                                        <Power className="mr-2 h-4 w-4" />
+                                                        {faq.active === false ? 'Enable' : 'Disable'}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     </div>
                                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{faq.question}</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow">{faq.answer}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow mb-4">{faq.answer}</p>
+                                    <div className="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800 flex gap-1">
+                                        {faq.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                        {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                    </div>
                                 </Card>
                             ))}
 
@@ -166,13 +284,14 @@ export default function FAQsView() {
                     {view === 'table' && (
                         <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                             <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                <div className="col-span-5">Question</div>
-                                <div className="col-span-6">Answer</div>
+                                <div className="col-span-4">Question</div>
+                                <div className="col-span-5">Answer</div>
+                                <div className="col-span-2">Status</div>
                                 <div className="col-span-1 text-right">Actions</div>
                             </div>
                             <div className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {currentPage === 1 && (
-                                    <div onClick={() => openWizard('faq')} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                    <div onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
                                         <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
                                             <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                                 <Plus className="w-4 h-4" />
@@ -182,16 +301,41 @@ export default function FAQsView() {
                                     </div>
                                 )}
                                 {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group" onClick={() => openWizard('faq')}>
-                                        <div className="col-span-5 font-medium text-slate-900 dark:text-white">{faq.question}</div>
-                                        <div className="col-span-6 text-sm text-slate-500 dark:text-slate-400 truncate">{faq.answer}</div>
-                                        <div className="col-span-1 text-right flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
-                                                <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-red-500 dark:hover:text-red-400">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
+                                    <div key={faq.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${(faq.isDraft || faq.active === false) ? 'opacity-70' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('faq')}>
+                                        <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
+                                            {faq.question}
+                                        </div>
+                                        <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">{faq.answer}</div>
+                                        <div className="col-span-2">
+                                            {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                            {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                        </div>
+                                        <div className="col-span-1 text-right flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
+                                                        <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
+                                                        <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
+                                                        <Power className="mr-2 h-4 w-4" />
+                                                        {faq.active === false ? 'Enable' : 'Disable'}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     </div>
                                 ))}
@@ -206,13 +350,44 @@ export default function FAQsView() {
                                 {currentPage === 1 && (
                                     <AddNewCard
                                         title="Add New FAQ"
-                                        onClick={() => openWizard('faq')}
+                                        onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
                                         variant="compact"
                                     />
                                 )}
                                 {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => openWizard('faq')}>
-                                        <h3 className="font-bold text-slate-900 dark:text-white mb-1">{faq.question}</h3>
+                                    <div key={faq.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(faq.isDraft || faq.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('faq')}>
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="font-bold text-slate-900 dark:text-white mb-1">{faq.question}</h3>
+                                            <div className="flex items-center gap-2">
+                                                {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
+                                                            <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
+                                                            <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
+                                                            <Power className="mr-2 h-4 w-4" />
+                                                            {faq.active === false ? 'Enable' : 'Disable'}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+                                        </div>
                                         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{faq.answer}</p>
                                     </div>
                                 ))}

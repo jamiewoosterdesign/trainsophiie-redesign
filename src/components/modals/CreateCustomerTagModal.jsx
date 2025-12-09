@@ -13,9 +13,21 @@ export default function CreateCustomerTagModal({ onClose }) {
     const [selectedColor, setSelectedColor] = useState('#ef4444'); // Default red
 
     const handleCreate = () => {
-        // Here you would typically save the tag
-        console.log({ tagName, description, color: selectedColor });
-        onClose();
+        if (onClose.length > 0 && !onClose.name) {
+            // Checking if onCreate was passed as second arg or prop? 
+            // The signature is ({ onClose, onCreate, editData })
+        }
+
+        const newTag = {
+            name: tagName,
+            description,
+            color: 'bg-custom', // simplified for now or match color picker
+            colorHex: selectedColor,
+            enabled: true,
+            createdAt: Date.now()
+        };
+
+        if (onClose) onClose(newTag); // Assuming onClose can handle data or we change signature
     };
 
     return (
@@ -71,7 +83,7 @@ export default function CreateCustomerTagModal({ onClose }) {
 
                 {/* Footer */}
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
-                    <Button variant="outline" onClick={onClose} className="dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+                    <Button variant="outline" onClick={() => onClose(null)} className="dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                         Cancel
                     </Button>
                     <Button onClick={handleCreate} disabled={!tagName.trim()}>

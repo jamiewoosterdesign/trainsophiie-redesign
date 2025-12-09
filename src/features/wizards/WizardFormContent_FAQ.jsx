@@ -123,7 +123,7 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between items-center mb-1.5">
-                                    <Label className="flex items-center gap-2">
+                                    <Label className={`flex items-center gap-2 ${formData.errors?.faqQuestion ? 'text-red-500' : ''}`}>
                                         Question *
                                         <TooltipProvider>
                                             <Tooltip delayDuration={0} open={tooltipOpen[`q-${index}`]} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, [`q-${index}`]: open }))}>
@@ -145,15 +145,21 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
                                 </div>
                                 <WizardInput
                                     value={faq.question}
-                                    onChange={(val) => updateFaq(index, 'question', val)}
+                                    onChange={(val) => {
+                                        updateFaq(index, 'question', val);
+                                        if (formData.errors?.faqQuestion) {
+                                            onChange('errors', { ...formData.errors, faqQuestion: false });
+                                        }
+                                    }}
                                     placeholder="e.g. What are your opening hours?"
-                                    className={`bg-white dark:bg-slate-950 font-medium ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-900/20 bg-emerald-50/10' : ''}`}
+                                    className={`bg-white dark:bg-slate-950 font-medium ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-900/20 bg-emerald-50/10' : ''} ${formData.errors?.faqQuestion ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                 />
+                                {formData.errors?.faqQuestion && <p className="text-xs text-red-500 mt-1">{formData.errors.faqQuestion}</p>}
                             </div>
 
                             <div>
                                 <div className="flex justify-between items-center mb-1.5">
-                                    <Label className="flex items-center gap-2">
+                                    <Label className={`flex items-center gap-2 ${formData.errors?.faqAnswer ? 'text-red-500' : ''}`}>
                                         Answer *
                                         <TooltipProvider>
                                             <Tooltip delayDuration={0} open={tooltipOpen[`a-${index}`]} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, [`a-${index}`]: open }))}>
@@ -175,10 +181,16 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
                                 </div>
                                 <WizardTextarea
                                     value={faq.answer}
-                                    onChange={(val) => updateFaq(index, 'answer', val)}
+                                    onChange={(val) => {
+                                        updateFaq(index, 'answer', val);
+                                        if (formData.errors?.faqAnswer) {
+                                            onChange('errors', { ...formData.errors, faqAnswer: false });
+                                        }
+                                    }}
                                     placeholder="e.g. We are open 9am to 5pm..."
-                                    className={`bg-white dark:bg-slate-950 ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-900/20 bg-emerald-50/10' : ''}`}
+                                    className={`bg-white dark:bg-slate-950 ${faq.isAutoFilled ? 'border-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-900/20 bg-emerald-50/10' : ''} ${formData.errors?.faqAnswer ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                 />
+                                {formData.errors?.faqAnswer && <p className="text-xs text-red-500 mt-1">{formData.errors.faqAnswer}</p>}
                             </div>
                         </div>
                     </div>

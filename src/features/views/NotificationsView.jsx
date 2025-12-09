@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
-import { Bell, UserPlus, ArrowLeft, Mail, MessageSquare, Phone, Globe, Pencil, Trash2, Search, ChevronLeft, ChevronRight, LayoutGrid, List, Plus } from 'lucide-react';
+import { Bell, UserPlus, ArrowLeft, Mail, MessageSquare, Phone, Globe, Pencil, Trash2, Search, ChevronLeft, ChevronRight, LayoutGrid, List, Plus, CheckCircle, X, MoreHorizontal, Copy, Power, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,14 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
@@ -27,9 +35,9 @@ import { ViewToggle } from '@/components/shared/ViewToggle';
 
 // Expanded Mock Data
 const MOCK_ASSIGNMENTS = [
-    { id: 1, member: 'Sarah Wilson', methods: ['sms', 'email'], tags: ['VIP', 'Urgent', 'Long Term', 'High Volume', 'Verified', 'Priority', 'Gold', 'Legacy', 'Local'], sources: ['call', 'sms'], enabled: true },
-    { id: 2, member: 'Mike Johnson', methods: ['email'], tags: ['All'], sources: ['webform'], enabled: true },
-    { id: 3, member: 'Emily Davis', methods: ['sms'], tags: ['Support', 'Billing', 'Returns', 'Complaints', 'Inquiries'], sources: ['chatbot', 'email'], enabled: false },
+    { id: 1, member: 'Sarah Wilson', methods: ['sms', 'email'], tags: ['VIP', 'Urgent', 'Long Term', 'High Volume', 'Verified', 'Priority', 'Gold', 'Legacy', 'Local'], sources: ['call', 'sms'], enabled: true, createdAt: 1700000000000 },
+    { id: 2, member: 'Mike Johnson', methods: ['email'], tags: ['All'], sources: ['webform'], enabled: true, createdAt: 1700000000001 },
+    { id: 3, member: 'Emily Davis', methods: ['sms'], tags: ['Support', 'Billing', 'Returns', 'Complaints', 'Inquiries'], sources: ['chatbot', 'email'], enabled: false, createdAt: 1700000000002 },
     { id: 4, member: 'David Brown', methods: ['email', 'sms'], tags: ['Sales', 'High Value', 'Corporate', 'Enterprise', 'Partner', 'Strategic'], sources: ['webform', 'call'], enabled: true },
     { id: 5, member: 'Jessica Lee', methods: ['email'], tags: ['General'], sources: ['email'], enabled: true },
     { id: 6, member: 'Chris Martin', methods: ['sms'], tags: ['Technical', 'Admin', 'Root Access'], sources: ['chatbot'], enabled: true },
@@ -49,18 +57,66 @@ export default function NotificationsView() {
     const { startGlobalVoiceFlow } = useOutletContext();
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState(null);
+    const [assignments, setAssignments] = useState(MOCK_ASSIGNMENTS);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [highlightedAssignmentId, setHighlightedAssignmentId] = useState(null);
+
+    const handleAssignMember = (data) => {
+        // If we are editing, we might handle update here, but for "Creation" flow focus:
+        if (!editingAssignment) {
+            const newId = Date.now();
+            const newAssignment = {
+                id: newId,
+                member: "New Team Member", // In a real app, this would come from the wizard selection
+                methods: ['email'],
+                tags: ['General'],
+                sources: ['webform'],
+                enabled: true,
+                createdAt: Date.now()
+            };
+            // Note: In a real app data would contain the structured wizard result.
+            // For now, we mock the new entry based on generic wizard completion.
+
+            setAssignments(prev => [newAssignment, ...prev]);
+            setShowSuccess(true);
+            setHighlightedAssignmentId(newId);
+            setTimeout(() => setShowSuccess(false), 3000);
+            setTimeout(() => setHighlightedAssignmentId(null), 6000);
+        }
+    };
+
+    const handleDuplicateAssignment = (assignment) => {
+        const newAssignment = {
+            ...assignment,
+            id: Date.now(),
+            member: `${assignment.member} 2`,
+            enabled: false,
+            createdAt: Date.now()
+        };
+        setAssignments(prev => [newAssignment, ...prev]);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+    };
+
+    const handleToggleAssignment = (id) => {
+        setAssignments(prev => prev.map(a => a.id === id ? { ...a, enabled: a.enabled === false ? true : false } : a));
+    };
+
+    const handleDeleteAssignment = (id) => {
+        setAssignments(prev => prev.filter(a => a.id !== id));
+    };
 
     const [view, setView] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'active' | 'inactive'
-    const [sortBy, setSortBy] = useState('member');
+    const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 11;
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
     // Filter & Sort Logic
-    const filteredAssignments = MOCK_ASSIGNMENTS
+    const filteredAssignments = assignments
         .filter(a =>
             a.member.toLowerCase().includes(searchQuery.toLowerCase()) ||
             a.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -71,10 +127,7 @@ export default function NotificationsView() {
             return true;
         })
         .sort((a, b) => {
-            if (sortBy === 'status') return (a.enabled === b.enabled) ? 0 : a.enabled ? -1 : 1;
-            return a.member.localeCompare(b.member);
-        })
-        .sort((a, b) => {
+            if (sortBy === 'date') return (b.createdAt || 0) - (a.createdAt || 0); // Newest first
             if (sortBy === 'status') return (a.enabled === b.enabled) ? 0 : a.enabled ? -1 : 1;
             return a.member.localeCompare(b.member);
         });
@@ -129,7 +182,38 @@ export default function NotificationsView() {
     };
 
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300">
+        <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
+            {/* Success Modal Overlay */}
+            {showSuccess && (
+                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
+                        <button
+                            onClick={() => setShowSuccess(false)}
+                            className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 animate-in zoom-in duration-300">
+                            <CheckCircle className="w-6 h-6" />
+                        </div>
+                        <div className="text-center space-y-0.5">
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Assignment Created!</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Added to notify list.</p>
+                        </div>
+                        {/* Progress bar to show auto-dismiss */}
+                        <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
+                            <div className="h-full bg-green-500 rounded-full animate-progress" style={{ width: '100%', animation: 'shrink 3s linear forwards' }}></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Add keyframes for progress bar locally */}
+            <style>{`
+                @keyframes shrink {
+                    from { width: 100%; }
+                    to { width: 0%; }
+                }
+            `}</style>
             {/* Header */}
             {/* Header */}
             <PageHeader
@@ -182,6 +266,7 @@ export default function NotificationsView() {
                                         <SelectValue placeholder="Sort by" />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="date">Date Added</SelectItem>
                                         <SelectItem value="member">Name (A-Z)</SelectItem>
                                         <SelectItem value="status">Status</SelectItem>
                                     </SelectContent>
@@ -211,76 +296,81 @@ export default function NotificationsView() {
                             )}
 
                             {paginatedAssignments.map((assignment) => (
-                                <Card key={assignment.id} onClick={() => handleEdit(assignment)} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full min-h-[280px] group relative">
+                                <Card key={assignment.id} onClick={() => handleEdit(assignment)} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full min-h-[280px] group relative ${assignment.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${assignment.id === highlightedAssignmentId ? 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50' : ''}`}>
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                                             {assignment.member.split(' ').map(n => n[0]).join('').substring(0, 2)}
                                         </div>
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <Switch checked={assignment.enabled} />
-                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                    <MoreHorizontal className="w-4 h-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                <DropdownMenuItem onClick={() => handleEdit(assignment)}>
+                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleDuplicateAssignment(assignment)}>
+                                                    <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleToggleAssignment(assignment.id)}>
+                                                    <Power className={`w-4 h-4 mr-2 ${assignment.enabled ? "text-green-500" : "text-slate-400"}`} /> {assignment.enabled ? 'Disable' : 'Enable'}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(assignment.id)}>
+                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
 
                                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2 line-clamp-1" title={assignment.member}>{assignment.member}</h3>
 
                                     {/* Text-based Methods (Email/SMS) */}
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <div className="flex gap-1.5 flex-wrap">
-                                            {assignment.methods.map(method => (
-                                                <div key={method} className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400 font-medium text-sm">
-                                                    {method === 'sms' ? <MessageSquare className="w-3.5 h-3.5" /> : <Mail className="w-3.5 h-3.5" />}
-                                                    <span className="capitalize">{method === 'sms' ? 'SMS' : 'Email'}</span>
+                                    <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+                                        {assignment.methods.map(method => (
+                                            <div key={method} className="flex items-center gap-2">
+                                                {method === 'sms' ? <MessageSquare className="w-4 h-4 text-slate-400" /> : <Mail className="w-4 h-4 text-slate-400" />}
+                                                <span className="capitalize">{method === 'sms' ? 'SMS' : 'Email'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Methods (renamed from Sources) */}
+                                    <div className="mb-4">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+                                            <Globe className="w-3 h-3" /> Methods
+                                        </div>
+                                        <div className="flex flex-wrap gap-1.5 text-slate-600 dark:text-slate-400">
+                                            {assignment.sources.map(s => (
+                                                <div key={s} className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 px-2 h-6 rounded text-xs capitalize">
+                                                    {s}
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 gap-3">
-                                        {/* Methods (renamed from Sources) */}
-                                        <div className="space-y-1.5 w-full">
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                                                <Globe className="w-3 h-3" /> Methods
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5 text-slate-600 dark:text-slate-400">
-                                                {assignment.sources.map(s => (
-                                                    <div key={s} className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 px-2 h-6 rounded text-xs capitalize">
-                                                        {s}
-                                                    </div>
-                                                ))}
-                                            </div>
+                                    {/* Tags */}
+                                    <div className="mb-4">
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+                                            <UserPlus className="w-3 h-3" /> Tags
                                         </div>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {assignment.tags.slice(0, 3).map(tag => (
+                                                <span key={tag} className={`px-2 h-6 flex items-center rounded text-xs font-medium border truncate max-w-[150px] ${getTagStyle(tag)}`}>
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                            {assignment.tags.length > 3 && (
+                                                <span className="text-[10px] text-slate-400 flex items-center">+{assignment.tags.length - 3}</span>
+                                            )}
+                                        </div>
+                                    </div>
 
-                                        {/* Tags */}
-                                        <div className="space-y-1.5 w-full">
-                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                                                <UserPlus className="w-3 h-3" /> Tags
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5 items-center">
-                                                {assignment.tags.slice(0, 2).map(tag => (
-                                                    <span key={tag} className={`px-2 h-6 flex items-center rounded text-xs font-medium border truncate max-w-[120px] ${getTagStyle(tag)}`}>
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                                {assignment.tags.length > 2 && (
-                                                    <HoverCard>
-                                                        <HoverCardTrigger asChild>
-                                                            <div onClick={(e) => { e.stopPropagation(); }} className="h-6 px-2 flex items-center justify-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded border border-slate-100 dark:border-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                                                                +{assignment.tags.length - 2}
-                                                            </div>
-                                                        </HoverCardTrigger>
-                                                        <HoverCardContent className="w-72 p-3 dark:bg-slate-900 dark:border-slate-800" side="top" align="center">
-                                                            <div className="text-xs font-semibold text-slate-500 mb-2 uppercase">All Tags ({assignment.tags.length})</div>
-                                                            <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
-                                                                {assignment.tags.map(tag => (
-                                                                    <span key={tag} className={`px-2 py-1.5 rounded text-xs font-medium border text-center truncate ${getTagStyle(tag)}`}>
-                                                                        {tag}
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        </HoverCardContent>
-                                                    </HoverCard>
-                                                )}
-                                            </div>
+                                    <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                                        <div>
+                                            {assignment.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
                                         </div>
                                     </div>
                                 </Card>
@@ -293,10 +383,11 @@ export default function NotificationsView() {
                         <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                             <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                 <div className="col-span-3">Team Member</div>
-                                <div className="col-span-3">Tags</div>
+                                <div className="col-span-2">Tags</div>
                                 <div className="col-span-3">Sources</div>
                                 <div className="col-span-2">Methods</div>
-                                <div className="col-span-1 text-right">Enabled</div>
+                                <div className="col-span-1 text-right">Status</div>
+                                <div className="col-span-1 text-right">Actions</div>
                             </div>
                             <div className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {currentPage === 1 && (
@@ -310,9 +401,9 @@ export default function NotificationsView() {
                                     </div>
                                 )}
                                 {paginatedAssignments.map(a => (
-                                    <div key={a.id} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => handleEdit(a)}>
+                                    <div key={a.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${a.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${a.id === highlightedAssignmentId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`} onClick={() => handleEdit(a)}>
                                         <div className="col-span-3 font-medium text-slate-900 dark:text-white">{a.member}</div>
-                                        <div className="col-span-3 flex flex-wrap gap-1">
+                                        <div className="col-span-2 flex flex-wrap gap-1">
                                             {a.tags.slice(0, 2).map(tag => (
                                                 <span key={tag} className={`px-1.5 py-0.5 rounded text-[10px] border ${getTagStyle(tag)}`}>{tag}</span>
                                             ))}
@@ -327,7 +418,31 @@ export default function NotificationsView() {
                                             ))}
                                         </div>
                                         <div className="col-span-1 text-right">
-                                            <Switch checked={a.enabled} onClick={(e) => e.stopPropagation()} />
+                                            {a.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
+                                        </div>
+                                        <div className="col-span-1 text-right flex justify-end">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                        <MoreHorizontal className="w-4 h-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                    <DropdownMenuItem onClick={() => handleEdit(a)}>
+                                                        <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDuplicateAssignment(a)}>
+                                                        <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleToggleAssignment(a.id)}>
+                                                        <Power className={`w-4 h-4 mr-2 ${a.enabled ? "text-green-500" : "text-slate-400"}`} /> {a.enabled ? 'Disable' : 'Enable'}
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(a.id)}>
+                                                        <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     </div>
                                 ))}
@@ -347,10 +462,34 @@ export default function NotificationsView() {
                                     />
                                 )}
                                 {paginatedAssignments.map(a => (
-                                    <div key={a.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => handleEdit(a)}>
+                                    <div key={a.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${a.id === highlightedAssignmentId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`} onClick={() => handleEdit(a)}>
                                         <div className="flex justify-between items-start mb-2">
                                             <h3 className="font-bold text-slate-900 dark:text-white">{a.member}</h3>
-                                            <Switch checked={a.enabled} onClick={(e) => e.stopPropagation()} />
+                                            <div className="flex items-center gap-2">
+                                                {a.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                            <MoreHorizontal className="w-4 h-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                        <DropdownMenuItem onClick={() => handleEdit(a)}>
+                                                            <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDuplicateAssignment(a)}>
+                                                            <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleToggleAssignment(a.id)}>
+                                                            <Power className={`w-4 h-4 mr-2 ${a.enabled ? "text-green-500" : "text-slate-400"}`} /> {a.enabled ? 'Disable' : 'Enable'}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(a.id)}>
+                                                            <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
                                         </div>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
                                             Via: {a.methods.map(m => m.toUpperCase()).join(', ')}
@@ -407,7 +546,10 @@ export default function NotificationsView() {
                         mode="notification_assignment"
                         initialData={editingAssignment}
                         onSwitchMode={() => { }}
-                        onClose={() => setShowAssignModal(false)}
+                        onClose={(data) => {
+                            if (data) handleAssignMember(data);
+                            setShowAssignModal(false);
+                        }}
                     />
                 </div>
             )}
