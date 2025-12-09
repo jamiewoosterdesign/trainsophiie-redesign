@@ -22,6 +22,8 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
         setTooltipOpen(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
+    const isError = (field) => formData.errors?.[field];
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
             {/* Header / Intro (Optional) */}
@@ -39,15 +41,30 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
 
             {/* Department Name */}
             <div>
-                <div className="flex justify-between items-center mb-1.5">
-                    <Label className="block">Department Name *</Label>
-                </div>
+                <Label className={`flex items-center gap-2 mb-1.5 ${isError('departmentName') ? 'text-red-500' : ''}`}>
+                    Department Name *
+                    <TooltipProvider>
+                        <Tooltip delayDuration={0} open={tooltipOpen['departmentName']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, departmentName: open }))}>
+                            <TooltipTrigger asChild onClick={(e) => toggleTooltip('departmentName', e)}>
+                                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                <p>The name of the department for internal organization and routing.</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </Label>
                 <Input
                     placeholder="e.g., Accounts, Support, Sales"
                     value={formData.departmentName}
-                    onChange={(e) => onChange('departmentName', e.target.value)}
+                    onChange={(e) => {
+                        onChange('departmentName', e.target.value);
+                        if (isError('departmentName')) onChange('errors', { ...formData.errors, departmentName: false });
+                    }}
                     highlight={(activeField === 'departmentName')?.toString()}
+                    className={isError('departmentName') ? 'border-red-300 focus-visible:ring-red-200' : ''}
                 />
+                {isError('departmentName') && <p className="text-xs text-red-500 mt-1">Department Name is required.</p>}
             </div>
 
             {/* Description */}
@@ -70,9 +87,12 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
                 <div className="relative">
                     <Textarea
                         placeholder="What handles does this department cover?"
-                        className="min-h-[120px] pb-10 resize-y"
+                        className={`min-h-[120px] pb-10 resize-y ${isError('departmentDescription') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                         value={formData.departmentDescription}
-                        onChange={(e) => onChange('departmentDescription', e.target.value)}
+                        onChange={(e) => {
+                            onChange('departmentDescription', e.target.value);
+                            if (isError('departmentDescription')) onChange('errors', { ...formData.errors, departmentDescription: false });
+                        }}
                         highlight={(activeField === 'departmentDescription')?.toString()}
                     />
                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
