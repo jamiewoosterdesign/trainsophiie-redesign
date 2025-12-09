@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
@@ -42,6 +44,8 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
 
 export default function OverviewView() {
     const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
+    const scrollRef = useRef(null);
+    const scrollDirection = useScrollDirection(scrollRef);
     const sections = [
         {
             title: "Knowledge Base",
@@ -188,13 +192,13 @@ export default function OverviewView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
-                <div>
-                    <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Overview</h1>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Welcome to your Sophiie dashboard.</p>
-                </div>
-            </header>
-            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950">
+            <PageHeader
+                title="Overview"
+                subtitle="Welcome to your Sophiie dashboard."
+                scrollDirection={scrollDirection}
+                showBackButton={false}
+            />
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-10">
 
                     {/* Hero Banner */}

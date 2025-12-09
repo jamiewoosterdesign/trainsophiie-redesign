@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Tag, Plus, ArrowLeft, Search, Pencil, Trash2, Filter, Info, AlertCircle, Sparkles, Bot, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -323,16 +325,12 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
             {view === 'grid' && (
                 <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {onAdd && (
-                        <button
+                        <AddNewCard
+                            title={addLabel}
+                            description={addSubtitle}
                             onClick={() => onAdd(null)}
-                            className="w-full h-full flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 min-h-[240px] group"
-                        >
-                            <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <Plus className="w-6 h-6 text-blue-500" />
-                            </div>
-                            <span>{addLabel}</span>
-                            {addSubtitle && <p className="text-xs text-center mt-2 opacity-70 font-normal">{addSubtitle}</p>}
-                        </button>
+                            className="h-full"
+                        />
                     )}
                     {paginatedTags.map(tag => (
                         <TagCard key={tag.id} tag={tag} onEdit={onEdit} />
@@ -348,15 +346,11 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
             {/* Mobile View: Cards */}
             <div className="md:hidden space-y-3">
                 {onAdd && (
-                    <button
+                    <AddNewCard
+                        title={addLabel}
                         onClick={() => onAdd(null)}
-                        className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group"
-                    >
-                        <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Plus className="w-5 h-5 text-blue-500" />
-                        </div>
-                        <span>{addLabel}</span>
-                    </button>
+                        variant="compact"
+                    />
                 )}
 
                 {paginatedTags.map((tag) => (
@@ -427,27 +421,19 @@ export default function TagsView() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             {/* Header */}
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Tags Management</h1>
-                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Manage your customer and inquiry tags.</p>
-                    </div>
-                </div>
-
-                {/* Header Buttons */}
-                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <Button onClick={() => openCustomerModal(null)} className="w-full md:w-auto">
-                        <Plus className="w-4 h-4 mr-2" /> Add Customer Tag
-                    </Button>
-                    <Button variant="outline" onClick={() => openInquiryModal(null)} className="w-full md:w-auto">
-                        <Plus className="w-4 h-4 mr-2" /> Add Inquiry Tag
-                    </Button>
-                </div>
-            </header>
+            {/* Header */}
+            <PageHeader
+                title="Tags Management"
+                subtitle="Manage your customer and inquiry tags."
+                scrollDirection={scrollDirection}
+            >
+                <Button onClick={() => openCustomerModal(null)} className="w-full md:w-auto">
+                    <Plus className="w-4 h-4 mr-2" /> Add Customer Tag
+                </Button>
+                <Button variant="outline" onClick={() => openInquiryModal(null)} className="w-full md:w-auto">
+                    <Plus className="w-4 h-4 mr-2" /> Add Inquiry Tag
+                </Button>
+            </PageHeader>
 
             {/* Content */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">

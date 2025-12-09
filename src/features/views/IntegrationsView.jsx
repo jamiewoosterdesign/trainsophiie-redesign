@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plug2, Sparkles, ExternalLink, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,21 +18,17 @@ const MOCK_INTEGRATIONS = [
 export default function IntegrationsView() {
     const { startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const scrollRef = useRef(null);
+    const scrollDirection = useScrollDirection(scrollRef);
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
-                <div className="flex items-start gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mt-1 shrink-0">
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Integrations</h1>
-                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Connect Sophiie to your existing tools.</p>
-                    </div>
-                </div>
-            </header>
-            <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950 relative">
+            <PageHeader
+                title="Integrations"
+                subtitle="Connect Sophiie to your existing tools."
+                scrollDirection={scrollDirection}
+            />
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950 relative">
                 <div className="max-w-7xl mx-auto w-full">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 

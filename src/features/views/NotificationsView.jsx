@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { Bell, UserPlus, ArrowLeft, Mail, MessageSquare, Phone, Globe, Pencil, Trash2, Search, ChevronLeft, ChevronRight, LayoutGrid, List, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -129,22 +131,16 @@ export default function NotificationsView() {
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             {/* Header */}
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Notifications</h1>
-                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Manage team notifications and assignments.</p>
-                    </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <Button onClick={handleNew} className="w-full sm:w-auto">
-                        <UserPlus className="w-4 h-4 mr-2" /> Assign New Team Member
-                    </Button>
-                </div>
-            </header>
+            {/* Header */}
+            <PageHeader
+                title="Notifications"
+                subtitle="Manage team notifications and assignments."
+                scrollDirection={scrollDirection}
+            >
+                <Button onClick={handleNew} className="w-full sm:w-auto">
+                    <UserPlus className="w-4 h-4 mr-2" /> Assign New Team Member
+                </Button>
+            </PageHeader>
 
             {/* Content */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
@@ -197,22 +193,20 @@ export default function NotificationsView() {
                     {/* Grid View (Cards) */}
                     {view === 'grid' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            <button onClick={handleNew}
-                                className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group gap-3">
-                                <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                    <Plus className="w-6 h-6 text-blue-500" />
-                                </div>
-                                <span className="font-medium">Assign New Team Member</span>
-                                <p className="text-xs text-center opacity-70 font-normal">Set up alerts for a team member</p>
-                            </button>
+                            <AddNewCard
+                                title="Assign New Team Member"
+                                description="Set up alerts for a team member"
+                                onClick={handleNew}
+                            />
 
                             {/* Mobile Add Button (Top) */}
                             {currentPage === 1 && (
                                 <div className="md:hidden">
-                                    <button onClick={handleNew}
-                                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                        <Plus className="w-5 h-5" /> Assign New Team Member
-                                    </button>
+                                    <AddNewCard
+                                        title="Assign New Team Member"
+                                        onClick={handleNew}
+                                        variant="compact"
+                                    />
                                 </div>
                             )}
 
@@ -346,10 +340,11 @@ export default function NotificationsView() {
                         {view === 'table' && (
                             <>
                                 {currentPage === 1 && (
-                                    <button onClick={handleNew}
-                                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                        <Plus className="w-5 h-5" /> Assign New
-                                    </button>
+                                    <AddNewCard
+                                        title="Assign New"
+                                        onClick={handleNew}
+                                        variant="compact"
+                                    />
                                 )}
                                 {paginatedAssignments.map(a => (
                                     <div key={a.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => handleEdit(a)}>

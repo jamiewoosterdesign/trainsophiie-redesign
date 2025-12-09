@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Plus, ArrowRight, ShieldAlert, Trash2, ArrowLeft, Zap, Waypoints, Search, ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
@@ -75,20 +77,15 @@ export default function ScenariosView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Scenarios & Restrictions</h1>
-                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Define handling rules for refunds, complaints, and general inquiries.</p>
-                    </div>
-                </div>
+            <PageHeader
+                title="Scenarios & Restrictions"
+                subtitle="Define handling rules for refunds, complaints, and general inquiries."
+                scrollDirection={scrollDirection}
+            >
                 <Button onClick={() => openWizard('protocol')} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add Scenario
                 </Button>
-            </header>
+            </PageHeader>
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950 px-4">
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
@@ -141,21 +138,19 @@ export default function ScenariosView() {
                         {/* Grid View */}
                         {view === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                <button onClick={() => openWizard('protocol')}
-                                    className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
-                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                        <Plus className="w-6 h-6 text-blue-500" />
-                                    </div>
-                                    <span className="font-medium">Create Scenario</span>
-                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Handle refunds, complaints & more</p>
-                                </button>
+                                <AddNewCard
+                                    title="Create Scenario"
+                                    description="Handle refunds, complaints & more"
+                                    onClick={() => openWizard('protocol')}
+                                />
                                 {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (
                                     <div className="md:hidden">
-                                        <button onClick={() => openWizard('protocol')}
-                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                            <Plus className="w-5 h-5" /> Create Scenario
-                                        </button>
+                                        <AddNewCard
+                                            title="Create Scenario"
+                                            onClick={() => openWizard('protocol')}
+                                            variant="compact"
+                                        />
                                     </div>
                                 )}
 
@@ -218,10 +213,11 @@ export default function ScenariosView() {
                             {view === 'table' && (
                                 <>
                                     {currentPage === 1 && (
-                                        <button onClick={() => openWizard('protocol')}
-                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                            <Plus className="w-5 h-5" /> Create Scenario
-                                        </button>
+                                        <AddNewCard
+                                            title="Create Scenario"
+                                            onClick={() => openWizard('protocol')}
+                                            variant="compact"
+                                        />
                                     )}
                                     {paginatedScenarios.map(proto => (
                                         <div key={proto.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => openWizard('protocol')}>

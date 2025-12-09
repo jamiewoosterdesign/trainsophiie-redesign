@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info } from 'lucide-react';
@@ -86,18 +87,13 @@ export default function BusinessInfoView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Business Information</h1>
-                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Configure your business information</p>
-                    </div>
-                </div>
+            <PageHeader
+                title="Business Information"
+                subtitle="Configure your business information"
+                scrollDirection={scrollDirection}
+            >
                 <Button className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white">Save Changes</Button>
-            </header>
+            </PageHeader>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-8 relative">

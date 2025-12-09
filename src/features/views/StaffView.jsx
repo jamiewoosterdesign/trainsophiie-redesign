@@ -1,4 +1,6 @@
 import React, { useState, useRef } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Plus, Settings, Phone, ArrowLeft, Users, Search, ChevronLeft, ChevronRight, LayoutGrid, Clock, PhoneForwarded } from 'lucide-react';
@@ -85,34 +87,25 @@ export default function StaffView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className="w-full md:w-auto flex justify-between items-start">
-                    <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                        <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                            <ArrowLeft className="w-5 h-5" />
-                        </Button>
-                        <div>
-                            <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Staff & Departments</h1>
-                            <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Manage team members and configure transfer logic.</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <Button
-                        variant="secondary"
-                        className="w-full md:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
-                        onClick={() => openWizard('department')}
-                    >
-                        <Plus className="w-4 h-4 mr-2" /> Add Department
-                    </Button>
-                    <Button onClick={() => openWizard('staff')} className="w-full md:w-auto">
-                        <Plus className="w-4 h-4 mr-2" /> Add New Staff
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={openSettings} className="hidden md:flex" title="Global Settings">
-                        <Settings className="w-4 h-4" />
-                    </Button>
-                </div>
-            </header>
+            <PageHeader
+                title="Staff & Departments"
+                subtitle="Manage team members and configure transfer logic."
+                scrollDirection={scrollDirection}
+            >
+                <Button
+                    variant="secondary"
+                    className="w-full md:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+                    onClick={() => openWizard('department')}
+                >
+                    <Plus className="w-4 h-4 mr-2" /> Add Department
+                </Button>
+                <Button onClick={() => openWizard('staff')} className="w-full md:w-auto">
+                    <Plus className="w-4 h-4 mr-2" /> Add New Staff
+                </Button>
+                <Button variant="outline" size="icon" onClick={openSettings} className="hidden md:flex" title="Global Settings">
+                    <Settings className="w-4 h-4" />
+                </Button>
+            </PageHeader>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-12">
@@ -129,20 +122,18 @@ export default function StaffView() {
 
                         {departmentView === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                <button onClick={() => openWizard('department')}
-                                    className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
-                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                        <Plus className="w-6 h-6 text-blue-500" />
-                                    </div>
-                                    <span className="font-medium">Add Department</span>
-                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Group staff members together</p>
-                                </button>
+                                <AddNewCard
+                                    title="Add Department"
+                                    description="Group staff members together"
+                                    onClick={() => openWizard('department')}
+                                />
                                 {/* Mobile Add Button (Top) */}
                                 <div className="md:hidden">
-                                    <button onClick={() => openWizard('department')}
-                                        className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                        <Plus className="w-5 h-5" /> Add Department
-                                    </button>
+                                    <AddNewCard
+                                        title="Add Department"
+                                        onClick={() => openWizard('department')}
+                                        variant="compact"
+                                    />
                                 </div>
                                 {MOCK_DEPARTMENTS.map(dept => (
                                     <Card key={dept.id} onClick={() => openWizard('department')} className="p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full min-h-[240px]">
@@ -192,10 +183,11 @@ export default function StaffView() {
                                     </div>
                                     {/* Mobile Add Button for Table View */}
                                     <div className="md:hidden p-4">
-                                        <button onClick={() => openWizard('department')}
-                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                            <Plus className="w-5 h-5" /> Add Department
-                                        </button>
+                                        <AddNewCard
+                                            title="Add Department"
+                                            onClick={() => openWizard('department')}
+                                            variant="compact"
+                                        />
                                     </div>
                                     {MOCK_DEPARTMENTS.map(dept => (
                                         <div key={dept.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-6 py-4 items-start md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b md:border-b-0 border-slate-100 dark:border-slate-800 last:border-0" onClick={() => openWizard('department')}>
@@ -297,21 +289,19 @@ export default function StaffView() {
                         {/* Grid View */}
                         {view === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                <button onClick={() => openWizard('staff')}
-                                    className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
-                                    <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                        <Plus className="w-6 h-6 text-blue-500" />
-                                    </div>
-                                    <span className="font-medium">Add New Staff</span>
-                                    <p className="text-xs text-center mt-2 opacity-70 font-normal">Invite a new user to the team</p>
-                                </button>
+                                <AddNewCard
+                                    title="Add New Staff"
+                                    description="Invite a new user to the team"
+                                    onClick={() => openWizard('staff')}
+                                />
                                 {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (
                                     <div className="md:hidden">
-                                        <button onClick={() => openWizard('staff')}
-                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                            <Plus className="w-5 h-5" /> Add New Staff
-                                        </button>
+                                        <AddNewCard
+                                            title="Add New Staff"
+                                            onClick={() => openWizard('staff')}
+                                            variant="compact"
+                                        />
                                     </div>
                                 )}
                                 {paginatedStaff.map(staff => (
@@ -333,7 +323,6 @@ export default function StaffView() {
                                         </div>
                                     </Card>
                                 ))}
-
                             </div>
                         )}
 
@@ -394,10 +383,11 @@ export default function StaffView() {
                             {view === 'table' && (
                                 <>
                                     {currentPage === 1 && (
-                                        <button onClick={() => openWizard('staff')}
-                                            className="w-full flex items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-2">
-                                            <Plus className="w-5 h-5" /> Add New Staff
-                                        </button>
+                                        <AddNewCard
+                                            title="Add New Staff"
+                                            onClick={() => openWizard('staff')}
+                                            variant="compact"
+                                        />
                                     )}
                                     {paginatedStaff.map(staff => (
                                         <div key={staff.id} className="p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm" onClick={() => openWizard('staff')}>

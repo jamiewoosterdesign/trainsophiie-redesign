@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { PageHeader } from '@/components/shared/PageHeader';
+import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import { Plus, Clock, Share2, Zap, Hammer, ArrowLeft, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCircle, X } from 'lucide-react';
@@ -209,25 +211,20 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
             {/* Grid View */}
             {view === 'grid' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <button onClick={onCreate}
-                        className="hidden md:flex border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-6 flex-col items-center justify-center text-slate-400 dark:text-slate-500 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all min-h-[240px] group">
-                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <Plus className="w-6 h-6 text-blue-500" />
-                        </div>
-                        <span className="font-medium">Create New Service</span>
-                        <p className="text-xs text-center mt-2 opacity-70 font-normal">Add the services you offer to customers</p>
-                    </button>
+                    <AddNewCard
+                        title="Create New Service"
+                        description="Add the services you offer to customers"
+                        onClick={onCreate}
+                    />
 
                     {/* Mobile Add Button */}
                     {currentPage === 1 && (
                         <div className="md:hidden">
-                            <button onClick={onCreate}
-                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
-                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Plus className="w-5 h-5 text-blue-500" />
-                                </div>
-                                <span>Create New Service</span>
-                            </button>
+                            <AddNewCard
+                                title="Create New Service"
+                                onClick={onCreate}
+                                variant="compact"
+                            />
                         </div>
                     )}
 
@@ -297,13 +294,11 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, hig
                 {view === 'table' && (
                     <>
                         {currentPage === 1 && (
-                            <button onClick={onCreate}
-                                className="w-full flex items-center p-4 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-all font-medium gap-3 group">
-                                <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                    <Plus className="w-5 h-5 text-blue-500" />
-                                </div>
-                                <span>Create New Service</span>
-                            </button>
+                            <AddNewCard
+                                title="Create New Service"
+                                onClick={onCreate}
+                                variant="compact"
+                            />
                         )}
                         {paginatedServices.map(service => (
                             <Card key={service.id} className={`p-4 hover:shadow-md transition-all cursor-pointer dark:bg-slate-900 dark:border-slate-800 ${service.id === highlightedId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`} onClick={onCreate}>
@@ -437,21 +432,14 @@ export default function ServicesView() {
                 }
             `}</style>
 
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300">
-                <div className={`flex gap-4 transition-all duration-300 ${scrollDirection === 'down' ? 'items-center' : 'items-start'}`}>
-                    <Button variant="ghost" size="icon" onClick={() => navigate('/overview')} className={`text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 shrink-0 transition-all duration-300 ${scrollDirection === 'down' ? 'mt-0' : 'mt-1'}`}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <div>
-                        <h1 className={`font-bold text-slate-900 dark:text-white transition-all duration-300 ${scrollDirection === 'down' ? 'text-lg' : 'text-xl md:text-2xl'}`}>Services Configuration</h1>
-                        <p className={`text-slate-500 dark:text-slate-400 text-sm transition-all duration-300 ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>Teach Sophiie what services you offer.</p>
-                    </div>
-                </div>
-                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                    <CategorySelector usedCategories={["Electricians", "Builders"]} />
-                    <AddServiceDropdown onAdd={(cat) => openWizard('service', { category: cat }, (data) => handleCreateService(data, cat))} />
-                </div>
-            </header>
+            <PageHeader
+                title="Services Configuration"
+                subtitle="Teach Sophiie what services you offer."
+                scrollDirection={scrollDirection}
+            >
+                <CategorySelector usedCategories={["Electricians", "Builders"]} />
+                <AddServiceDropdown onAdd={(cat) => openWizard('service', { category: cat }, (data) => handleCreateService(data, cat))} />
+            </PageHeader>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-12">
