@@ -4,15 +4,53 @@ import { WizardAutoFillBanner } from './components/WizardAutoFillBanner';
 import { WizardField } from './components/WizardField';
 import { WizardInput, WizardTextarea } from './components/WizardSmartInputs';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sparkles } from 'lucide-react';
+import {
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Sparkles, HelpCircle, Plus, ChevronDown, X, Trash2, FileText, Upload, Info } from 'lucide-react';
+import { cn } from "@/lib/utils";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export default function WizardFormContentProduct({ formData, onChange, activeField }) {
+export default function WizardFormContentProduct({ formData, onChange, activeField, onSwitchMode }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
+    const [addFaqOpen, setAddFaqOpen] = useState(false);
+    const addFaqRef = React.useRef(null);
+
+    React.useEffect(() => {
+        function handleClickOutside(event) {
+            if (addFaqRef.current && !addFaqRef.current.contains(event.target)) {
+                setAddFaqOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [addFaqRef]);
 
     // Mobile Tooltip Toggle
     const toggleTooltip = (id) => {
         setTooltipOpen(prev => ({ ...prev, [id]: !prev[id] }));
+    };
+
+    const handleAddFaqFromKb = () => {
+        const newFaqs = [...(formData.productFaqs || []), {
+            question: "What is the warranty period?",
+            answer: "This product comes with a standard 2-year manufacturer warranty covering parts and labor."
+        }];
+        onChange('productFaqs', newFaqs);
+    };
+
+    const handleDismissFaq = (index) => {
+        const newFaqs = [...(formData.productFaqs || [])];
+        newFaqs.splice(index, 1);
+        onChange('productFaqs', newFaqs);
     };
 
     const showAutoFillBanner = formData.productName &&
@@ -108,7 +146,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                     onTooltipToggle={() => toggleTooltip('priceMode')}
                     error={formData.errors?.priceMode}
                 >
-                    <div className="flex gap-2 mb-2 overflow-x-auto pb-1 -mx-1">
+                    <div className="flex gap-2 mb-2 overflow-x-auto p-1 -m-1">
                         {['fixed', 'range', 'na'].map(m => (
                             <div key={m}
                                 onClick={() => {
@@ -121,10 +159,10 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                                     }
                                 }}
                                 className={`border rounded-full px-4 py-2 cursor-pointer whitespace-nowrap text-sm transition-all ${formData.priceMode === m
-                                        ? (formData.autoFilledFields?.priceMode
-                                            ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-medium ring-1 ring-emerald-500' // AI Highlight
-                                            : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400 font-medium ring-1 ring-blue-500')
-                                        : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                                    ? (formData.autoFilledFields?.priceMode
+                                        ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-medium ring-1 ring-emerald-500' // AI Highlight
+                                        : 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-700 dark:text-blue-400 font-medium ring-1 ring-blue-500')
+                                    : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                                     }`}
                             >
                                 {m === 'fixed' ? 'Fixed Price' : m === 'range' ? 'Price Range' : 'Not Applicable'}
@@ -248,6 +286,101 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                     )}
                 </div>
             </WizardField>
+
+            {/* Product FAQs */}
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-6 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div className="flex gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0">
+                            <HelpCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="font-semibold text-slate-900 dark:text-slate-100">Product FAQs</h3>
+                                <TooltipProvider>
+                                    <Tooltip
+                                        delayDuration={0}
+                                        open={tooltipOpen['productFaqs']}
+                                        onOpenChange={() => toggleTooltip('productFaqs')}
+                                    >
+                                        <TooltipTrigger asChild onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleTooltip('productFaqs');
+                                        }}>
+                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                            <p>Add Answers to frequently asked questions about this product</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">Add frequently asked questions about this product</p>
+                        </div>
+                    </div>
+
+                    {/* Custom Dropdown Button */}
+                    <div className="relative self-end sm:self-auto" ref={addFaqRef}>
+                        <Button
+                            variant="outline"
+                            onClick={() => setAddFaqOpen(!addFaqOpen)}
+                            className="bg-sky-50 text-sky-700 border-sky-200 hover:bg-sky-100 hover:text-sky-800 dark:bg-sky-900/20 dark:text-sky-400 dark:border-sky-800 dark:hover:bg-sky-900/40 gap-0 pl-3 pr-2 h-9"
+                        >
+                            <span className="pr-3 border-r border-sky-200 dark:border-sky-800 mr-2 flex items-center font-medium">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add FAQ
+                            </span>
+                            <ChevronDown className={`w-4 h-4 transition-transform ${addFaqOpen ? 'rotate-180' : ''}`} />
+                        </Button>
+
+                        {addFaqOpen && (
+                            <div className="absolute top-full right-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-100 dark:bg-slate-900 dark:border-slate-800">
+                                <div className="p-1">
+                                    <button
+                                        onClick={() => {
+                                            handleAddFaqFromKb();
+                                            setAddFaqOpen(false);
+                                        }}
+                                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 text-slate-700 dark:text-slate-200"
+                                    >
+                                        <FileText className="w-4 h-4 text-slate-400" />
+                                        From Knowledge Base
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (onSwitchMode) onSwitchMode('document');
+                                            setAddFaqOpen(false);
+                                        }}
+                                        className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2 text-slate-700 dark:text-slate-200"
+                                    >
+                                        <Upload className="w-4 h-4 text-slate-400" />
+                                        Upload Document
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* FAQ List */}
+                {formData.productFaqs && formData.productFaqs.length > 0 && (
+                    <div className="grid gap-3 pt-2">
+                        {formData.productFaqs.map((faq, index) => (
+                            <div key={index} className="relative group p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                                <button
+                                    onClick={() => handleDismissFaq(index)}
+                                    className="absolute top-3 right-3 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                                    title="Remove FAQ"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                                <h4 className="font-medium text-slate-900 dark:text-slate-200 pr-8 mb-1">{faq.question}</h4>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">{faq.answer}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
