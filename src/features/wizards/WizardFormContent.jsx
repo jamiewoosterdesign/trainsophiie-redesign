@@ -1639,7 +1639,7 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                     {/* Transfer Routing */}
                     {formData.protocolAction === 'transfer' && (
-                        <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 animate-in fade-in">
+                        <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 animate-in fade-in">
                             <Label className="mb-2 block">Routing</Label>
                             <TransferRoutingSelector
                                 type={formData.protocolDestinationType}
@@ -1653,13 +1653,13 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
 
                     {/* Book UI */}
                     {formData.protocolAction === 'book' && (
-                        <div className="p-4 bg-purple-50 rounded-lg border border-purple-100 flex items-center gap-3 animate-in fade-in">
-                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-purple-600 shadow-sm">
+                        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800 flex items-center gap-3 animate-in fade-in">
+                            <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm">
                                 <Calendar className="w-5 h-5" />
                             </div>
                             <div>
-                                <h4 className="text-sm font-bold text-purple-900">Calendar Active</h4>
-                                <p className="text-xs text-purple-700">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
+                                <h4 className="text-sm font-bold text-purple-900 dark:text-purple-100">Calendar Active</h4>
+                                <p className="text-xs text-purple-700 dark:text-purple-300">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
                             </div>
                         </div>
                     )}
@@ -1743,12 +1743,12 @@ export default function WizardFormContent({ mode, step, formData, onChange, acti
         if (step === 3) {
             return (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center">
-                        <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
+                        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                             <ScrollText className="w-8 h-8" />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-800 mb-1">Scenario Summary</h3>
-                        <p className="text-sm text-slate-500">Review the logic before activating.</p>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Scenario Summary</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Review the logic before activating.</p>
                     </div>
 
                     <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800">
