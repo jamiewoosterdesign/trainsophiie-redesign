@@ -179,7 +179,19 @@ export default function WizardFormContentDocument({ step, formData, onChange, ac
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">Emergency Gas Repair</h4>
-                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">98% Match</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">98% Match</span>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                <Info className="w-3 h-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 cursor-help transition-colors" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900 text-xs max-w-[200px]">
+                                                <p>I am 98% confident this relates to a new service based on your existing data patterns.</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                             </div>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"We offer 24/7 gas leak detection and repair services for residential properties..."</p>
                             <div className="mt-3 flex gap-2">
@@ -200,7 +212,19 @@ export default function WizardFormContentDocument({ step, formData, onChange, ac
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">Boiler Installation</h4>
-                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">92% Match</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">92% Match</span>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                <Info className="w-3 h-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 cursor-help transition-colors" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900 text-xs max-w-[200px]">
+                                                <p>I am 92% confident this information identifies a distinct service offering.</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                             </div>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Full boiler installation and certification with 5-year warranty..."</p>
                             <div className="mt-3 flex gap-2">
@@ -221,7 +245,19 @@ export default function WizardFormContentDocument({ step, formData, onChange, ac
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">Payment Policy FAQ</h4>
-                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">85% Match</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">85% Match</span>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                <Info className="w-3 h-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 cursor-help transition-colors" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900 text-xs max-w-[200px]">
+                                                <p>I am 85% confident this text answers a frequently asked question.</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                             </div>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Payment is required upon completion of work. We accept credit cards and extensive..."</p>
                             <div className="mt-3 flex gap-2">
@@ -241,7 +277,19 @@ export default function WizardFormContentDocument({ step, formData, onChange, ac
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">Warranty Questions</h4>
-                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">88% Match</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">88% Match</span>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                <Info className="w-3 h-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 cursor-help transition-colors" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900 text-xs max-w-[200px]">
+                                                <p>I am 88% confident this relates to warranty information customers ask about.</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                             </div>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"All boiler installations come with a default 5-year warranty, provided annual service is..."</p>
                             <div className="mt-3 flex gap-2">
@@ -261,7 +309,19 @@ export default function WizardFormContentDocument({ step, formData, onChange, ac
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-bold text-slate-900 dark:text-white text-sm">Safety Protocol: Gas Leaks</h4>
-                                <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">95% Match</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">95% Match</span>
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0}>
+                                            <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                                                <Info className="w-3 h-3 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 cursor-help transition-colors" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900 text-xs max-w-[200px]">
+                                                <p>I am 95% confident this text outlines a critical safety policy or protocol.</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                             </div>
                             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">"Immediate evacuation required if gas smell exceeds threshold. Do not use electrical switches..."</p>
                             <div className="mt-3 flex gap-2">

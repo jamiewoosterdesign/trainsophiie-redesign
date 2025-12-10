@@ -166,7 +166,19 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                 {(formData.protocolAction === 'script' || formData.protocolAction === 'collect') && (
                     <div className="space-y-6 animate-in fade-in">
                         <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800">
-                            <Label className="text-xs text-slate-500 dark:text-slate-400 uppercase block mb-2">{formData.protocolAction === 'collect' ? 'Data Collection Script' : 'Response Script'}</Label>
+                            <Label className="text-xs text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
+                                {formData.protocolAction === 'collect' ? 'AI Response' : 'Response Script'}
+                                <TooltipProvider>
+                                    <Tooltip delayDuration={0} open={tooltipOpen['aiResponse']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, aiResponse: open }))}>
+                                        <TooltipTrigger asChild onClick={(e) => toggleTooltip('aiResponse', e)}>
+                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                            <p>The initial phrase Sophiie will use to start collecting information.</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </Label>
                             <div className="relative">
                                 <Textarea
                                     className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"

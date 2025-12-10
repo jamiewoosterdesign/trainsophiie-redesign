@@ -71,6 +71,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                 tooltipOpen={tooltipOpen['productName']}
                 onTooltipToggle={(open) => toggleTooltip('productName')}
                 error={formData.errors?.productName}
+                isAutoFilled={formData.autoFilledFields?.productName}
             >
                 <div className="relative">
                     <WizardInput
@@ -88,12 +89,6 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                         className={formData.errors?.productName ? 'border-red-300 focus-visible:ring-red-200' : ''}
                         highlight={(activeField === 'productName' || formData.autoFilledFields?.productName)?.toString()}
                     />
-                    {formData.autoFilledFields?.productName && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
-                            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
-                            <Sparkles className="w-3 h-3" />
-                        </div>
-                    )}
                 </div>
             </WizardField>
 
@@ -147,6 +142,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                     tooltipOpen={tooltipOpen['priceMode']}
                     onTooltipToggle={() => toggleTooltip('priceMode')}
                     error={formData.errors?.priceMode}
+                    isAutoFilled={formData.autoFilledFields?.priceMode}
                 >
                     <div className="flex gap-2 mb-2 overflow-x-auto p-1 -m-1">
                         {['fixed', 'range', 'na'].map(m => (
@@ -181,6 +177,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                         tooltipOpen={tooltipOpen['productPrice']}
                         onTooltipToggle={() => toggleTooltip('productPrice')}
                         error={formData.errors?.productPrice}
+                        isAutoFilled={formData.autoFilledFields?.price}
                     >
                         <div className="relative">
                             <div className="absolute left-3 top-2.5 text-slate-500 z-10">$</div>
@@ -199,11 +196,6 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                                 className={`pl-7 ${formData.errors?.productPrice ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
                                 highlight={(activeField === 'productPrice' || formData.autoFilledFields?.price)?.toString()}
                             />
-                            {formData.autoFilledFields?.price && (
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
-                                    <Sparkles className="w-3 h-3" />
-                                </div>
-                            )}
                         </div>
                     </WizardField>
                 )}
@@ -263,6 +255,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                 tooltipOpen={tooltipOpen['description']}
                 onTooltipToggle={(open) => toggleTooltip('description')}
                 error={formData.errors?.description}
+                isAutoFilled={formData.autoFilledFields?.description}
             >
                 <div className="relative">
                     <WizardTextarea
@@ -280,12 +273,6 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                         className={formData.errors?.description ? 'border-red-300 focus-visible:ring-red-200' : ''}
                         highlight={(activeField === 'description' || formData.autoFilledFields?.description)?.toString()}
                     />
-                    {formData.autoFilledFields?.description && (
-                        <div className="absolute top-2 right-12 flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
-                            <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
-                            <Sparkles className="w-3 h-3" />
-                        </div>
-                    )}
                 </div>
             </WizardField>
 

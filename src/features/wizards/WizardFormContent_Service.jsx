@@ -118,6 +118,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                 onChange('plusGst', false);
                                 onChange('plusMaterials', false);
                                 onChange('questions', []);
+                                onChange('autoFilledFields', {});
                             }}
                         />
                     )}
@@ -137,7 +138,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                             </TooltipProvider>
                         </Label>
                         {formData.autoFilledFields?.description && (
-                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
                                 <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
                                 <Sparkles className="w-3 h-3" />
                             </div>
@@ -186,7 +187,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                             </TooltipProvider>
                         </Label>
                         {formData.autoFilledFields?.duration && (
-                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
                                 <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
                                 <Sparkles className="w-3 h-3" />
                             </div>
@@ -248,7 +249,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                             </TooltipProvider>
                         </Label>
                         {formData.autoFilledFields?.priceMode && (
-                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in">
+                            <div className="flex items-center gap-1.5 text-emerald-600 animate-in fade-in bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md shadow-sm border border-emerald-100 dark:border-emerald-900/50">
                                 <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">AI Auto-filled</span>
                                 <Sparkles className="w-3 h-3" />
                             </div>

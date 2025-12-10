@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
-import { X, ChevronRight, Check, ArrowLeft, MessageSquare, Mic, MicOff, Settings } from 'lucide-react';
+import { X, ChevronRight, Check, ArrowLeft, MessageSquare, Mic, MicOff, Settings, PenLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Tooltip,
@@ -375,32 +375,59 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 />
             )}
 
+
             {/* Save Confirmation Dialog */}
             {showSaveConfirm && (
-                <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in zoom-in-95 border border-slate-200 dark:border-slate-700">
-                        <h3 className="font-bold text-xl mb-3 text-slate-900 dark:text-white">Unsaved Changes</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">You have unsaved changes. How would you like to proceed?</p>
-                        <div className="flex flex-col gap-3">
-                            <Button
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-sm font-semibold shadow-md hover:shadow-lg transition-all"
-                                onClick={handleSaveAndExit}
-                            >
-                                Save & Exit
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="w-full h-12 text-sm font-semibold bg-white dark:bg-slate-800 text-red-600 dark:text-slate-300 border-red-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-slate-700"
-                                onClick={() => onClose()}
-                            >
-                                Discard Changes
-                            </Button>
-                            <button
-                                className="w-full text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 py-3 transition-colors"
-                                onClick={() => setShowSaveConfirm(false)}
-                            >
-                                Keep Editing
-                            </button>
+                <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200 relative border border-slate-200 dark:border-slate-800">
+                        {/* Close X */}
+                        <button
+                            onClick={() => setShowSaveConfirm(false)}
+                            className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+
+                        <div className="flex gap-5">
+                            {/* Icon */}
+                            {/* Icon - Hidden on mobile */}
+                            <div className="hidden sm:flex w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center flex-shrink-0 text-slate-600 dark:text-slate-300">
+                                <PenLine className="w-6 h-6" />
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 pt-1">
+                                <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Unsaved Changes</h3>
+                                <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
+                                    Do you want to discard your changes, save them or keep editing?
+                                </p>
+
+                                {/* Buttons */}
+                                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 mt-8">
+                                    <button
+                                        className="text-sm font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2 px-1"
+                                        onClick={() => setShowSaveConfirm(false)}
+                                    >
+                                        Keep Editing
+                                    </button>
+
+                                    <div className="flex flex-col sm:flex-row gap-3">
+                                        <Button
+                                            variant="outline"
+                                            className="sm:w-auto w-full h-10 px-6 border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
+                                            onClick={() => onClose()}
+                                        >
+                                            Discard
+                                        </Button>
+                                        <Button
+                                            className="sm:w-auto w-full h-10 px-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-sm border-0 rounded-md"
+                                            onClick={handleSaveAndExit}
+                                        >
+                                            Save
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
