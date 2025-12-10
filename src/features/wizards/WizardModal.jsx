@@ -390,7 +390,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             </Button>
                             <Button
                                 variant="outline"
-                                className="w-full h-12 text-sm font-semibold bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                className="w-full h-12 text-sm font-semibold bg-white dark:bg-slate-800 text-red-600 dark:text-slate-300 border-red-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-slate-700"
                                 onClick={() => onClose()}
                             >
                                 Discard Changes
