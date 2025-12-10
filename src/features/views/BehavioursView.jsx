@@ -49,7 +49,7 @@ export default function BehavioursView() {
             />
 
             {/* Main Content */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950 relative">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950 relative">
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 

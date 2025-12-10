@@ -6,7 +6,7 @@ import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
     Users, ArrowRightLeft, Bell, Tag,
     Mic, MessageSquare, Activity,
-    CheckCircle, ChevronRight, Mic2, ShoppingBag
+    CheckCircle, ChevronRight, Mic2, ShoppingBag, Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -203,8 +203,13 @@ export default function OverviewView() {
                 subtitle="Welcome to your Sophiie dashboard."
                 scrollDirection={scrollDirection}
                 showBackButton={false}
+                icon={
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                        <Bot className="w-6 h-6" />
+                    </div>
+                }
             />
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-10">
 
                     {/* Hero Banner */}

@@ -225,7 +225,7 @@ export default function BusinessInfoView() {
                 </Button>
             </PageHeader>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-950">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 {/* Page Section Navigation */}
                 <PageSectionNav
                     sections={sections}

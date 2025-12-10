@@ -11,6 +11,7 @@ export function PageHeader({
     onBack,
     backPath = '/overview',
     showBackButton = true,
+    icon,
     className,
     children
 }) {
@@ -21,7 +22,7 @@ export function PageHeader({
 
     return (
         <header className={cn(
-            "bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300",
+            "bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 py-4 md:px-8 md:py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 shrink-0 sticky top-0 z-30 transition-shadow duration-300",
             className
         )}>
             <div className={cn(
@@ -42,20 +43,25 @@ export function PageHeader({
                     </Button>
                 )}
                 <div>
-                    <h1 className={cn(
-                        "font-bold text-slate-900 dark:text-white transition-all duration-300",
-                        isScrolledDown ? "text-lg" : "text-xl md:text-2xl"
-                    )}>
-                        {title}
-                    </h1>
-                    {subtitle && (
-                        <p className={cn(
-                            "text-slate-500 dark:text-slate-400 text-sm transition-all duration-300",
-                            isScrolledDown ? "max-h-0 opacity-0 mt-0" : "max-h-20 opacity-100 mt-1"
-                        )}>
-                            {subtitle}
-                        </p>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {icon && icon}
+                        <div>
+                            <h1 className={cn(
+                                "font-bold text-slate-900 dark:text-white transition-all duration-300",
+                                isScrolledDown ? "text-lg" : "text-xl md:text-2xl"
+                            )}>
+                                {title}
+                            </h1>
+                            {subtitle && (
+                                <p className={cn(
+                                    "text-slate-500 dark:text-slate-400 text-sm transition-all duration-300",
+                                    isScrolledDown ? "max-h-0 opacity-0 mt-0" : "max-h-20 opacity-100 mt-1"
+                                )}>
+                                    {subtitle}
+                                </p>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
             {children && (

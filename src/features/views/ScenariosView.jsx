@@ -179,7 +179,7 @@ export default function ScenariosView() {
                     <Plus className="w-4 h-4 mr-2" /> Add Scenario
                 </Button>
             </PageHeader>
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950 px-4">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:px-8 bg-slate-50/50 dark:bg-slate-950 px-4">
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
