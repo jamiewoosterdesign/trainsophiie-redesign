@@ -340,7 +340,15 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
     };
 
     return (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200"
+            onClick={(e) => {
+                // Check if click is on backdrop (not the modal content)
+                if (e.target === e.currentTarget) {
+                    handleClose();
+                }
+            }}
+        >
 
             {/* Toast Notification */}
             {showToast && (
@@ -369,15 +377,26 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
 
             {/* Save Confirmation Dialog */}
             {showSaveConfirm && (
-                <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/20">
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-2xl w-96 animate-in zoom-in-95 border border-transparent dark:border-slate-800">
-                        <h3 className="font-bold text-lg mb-2 text-slate-900 dark:text-white">Unsaved Changes</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">You have unsaved changes. How would you like to proceed?</p>
+                <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 animate-in zoom-in-95 border border-slate-200 dark:border-slate-700">
+                        <h3 className="font-bold text-xl mb-3 text-slate-900 dark:text-white">Unsaved Changes</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">You have unsaved changes. How would you like to proceed?</p>
                         <div className="flex flex-col gap-3">
-                            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11" onClick={handleSaveAndExit}>Save & Exit</Button>
-                            <Button variant="danger" className="w-full h-11 bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700" onClick={() => onClose()}>Discard Changes</Button>
+                            <Button
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-sm font-semibold shadow-md hover:shadow-lg transition-all"
+                                onClick={handleSaveAndExit}
+                            >
+                                Save & Exit
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="w-full h-12 text-sm font-semibold bg-white dark:bg-slate-800 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                onClick={() => onClose()}
+                            >
+                                Discard Changes
+                            </Button>
                             <button
-                                className="w-full text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 mt-2 transition-colors"
+                                className="w-full text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 py-3 transition-colors"
                                 onClick={() => setShowSaveConfirm(false)}
                             >
                                 Keep Editing
@@ -505,9 +524,33 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                 )}
                             </div>
                         </div>
-                        <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                            <X className="w-6 h-6" />
-                        </button>
+
+                        {/* Voice Toggle Button (Desktop) */}
+                        <div className="relative">
+                            {showVoiceTooltip && (
+                                <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
+                                    <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
+                                    Toggle Voice Setup anytime here
+                                </div>
+                            )}
+                            <button
+                                onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
+                                className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
+                                    ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                    }`}
+                            >
+                                {simulatorTab === 'voice' ? (
+                                    <>
+                                        <Mic className="w-3.5 h-3.5 animate-pulse" /> Voice On
+                                    </>
+                                ) : (
+                                    <>
+                                        <Mic className="w-3.5 h-3.5" /> Voice Off
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Form Content */}
@@ -581,6 +624,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         setActiveField={setActiveField}
                         showVoiceTooltip={showVoiceTooltip}
                         isMobile={true} // Hint to simulator
+                        onWizardClose={handleClose}
                     />
                 </div>
 

@@ -11,14 +11,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
+import { SetupProgressTracker } from '@/components/shared/SetupProgressTracker';
 
 const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, statusColor }) => {
     const navigate = useNavigate();
+    const isComplete = status === 'Complete' || status === 'Services added' || status === 'Documents added' || status === 'Policy added' || status === 'Faqs added' || status === 'Team added';
+
+    const iconColorClass = isComplete
+        ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+        : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
 
     return (
         <Card className={`p-6 flex flex-col h-full hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group ${colorClass.includes('ring-') ? colorClass.split(' ').filter(c => c.startsWith('ring') || c.startsWith('shadow') || c.startsWith('scale') || c.startsWith('transition') || c.startsWith('duration')).join(' ') : ''}`} onClick={() => navigate(link)}>
             <div className="flex-1">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${colorClass.split(' ').filter(c => !c.startsWith('ring') && !c.startsWith('shadow') && !c.startsWith('scale') && !c.startsWith('transition') && !c.startsWith('duration')).join(' ')}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${iconColorClass}`}>
                     <Icon className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 mb-1">{title}</h3>
@@ -27,7 +33,7 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
 
             <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
                 <div className="flex items-center gap-2">
-                    {status === 'Complete' || status === 'Services added' || status === 'Documents added' || status === 'Policy added' || status === 'Faqs added' || status === 'Team added' ? (
+                    {isComplete ? (
                         <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
                         <CheckCircle className="w-4 h-4 text-slate-300" />
@@ -203,6 +209,9 @@ export default function OverviewView() {
 
                     {/* Hero Banner */}
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
+
+                    {/* Setup Progress Tracker */}
+                    <SetupProgressTracker />
 
                     {/* Sections */}
                     {sections.map((section, idx) => (

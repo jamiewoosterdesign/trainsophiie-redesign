@@ -1,9 +1,30 @@
 import React from 'react';
-import { Check, Circle, Trophy, Sparkles, X } from 'lucide-react';
+import { Check, X, Sparkles, Briefcase, Wrench, ShoppingBag, Book, ListChecks, HelpCircle, ShieldAlert, Users, ArrowRightLeft, Bell, Tag, Mic, MessageSquare, Activity, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 export function SetupProgressModal({ isOpen, onClose }) {
+    const navigate = useNavigate();
+
+    // Map section IDs to their icons and routes
+    const sectionConfig = {
+        'overview': { icon: Home, route: '/overview' },
+        'business-info': { icon: Briefcase, route: '/business-info' },
+        'services': { icon: Wrench, route: '/services' },
+        'products': { icon: ShoppingBag, route: '/products' },
+        'documents': { icon: Book, route: '/knowledge' },
+        'policies': { icon: ListChecks, route: '/policies' },
+        'faqs': { icon: HelpCircle, route: '/faqs' },
+        'scenarios': { icon: ShieldAlert, route: '/scenarios' },
+        'staff': { icon: Users, route: '/staff' },
+        'transfers': { icon: ArrowRightLeft, route: '/transfers' },
+        'notifications': { icon: Bell, route: '/notifications' },
+        'tags': { icon: Tag, route: '/tags' },
+        'voice': { icon: Mic, route: '/voice' },
+        'greetings': { icon: MessageSquare, route: '/greetings' },
+        'behaviors': { icon: Activity, route: '/behaviors' },
+    };
+
     // Mock data for all Train Sophiie pages
     const allSections = [
         { id: 'overview', title: 'Overview', isComplete: true },
@@ -28,6 +49,14 @@ export function SetupProgressModal({ isOpen, onClose }) {
     const progress = Math.round((completedCount / totalCount) * 100);
     const isAllComplete = completedCount === totalCount;
 
+    const handleSectionClick = (sectionId) => {
+        const config = sectionConfig[sectionId];
+        if (config?.route) {
+            navigate(config.route);
+            onClose();
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -45,7 +74,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
                         ? "border-green-200 dark:border-green-800/50 bg-green-100/50 dark:bg-green-900/20"
                         : "border-slate-100 dark:border-slate-800"
                 )}>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-6">
                         <h2 className={cn(
                             "text-xl font-bold",
                             isAllComplete ? "text-green-800 dark:text-green-300" : "text-slate-900 dark:text-white"
@@ -60,94 +89,127 @@ export function SetupProgressModal({ isOpen, onClose }) {
                         </button>
                     </div>
 
-                    {/* Progress Ring */}
-                    <div className="flex items-center gap-4">
-                        <div className="relative w-20 h-20">
-                            <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                    {/* Semi-Circle Progress */}
+                    <div className="flex flex-col items-center">
+                        <div className="relative w-48 h-24 mb-4">
+                            <svg className="w-full h-full" viewBox="0 0 200 100">
+                                {/* Background arc */}
                                 <path
-                                    className="text-slate-200 dark:text-slate-700"
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    d="M 20 90 A 80 80 0 0 1 180 90"
                                     fill="none"
                                     stroke="currentColor"
-                                    strokeWidth="3"
+                                    strokeWidth="12"
+                                    strokeLinecap="round"
+                                    className="text-slate-200 dark:text-slate-700"
                                 />
+                                {/* Progress arc */}
                                 <path
+                                    d="M 20 90 A 80 80 0 0 1 180 90"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="12"
+                                    strokeLinecap="round"
+                                    strokeDasharray={`${(progress / 100) * 251.2}, 251.2`}
                                     className={cn(
                                         "transition-all duration-700",
-                                        isAllComplete ? "text-green-500" : "text-blue-600"
+                                        isAllComplete
+                                            ? "text-green-500 dark:text-green-400"
+                                            : "text-blue-600 dark:text-blue-500"
                                     )}
-                                    strokeDasharray={`${progress}, 100`}
-                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
                                 />
                             </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className={cn(
-                                    "text-lg font-bold",
-                                    isAllComplete ? "text-green-700 dark:text-green-400" : "text-slate-900 dark:text-white"
-                                )}>
-                                    {progress}%
-                                </span>
+                            <div className="absolute inset-0 flex items-end justify-center pb-2">
+                                <div className="text-center">
+                                    <div className={cn(
+                                        "text-3xl font-bold mb-1",
+                                        isAllComplete
+                                            ? "text-green-700 dark:text-green-400"
+                                            : "text-slate-900 dark:text-white"
+                                    )}>
+                                        {progress}%
+                                    </div>
+                                    <p className={cn(
+                                        "text-xs font-medium",
+                                        isAllComplete
+                                            ? "text-green-600 dark:text-green-300"
+                                            : "text-slate-600 dark:text-slate-400"
+                                    )}>
+                                        {completedCount} of {totalCount} complete
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex-1">
-                            <p className={cn(
-                                "text-sm font-medium mb-1",
-                                isAllComplete ? "text-green-700 dark:text-green-300" : "text-slate-600 dark:text-slate-400"
-                            )}>
-                                {completedCount} of {totalCount} sections complete
-                            </p>
-                            {isAllComplete && (
-                                <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300 animate-in fade-in slide-in-from-bottom-2">
-                                    <Sparkles className="w-4 h-4" />
-                                    <span>You're all set!</span>
-                                </div>
-                            )}
-                        </div>
+                        {isAllComplete && (
+                            <div className="flex items-center gap-2 text-sm text-green-700 dark:text-green-300 animate-in fade-in slide-in-from-bottom-2">
+                                <Sparkles className="w-4 h-4" />
+                                <span className="font-medium">You're all set!</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Section List */}
                 <div className="p-4 max-h-[400px] overflow-y-auto">
-                    <div className="space-y-1">
-                        {allSections.map((section) => (
-                            <div
-                                key={section.id}
-                                className={cn(
-                                    "flex items-center gap-3 p-3 rounded-lg transition-colors",
-                                    section.isComplete
-                                        ? "bg-slate-50/50 dark:bg-slate-800/30"
-                                        : "bg-white dark:bg-slate-800/50"
-                                )}
-                            >
-                                {/* Status Icon */}
-                                <div className={cn(
-                                    "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0",
-                                    section.isComplete
-                                        ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-                                        : "bg-slate-100 text-slate-300 dark:bg-slate-700 dark:text-slate-600"
-                                )}>
-                                    {section.isComplete ? (
-                                        <Check className="w-3.5 h-3.5" />
-                                    ) : (
-                                        <div className="w-2 h-2 rounded-full bg-current opacity-50" />
-                                    )}
-                                </div>
+                    <div className="space-y-1.5">
+                        {allSections.map((section) => {
+                            const config = sectionConfig[section.id];
+                            const Icon = config?.icon;
 
-                                <span className={cn(
-                                    "text-sm font-medium flex-1",
-                                    section.isComplete
-                                        ? "text-slate-700 dark:text-slate-300"
-                                        : "text-slate-500 dark:text-slate-400"
-                                )}>
-                                    {section.title}
-                                </span>
-                            </div>
-                        ))}
+                            return (
+                                <button
+                                    key={section.id}
+                                    onClick={() => handleSectionClick(section.id)}
+                                    className={cn(
+                                        "w-full flex items-center gap-3 p-3 rounded-lg transition-all group",
+                                        "hover:bg-blue-50 dark:hover:bg-blue-900/20",
+                                        "hover:shadow-sm hover:-translate-y-0.5",
+                                        section.isComplete
+                                            ? "bg-slate-50/50 dark:bg-slate-800/30"
+                                            : "bg-white dark:bg-slate-800/50"
+                                    )}
+                                >
+                                    {/* Status Icon */}
+                                    <div className={cn(
+                                        "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-colors",
+                                        section.isComplete
+                                            ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                                            : "bg-slate-100 text-slate-300 dark:bg-slate-700 dark:text-slate-600"
+                                    )}>
+                                        {section.isComplete ? (
+                                            <Check className="w-3.5 h-3.5" />
+                                        ) : (
+                                            <div className="w-2 h-2 rounded-full bg-current opacity-50" />
+                                        )}
+                                    </div>
+
+                                    {/* Page Icon */}
+                                    {Icon && (
+                                        <div className={cn(
+                                            "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors",
+                                            "bg-slate-100 dark:bg-slate-700/50",
+                                            "group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30"
+                                        )}>
+                                            <Icon className={cn(
+                                                "w-4 h-4 transition-colors",
+                                                "text-slate-600 dark:text-slate-400",
+                                                "group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                                            )} />
+                                        </div>
+                                    )}
+
+                                    <span className={cn(
+                                        "text-sm font-medium flex-1 text-left transition-colors",
+                                        section.isComplete
+                                            ? "text-slate-700 dark:text-slate-300"
+                                            : "text-slate-500 dark:text-slate-400",
+                                        "group-hover:text-blue-700 dark:group-hover:text-blue-300"
+                                    )}>
+                                        {section.title}
+                                    </span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 

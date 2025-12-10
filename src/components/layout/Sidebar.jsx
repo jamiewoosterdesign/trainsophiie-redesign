@@ -4,7 +4,7 @@ import {
     Headset, Mail, Users, Wrench, ListChecks, ArrowRightLeft,
     Book, Settings, HelpCircle, Bot, ShieldAlert, Menu, X, ChevronDown,
     LayoutGrid, Briefcase, Bell, Tag, Mic, MessageSquare, Sliders, Sun, Moon,
-    ShoppingBag
+    ShoppingBag, Check, CheckCircle
 } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { Switch } from '@/components/ui/switch';
@@ -32,16 +32,23 @@ const SidebarGroup = ({ title, children }) => (
     </div>
 );
 
-const SidebarItem = ({ icon, label, active, onClick }) => (
+const SidebarItem = ({ icon, label, active, onClick, isComplete }) => (
     <li>
         <button onClick={onClick} className={cn(
-            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+            "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors relative",
             active
                 ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'
         )}>
             {React.cloneElement(icon, { size: 18, className: cn("flex-shrink-0", active ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500') })}
             <span className="flex-1 text-left leading-snug">{label}</span>
+            {isComplete !== undefined && (
+                isComplete ? (
+                    <CheckCircle size={16} className="text-green-500 delay-500 duration-500 animate-in fade-in fill-mode-forwards dark:text-green-600 flex-shrink-0" />
+                ) : (
+                    <CheckCircle size={16} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />
+                )
+            )}
         </button>
     </li>
 );
@@ -239,26 +246,26 @@ export default function Sidebar() {
                     </ul>
 
                     <SidebarGroup title="Knowledge Base">
-                        <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => navigate('/business-info')} />
-                        <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => navigate('/services')} />
-                        <SidebarItem icon={<ShoppingBag />} label="Products" active={currentPath === 'products'} onClick={() => navigate('/products')} />
-                        <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => navigate('/knowledge')} />
-                        <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => navigate('/policies')} />
-                        <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => navigate('/faqs')} />
-                        <SidebarItem icon={<ShieldAlert />} label="Scenarios & Restrictions" active={currentPath === 'scenarios'} onClick={() => navigate('/scenarios')} />
+                        <SidebarItem icon={<Briefcase />} label="Business Info" active={currentPath === 'business-info'} onClick={() => navigate('/business-info')} isComplete={true} />
+                        <SidebarItem icon={<Wrench />} label="Services" active={currentPath === 'services'} onClick={() => navigate('/services')} isComplete={true} />
+                        <SidebarItem icon={<ShoppingBag />} label="Products" active={currentPath === 'products'} onClick={() => navigate('/products')} isComplete={true} />
+                        <SidebarItem icon={<Book />} label="Documents" active={currentPath === 'knowledge'} onClick={() => navigate('/knowledge')} isComplete={true} />
+                        <SidebarItem icon={<ListChecks />} label="Policies" active={currentPath === 'policies'} onClick={() => navigate('/policies')} isComplete={true} />
+                        <SidebarItem icon={<HelpCircle />} label="FAQs" active={currentPath === 'faqs'} onClick={() => navigate('/faqs')} isComplete={true} />
+                        <SidebarItem icon={<ShieldAlert />} label="Scenarios & Restrictions" active={currentPath === 'scenarios'} onClick={() => navigate('/scenarios')} isComplete={false} />
                     </SidebarGroup>
 
                     <SidebarGroup title="Team & Routing">
-                        <SidebarItem icon={<Users />} label="Staff & Departments" active={currentPath === 'staff'} onClick={() => navigate('/staff')} />
-                        <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => navigate('/transfers')} />
-                        <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => navigate('/notifications')} />
-                        <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => navigate('/tags')} />
+                        <SidebarItem icon={<Users />} label="Staff & Departments" active={currentPath === 'staff'} onClick={() => navigate('/staff')} isComplete={true} />
+                        <SidebarItem icon={<ArrowRightLeft />} label="Transfers" active={currentPath === 'transfers'} onClick={() => navigate('/transfers')} isComplete={true} />
+                        <SidebarItem icon={<Bell />} label="Notifications" active={currentPath === 'notifications'} onClick={() => navigate('/notifications')} isComplete={true} />
+                        <SidebarItem icon={<Tag />} label="Tags" active={currentPath === 'tags'} onClick={() => navigate('/tags')} isComplete={true} />
                     </SidebarGroup>
 
                     <SidebarGroup title="Personality">
-                        <SidebarItem icon={<Mic />} label="Voice & Personality" active={currentPath === 'voice'} onClick={() => navigate('/voice')} />
-                        <SidebarItem icon={<MessageSquare />} label="Greetings & Closings" active={currentPath === 'greetings'} onClick={() => navigate('/greetings')} />
-                        <SidebarItem icon={<Sliders />} label="Behaviors" active={currentPath === 'behaviors'} onClick={() => navigate('/behaviors')} />
+                        <SidebarItem icon={<Mic />} label="Voice & Personality" active={currentPath === 'voice'} onClick={() => navigate('/voice')} isComplete={false} />
+                        <SidebarItem icon={<MessageSquare />} label="Greetings & Closings" active={currentPath === 'greetings'} onClick={() => navigate('/greetings')} isComplete={true} />
+                        <SidebarItem icon={<Sliders />} label="Behaviors" active={currentPath === 'behaviors'} onClick={() => navigate('/behaviors')} isComplete={false} />
                     </SidebarGroup>
                 </nav>
 
