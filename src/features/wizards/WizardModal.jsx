@@ -497,10 +497,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full md:w-[55%] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}>
 
                     {/* Desktop Header (Hidden on Mobile) */}
-                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-center bg-white dark:bg-slate-900 flex-shrink-0">
+                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-start bg-white dark:bg-slate-900 flex-shrink-0">
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-full md:w-auto">
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{getWizardTitle()}</h2>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{getWizardTitle()}</h2>
                                 {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
                                     <div className="flex flex-wrap items-center gap-3 mt-3">
                                         {(
@@ -525,10 +525,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             </div>
                         </div>
 
-                        {/* Voice Toggle Button (Desktop) */}
-                        <div className="relative">
+                        {/* Voice Toggle Button (Desktop) - Top Aligned */}
+                        <div className="relative pt-1 pl-4">
                             {showVoiceTooltip && (
-                                <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
+                                <div className="absolute top-14 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
                                     <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
                                     Toggle Voice Setup anytime here
                                 </div>
