@@ -64,7 +64,7 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
             {showAutoFillBanner && (
                 <WizardAutoFillBanner
                     type="suggestion"
-                    theme="purple"
+                    theme="emerald"
                     title="Knowledge Found"
                     description={
                         <>I found 5 relevant FAQs for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill them?</>

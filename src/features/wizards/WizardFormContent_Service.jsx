@@ -42,7 +42,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                 {showAutoFillBanner && (
                     <WizardAutoFillBanner
                         type="suggestion"
-                        theme="purple"
+                        theme="emerald"
                         title="Knowledge Found"
                         description={
                             <>I found pricing and details for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill this?</>

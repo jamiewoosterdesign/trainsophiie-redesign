@@ -65,7 +65,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
             {showAutoFillBanner && (
                 <WizardAutoFillBanner
                     type="suggestion"
-                    theme="purple"
+                    theme="emerald"
                     title="Knowledge Found"
                     description={
                         <>I found product details for "Heater" in your <strong>Product_Catalog.pdf</strong>. Want me to auto-fill this?</>
