@@ -61,27 +61,7 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
 
-            {/* Knowledge Found Banner */}
-            {showAutoFillBanner && (
-                <WizardAutoFillBanner
-                    type="suggestion"
-                    theme="emerald"
-                    title="Knowledge Found"
-                    description={
-                        <>I found product details for "Heater" in your <strong>Product_Catalog.pdf</strong>. Want me to auto-fill this?</>
-                    }
-                    onAutoFill={() => {
-                        onChange('isContextActive', true);
-                        onChange('contextFileName', 'Product_Catalog.pdf');
-                        onChange('productName', "Premium Gas Heater 3000");
-                        onChange('description', "Top-tier efficient gas heater with advanced safety features, remote control, and 5-year warranty. Suitable for large living areas.");
-                        onChange('priceMode', 'fixed');
-                        onChange('productPrice', "899.00");
-                        onChange('autoFilledFields', { productName: true, description: true, priceMode: true, price: true });
-                    }}
-                    onDismiss={() => onChange('autoFillDismissed', true)}
-                />
-            )}
+
 
             {/* Product Name */}
             <WizardField
@@ -116,6 +96,28 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                     )}
                 </div>
             </WizardField>
+
+            {/* Knowledge Found Banner */}
+            {showAutoFillBanner && (
+                <WizardAutoFillBanner
+                    type="suggestion"
+                    theme="emerald"
+                    title="Knowledge Found"
+                    description={
+                        <>I found product details for "Heater" in your <strong>Product_Catalog.pdf</strong>. Want me to auto-fill this?</>
+                    }
+                    onAutoFill={() => {
+                        onChange('isContextActive', true);
+                        onChange('contextFileName', 'Product_Catalog.pdf');
+                        onChange('productName', "Premium Gas Heater 3000");
+                        onChange('description', "Top-tier efficient gas heater with advanced safety features, remote control, and 5-year warranty. Suitable for large living areas.");
+                        onChange('priceMode', 'fixed');
+                        onChange('productPrice', "899.00");
+                        onChange('autoFilledFields', { productName: true, description: true, priceMode: true, price: true });
+                    }}
+                    onDismiss={() => onChange('autoFillDismissed', true)}
+                />
+            )}
 
             {/* Active Context Banner */}
             {formData.isContextActive && (

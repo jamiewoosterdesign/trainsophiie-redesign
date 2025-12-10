@@ -60,49 +60,7 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
 
             {/* Knowledge Found Banner (Auto-fill Suggestion) */}
-            {/* Knowledge Found Banner (Auto-fill Suggestion) */}
-            {showAutoFillBanner && (
-                <WizardAutoFillBanner
-                    type="suggestion"
-                    theme="emerald"
-                    title="Knowledge Found"
-                    description={
-                        <>I found 5 relevant FAQs for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill them?</>
-                    }
-                    onAutoFill={() => {
-                        const mockFaqs = [
-                            { question: "How often should I service my heater?", answer: "Heaters should be serviced annually to ensure safety and efficiency.", isAutoFilled: true },
-                            { question: "What should I do if my hot water stops?", answer: "Check your pilot light first. If it's out, try relighting it following the manufacturer's instructions.", isAutoFilled: true },
-                            { question: "Do you install tankless systems?", answer: "Yes, we specialize in high-efficiency tankless hot water systems.", isAutoFilled: true },
-                            { question: "How long is the warranty on new installs?", answer: "Our standard labor warranty is 12 months, plus the manufacturer's warranty on the unit (usually 5-10 years).", isAutoFilled: true },
-                            { question: "Is my heater covered by insurance?", answer: "Damage from sudden events may be covered, but wear and tear usually isn't. Check with your provider.", isAutoFilled: true }
-                        ];
 
-                        onChange('isContextActive', true);
-                        onChange('contextFileName', 'SOP_Manual.pdf');
-                        onChange('faqs', mockFaqs);
-                        onChange('faqQuestion', mockFaqs[0].question);
-                        onChange('faqAnswer', mockFaqs[0].answer);
-                        onChange('autoFilledFields', {}); // Clear old method
-                    }}
-                    onDismiss={() => onChange('autoFillDismissed', true)}
-                />
-            )}
-
-            {/* Knowledge Extracted Banner (Context Active) */}
-            {formData.isContextActive && (
-                <WizardAutoFillBanner
-                    type="active"
-                    theme="emerald"
-                    fileName={formData.contextFileName}
-                    onRemoveContext={() => {
-                        onChange('isContextActive', false);
-                        onChange('faqs', [{ question: '', answer: '' }]);
-                        onChange('faqQuestion', '');
-                        onChange('faqAnswer', '');
-                    }}
-                />
-            )}
 
             {/* FAQ List */}
             <div className="space-y-4">
@@ -157,6 +115,53 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
                                 {formData.errors?.faqQuestion && <p className="text-xs text-red-500 mt-1">{formData.errors.faqQuestion}</p>}
                             </div>
 
+                            {/* Banners moved inside first card */}
+                            {index === 0 && (
+                                <div className="py-2 space-y-3">
+                                    {showAutoFillBanner && (
+                                        <WizardAutoFillBanner
+                                            type="suggestion"
+                                            theme="emerald"
+                                            title="Knowledge Found"
+                                            description={
+                                                <>I found 5 relevant FAQs for "Heater" in your <strong>SOP_Manual.pdf</strong>. Want me to auto-fill them?</>
+                                            }
+                                            onAutoFill={() => {
+                                                const mockFaqs = [
+                                                    { question: "How often should I service my heater?", answer: "Heaters should be serviced annually to ensure safety and efficiency.", isAutoFilled: true },
+                                                    { question: "What should I do if my hot water stops?", answer: "Check your pilot light first. If it's out, try relighting it following the manufacturer's instructions.", isAutoFilled: true },
+                                                    { question: "Do you install tankless systems?", answer: "Yes, we specialize in high-efficiency tankless hot water systems.", isAutoFilled: true },
+                                                    { question: "How long is the warranty on new installs?", answer: "Our standard labor warranty is 12 months, plus the manufacturer's warranty on the unit (usually 5-10 years).", isAutoFilled: true },
+                                                    { question: "Is my heater covered by insurance?", answer: "Damage from sudden events may be covered, but wear and tear usually isn't. Check with your provider.", isAutoFilled: true }
+                                                ];
+
+                                                onChange('isContextActive', true);
+                                                onChange('contextFileName', 'SOP_Manual.pdf');
+                                                onChange('faqs', mockFaqs);
+                                                onChange('faqQuestion', mockFaqs[0].question);
+                                                onChange('faqAnswer', mockFaqs[0].answer);
+                                                onChange('autoFilledFields', {});
+                                            }}
+                                            onDismiss={() => onChange('autoFillDismissed', true)}
+                                        />
+                                    )}
+
+                                    {formData.isContextActive && (
+                                        <WizardAutoFillBanner
+                                            type="active"
+                                            theme="emerald"
+                                            fileName={formData.contextFileName}
+                                            onRemoveContext={() => {
+                                                onChange('isContextActive', false);
+                                                onChange('faqs', [{ question: '', answer: '' }]);
+                                                onChange('faqQuestion', '');
+                                                onChange('faqAnswer', '');
+                                            }}
+                                        />
+                                    )}
+                                </div>
+                            )}
+
                             <div>
                                 <div className="flex justify-between items-center mb-1.5">
                                     <Label className={`flex items-center gap-2 ${formData.errors?.faqAnswer ? 'text-red-500' : ''}`}>
@@ -204,6 +209,6 @@ export default function WizardFormContentFaq({ formData, onChange, activeField }
             >
                 <Plus className="w-4 h-4 mr-2" /> Add Another FAQ
             </Button>
-        </div>
+        </div >
     );
 }
