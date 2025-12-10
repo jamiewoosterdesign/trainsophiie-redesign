@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Mic2, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export default function VoiceSetupBanner({ onStartVoiceFlow }) {
+    const location = useLocation();
     const [isCollapsed, setIsCollapsed] = useState(() => {
-        const saved = localStorage.getItem('voiceSetupBannerCollapsed');
-        return saved === 'true';
+        // specific check for overview path - if we are on overview, start expanded (false), otherwise start collapsed (true)
+        return location.pathname !== '/overview';
     });
-
-    useEffect(() => {
-        localStorage.setItem('voiceSetupBannerCollapsed', isCollapsed);
-    }, [isCollapsed]);
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const bannerRef = useRef(null);

@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { SophiieLogo } from '@/components/icons/SophiieLogo';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { SetupProgressModal } from '@/components/modals/SetupProgressModal';
 
 const NavIcon = ({ icon, active, onClick }) => (
     <button onClick={onClick} className={cn(
@@ -54,6 +55,7 @@ export default function Sidebar() {
     const { theme, setTheme } = useTheme();
     const [showSettingsPopover, setShowSettingsPopover] = React.useState(false);
     const [showMobileSettings, setShowMobileSettings] = React.useState(false);
+    const [showProgressModal, setShowProgressModal] = React.useState(false);
     const settingsRef = React.useRef(null);
 
     // Click outside handler for desktop popover
@@ -260,7 +262,10 @@ export default function Sidebar() {
                     </SidebarGroup>
                 </nav>
 
-                <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <button
+                    onClick={() => setShowProgressModal(true)}
+                    className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-full text-left"
+                >
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Setup Progress</span>
                         <span className="text-xs font-bold text-blue-600 dark:text-blue-400">85%</span>
@@ -268,8 +273,14 @@ export default function Sidebar() {
                     <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                         <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
                     </div>
-                </div>
+                </button>
             </aside>
+
+            {/* Setup Progress Modal */}
+            <SetupProgressModal
+                isOpen={showProgressModal}
+                onClose={() => setShowProgressModal(false)}
+            />
         </>
     );
 }

@@ -52,31 +52,45 @@ export default function FAQsView() {
     const navigate = useNavigate();
 
     const [faqs, setFaqs] = useState(MOCK_FAQS);
-    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
-    const [highlightedFaqId, setHighlightedFaqId] = useState(null);
+    const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created', count: 1 }); // Added count
+    const [highlightedFaqIds, setHighlightedFaqIds] = useState([]); // Changed to array
 
     const handleCreateFaq = (data) => {
-        // Create new faq object
-        const newFaqId = `new-${Date.now()}`;
-        const newFaq = {
-            id: newFaqId,
-            question: data.faqQuestion || 'New Question',
-            answer: data.faqAnswer || 'No answer',
-            isDraft: data.status === 'draft',
-            createdAt: Date.now(),
-        };
+        // Check if we have multiple FAQs
+        const faqsToCreate = data.faqs && data.faqs.length > 0
+            ? data.faqs
+            : [{ question: data.faqQuestion || 'New Question', answer: data.faqAnswer || 'No answer' }];
 
-        setFaqs(prev => [newFaq, ...prev]);
+        const isDraft = data.status === 'draft';
+        const timestamp = Date.now();
 
-        // Show success modal
-        setShowSuccess({ show: true, type: data.status === 'draft' ? 'saved' : 'created' });
-        setHighlightedFaqId(newFaqId);
+        // Create new FAQ objects
+        const newFaqs = faqsToCreate.map((faq, index) => ({
+            id: `new-${timestamp}-${index}`,
+            question: faq.question || 'New Question',
+            answer: faq.answer || 'No answer',
+            isDraft: isDraft,
+            createdAt: timestamp + index, // Slight increment for ordering
+        }));
+
+        // Add all new FAQs to the top of the list
+        setFaqs(prev => [...newFaqs, ...prev]);
+
+        // Show success modal with count
+        setShowSuccess({
+            show: true,
+            type: isDraft ? 'saved' : 'created',
+            count: newFaqs.length
+        });
+
+        // Highlight all new FAQs
+        setHighlightedFaqIds(newFaqs.map(f => f.id));
 
         // Auto-dismiss modal after 3 seconds
-        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+        setTimeout(() => setShowSuccess({ show: false, type: 'created', count: 1 }), 3000);
 
         // Remove highlight after 6 seconds (3s modal + 3s fade out)
-        setTimeout(() => setHighlightedFaqId(null), 6000);
+        setTimeout(() => setHighlightedFaqIds([]), 6000);
     };
 
     const handleDuplicateFaq = (faq) => {
@@ -89,9 +103,10 @@ export default function FAQsView() {
             createdAt: Date.now()
         };
         setFaqs(prev => [newFaq, ...prev]);
-        setShowSuccess({ show: true, type: 'created' });
-        setHighlightedFaqId(newFaq.id);
-        setTimeout(() => setShowSuccess({ show: false, type: 'created' }), 3000);
+        setShowSuccess({ show: true, type: 'created', count: 1 });
+        setHighlightedFaqIds([newFaq.id]);
+        setTimeout(() => setShowSuccess({ show: false, type: 'created', count: 1 }), 3000);
+        setTimeout(() => setHighlightedFaqIds([]), 6000);
     };
 
     const handleToggleFaqStatus = (id) => {
@@ -142,7 +157,7 @@ export default function FAQsView() {
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col items-center gap-3 w-80 border border-slate-100 dark:border-slate-800 relative">
                         <button
-                            onClick={() => setShowSuccess({ show: false, type: 'created' })}
+                            onClick={() => setShowSuccess({ show: false, type: 'created', count: 1 })}
                             className="absolute top-2 right-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <X className="w-4 h-4" />
@@ -151,8 +166,18 @@ export default function FAQsView() {
                             <CheckCircle className="w-6 h-6" />
                         </div>
                         <div className="text-center space-y-0.5">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{showSuccess.type === 'saved' ? 'FAQ Saved' : 'FAQ Created!'}</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">{showSuccess.type === 'saved' ? 'You can finish it later.' : 'Added to your list.'}</p>
+                            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                {showSuccess.type === 'saved'
+                                    ? (showSuccess.count > 1 ? 'FAQs Saved' : 'FAQ Saved')
+                                    : (showSuccess.count > 1 ? 'FAQs Created!' : 'FAQ Created!')
+                                }
+                            </h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {showSuccess.type === 'saved'
+                                    ? 'You can finish it later.'
+                                    : (showSuccess.count > 1 ? `${showSuccess.count} FAQs added to your list.` : 'Added to your list.')
+                                }
+                            </p>
                         </div>
                         {/* Progress bar to show auto-dismiss */}
                         <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
@@ -234,7 +259,7 @@ export default function FAQsView() {
                                 </div>
                             )}
                             {paginatedFAQs.map(faq => (
-                                <Card key={faq.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 ${faq.isDraft ? 'opacity-70 grayscale-[0.5]' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}>
+                                <Card key={faq.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 ${faq.isDraft ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}>
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
                                             <MessageCircle className="w-5 h-5" />
@@ -301,7 +326,7 @@ export default function FAQsView() {
                                     </div>
                                 )}
                                 {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${(faq.isDraft || faq.active === false) ? 'opacity-70' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('faq')}>
+                                    <div key={faq.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${(faq.isDraft || faq.active === false) ? 'opacity-70' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('faq')}>
                                         <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
                                             {faq.question}
                                         </div>
@@ -355,7 +380,7 @@ export default function FAQsView() {
                                     />
                                 )}
                                 {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(faq.isDraft || faq.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${faq.id === highlightedFaqId ? (faq.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('faq')}>
+                                    <div key={faq.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(faq.isDraft || faq.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('faq')}>
                                         <div className="flex justify-between items-start mb-1">
                                             <h3 className="font-bold text-slate-900 dark:text-white mb-1">{faq.question}</h3>
                                             <div className="flex items-center gap-2">
