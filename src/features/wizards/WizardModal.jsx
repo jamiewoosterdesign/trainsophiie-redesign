@@ -464,7 +464,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 </div>
             )}
 
-            <div className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] md:max-w-6xl md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
+            <div className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'md:max-w-3xl' : 'md:max-w-6xl'} md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
 
                 {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
                 <div className="md:hidden flex-none">
