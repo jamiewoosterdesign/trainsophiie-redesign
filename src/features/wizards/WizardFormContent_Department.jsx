@@ -13,8 +13,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TeamMemberSelector } from './components/TeamMemberSelector';
 
-export default function WizardFormContentDepartment({ mode, step, formData, onChange, activeField }) {
+export default function WizardFormContentDepartment({ mode, step, formData, onChange, activeField, onSwitchMode }) {
     // --- DEPARTMENT WIZARD ---
     const [tooltipOpen, setTooltipOpen] = React.useState({});
     const toggleTooltip = (id, e) => {
@@ -106,36 +107,18 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
                 </div>
             </div>
 
-            {/* Assigned Team Members (Simple Multi-select Simulation) */}
+            {/* Assigned Team Members */}
             <div>
                 <Label className="mb-3 block">Assigned Team Members</Label>
-                <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50 max-h-[200px] overflow-y-auto space-y-2">
-                    {[
-                        { name: 'Sarah Jenkins', role: 'Sales' },
-                        { name: 'Mike Ross', role: 'Support' },
-                        { name: 'Jessica Pearson', role: 'Manager' },
-                        { name: 'Harvey Specter', role: 'Sales' },
-                    ].map((member, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-2 rounded-lg hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm border border-transparent hover:border-slate-100 dark:hover:border-slate-700 transition-all cursor-pointer"
-                            onClick={() => {
-                                const current = formData.departmentMembers || [];
-                                const exists = current.includes(member.name);
-                                onChange('departmentMembers', exists ? current.filter(n => n !== member.name) : [...current, member.name]);
-                            }}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${formData.departmentMembers?.includes(member.name) ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'}`}>
-                                    {formData.departmentMembers?.includes(member.name) && <CheckCircle2 className="w-3.5 h-3.5" />}
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-medium text-slate-900 dark:text-slate-200">{member.name}</span>
-                                    <span className="text-xs text-slate-500 dark:text-slate-400">{member.role}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                <div className="bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+                    <TeamMemberSelector
+                        value={formData.departmentMembers || []}
+                        onChange={(val) => onChange('departmentMembers', val)}
+                        onAddNew={() => onSwitchMode('staff')}
+                        multiple={true}
+                    />
+                    <p className="text-xs text-slate-500 mt-2">Select staff who belong to this department.</p>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">Select staff who belong to this department.</p>
             </div>
 
             {/* Routing Logic */}

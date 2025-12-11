@@ -80,6 +80,7 @@ export default function VoicePersonalityView() {
     const [activeRegion, setActiveRegion] = useState('australian');
     const [profanityFilter, setProfanityFilter] = useState(true);
     const [playingVoice, setPlayingVoice] = useState(null);
+    const [playingPersonality, setPlayingPersonality] = useState(null);
 
     const togglePlay = (id) => {
         if (playingVoice === id) {
@@ -88,6 +89,16 @@ export default function VoicePersonalityView() {
             setPlayingVoice(id);
             // Simulate audio play
             setTimeout(() => setPlayingVoice(null), 3000);
+        }
+    };
+
+    const togglePersonalityPlay = (id) => {
+        if (playingPersonality === id) {
+            setPlayingPersonality(null);
+        } else {
+            setPlayingPersonality(id);
+            // Simulate audio play
+            setTimeout(() => setPlayingPersonality(null), 3000);
         }
     };
 
@@ -256,7 +267,17 @@ export default function VoicePersonalityView() {
                                         )}
                                     </div>
                                     <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{p.name}</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{p.description}</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-4">{p.description}</p>
+
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        className="w-full gap-2 text-xs dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                                        onClick={(e) => { e.stopPropagation(); togglePersonalityPlay(p.id); }}
+                                    >
+                                        {playingPersonality === p.id ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                                        {playingPersonality === p.id ? 'Playing...' : 'Preview Personality'}
+                                    </Button>
                                 </div>
                             ))}
                         </div>

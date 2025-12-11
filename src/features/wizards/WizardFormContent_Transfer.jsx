@@ -74,7 +74,7 @@ export default function WizardFormContentTransfer({ step, formData, onChange, on
                                 <Zap className="w-4 h-4" />
                                 <span className="font-semibold text-slate-800 dark:text-slate-200">Warm Transfer</span>
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">AI introduces caller to agent first.</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400">AI introduces caller to Team Member first.</div>
                         </div>
                         <div
                             onClick={() => onChange('transferType', 'cold')}
@@ -105,12 +105,12 @@ export default function WizardFormContentTransfer({ step, formData, onChange, on
                                     <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                    <p>What the AI says to the agent before connecting.</p>
+                                    <p>What the AI says to the Team Member before connecting.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </Label>
-                    <p className="text-xs text-slate-500 mb-3">What the AI says to the agent before connecting.</p>
+                    <p className="text-xs text-slate-500 mb-3">What the AI says to the Team Member before connecting.</p>
                     <div className="relative">
                         <Textarea
                             className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm font-mono bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px] pb-10"

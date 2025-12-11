@@ -145,6 +145,26 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
         assignSourceSms: false,
         assignSourceEmail: false,
 
+        // Staff Mode Extra Fields
+        staffDepartment: '',
+        staffTags: [],
+        escalationEnabled: false,
+        escalationNotes: '',
+        unavailabilities: [],
+
+        // Unavailability Form (Temporary state)
+        unavailDescription: '',
+        unavailStartDate: '',
+        unavailEndDate: '',
+        unavailStartTime: false, // Logic toggle for single date
+        unavailEndTime: false, // Logic toggle for single date
+        unavailStartTimeValue: '',
+        unavailEndTimeValue: '',
+        unavailRecurring: false,
+        unavailFreq: 'Weekly',
+        unavailDays: [],
+        unavailSpecificTime: false,
+
         // Merge Initial Data
         ...initialData
     });
@@ -169,7 +189,11 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
         if (isDirty) {
             setShowSaveConfirm(true);
         } else {
-            onClose();
+            if (returnToMode) {
+                handleBack();
+            } else {
+                onClose();
+            }
         }
     };
 
@@ -415,7 +439,14 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                         <Button
                                             variant="outline"
                                             className="sm:w-auto w-full h-10 px-6 border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
-                                            onClick={() => onClose()}
+                                            onClick={() => {
+                                                setShowSaveConfirm(false);
+                                                if (returnToMode) {
+                                                    handleBack();
+                                                } else {
+                                                    onClose();
+                                                }
+                                            }}
                                         >
                                             Discard
                                         </Button>
@@ -477,7 +508,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                     {(
                                         {
                                             service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                            staff: ['Service Details', 'Conversation Flow', 'Outcome'],
+                                            staff: ['Details', 'Responsibilities', 'Availability'],
                                             protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                             document: ['Upload', 'Review', 'Apply'],
@@ -496,32 +527,34 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         </div>
 
                         {/* Mobile Tabs */}
-                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full mt-2">
-                            <button
-                                onClick={() => setMobileTab('wizard')}
-                                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'wizard'
-                                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-                                    }`}
-                            >
-                                <Settings className="w-4 h-4" /> Set Up
-                            </button>
-                            <button
-                                onClick={() => setMobileTab('preview')}
-                                className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'preview'
-                                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
-                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
-                                    }`}
-                            >
-                                <MessageSquare className="w-4 h-4" /> Live Preview
-                            </button>
-                        </div>
+                        {!['staff', 'department', 'notification_assignment'].includes(mode) && (
+                            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full mt-2">
+                                <button
+                                    onClick={() => setMobileTab('wizard')}
+                                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'wizard'
+                                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                                        }`}
+                                >
+                                    <Settings className="w-4 h-4" /> Set Up
+                                </button>
+                                <button
+                                    onClick={() => setMobileTab('preview')}
+                                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center justify-center gap-2 ${mobileTab === 'preview'
+                                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                                        }`}
+                                >
+                                    <MessageSquare className="w-4 h-4" /> Live Preview
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
 
                 {/* LEFT PANEL: WIZARD FORM (Visible if 'wizard' tab active on mobile, always on desktop) */}
-                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full md:w-[55%] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}>
+                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'md:w-full' : 'md:w-[55%] border-r'} flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}>
 
                     {/* Desktop Header (Hidden on Mobile) */}
                     <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-start bg-white dark:bg-slate-900 flex-shrink-0">
@@ -533,7 +566,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                         {(
                                             {
                                                 service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                                staff: ['Service Details', 'Conversation Flow', 'Outcome'],
+                                                staff: ['Details', 'Responsibilities', 'Availability'],
                                                 protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                                 document: ['Upload', 'Review', 'Apply'],
@@ -553,7 +586,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         </div>
 
                         {/* Voice Toggle Button (Desktop) - Top Aligned */}
-                        <div className="relative pt-1 pl-4">
+                        <div className="relative pt-1 pl-4 flex items-center gap-2">
                             {showVoiceTooltip && (
                                 <div className="absolute top-14 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
                                     <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
@@ -577,6 +610,17 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                     </>
                                 )}
                             </button>
+
+                            {/* Close Button (Moved here for wizards without preview pane) */}
+                            {['staff', 'department', 'notification_assignment'].includes(mode) && (
+                                <button
+                                    onClick={handleClose}
+                                    className="hidden md:flex w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 items-center justify-center transition-colors"
+                                    title="Close"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -637,8 +681,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                     </div>
                 </div>
 
-                {/* RIGHT PANEL: LIVE SIMULATOR (Visible if 'preview' tab active on mobile, always on desktop) */}
-                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} md:flex w-full md:w-[45%] bg-slate-50 dark:bg-slate-950 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
+                {/* RIGHT PANEL: LIVE SIMULATOR (Visible if 'preview' tab active on mobile, always on desktop unless preview disabled) */}
+                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'hidden' : 'md:flex'} w-full md:w-[45%] bg-slate-50 dark:bg-slate-950 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
                     <LiveSimulator
                         mode={mode}
                         formData={formData}

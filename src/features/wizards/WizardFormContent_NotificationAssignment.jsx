@@ -12,7 +12,9 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function WizardFormContentNotificationAssignment({ step, formData, onChange }) {
+import { TeamMemberSelector } from './components/TeamMemberSelector';
+
+export default function WizardFormContentNotificationAssignment({ step, formData, onChange, onSwitchMode }) {
     const [tagSearch, setTagSearch] = useState('');
     const [tooltipOpen, setTooltipOpen] = useState({});
 
@@ -22,13 +24,6 @@ export default function WizardFormContentNotificationAssignment({ step, formData
     };
 
     const isError = (field) => formData.errors?.[field];
-
-    const TEAM_MEMBERS = [
-        { id: '1', name: 'Sarah Wilson' },
-        { id: '2', name: 'Mike Johnson' },
-        { id: '3', name: 'Emily Davis' },
-        { id: '4', name: 'David Brown' },
-    ];
 
     const TAG_OPTIONS = [
         { value: 'standard-job', label: 'standard-job', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
@@ -58,24 +53,14 @@ export default function WizardFormContentNotificationAssignment({ step, formData
                         </Tooltip>
                     </TooltipProvider>
                 </Label>
-                <Select
+                <TeamMemberSelector
                     value={formData.assignMemberId}
-                    onValueChange={(val) => {
+                    onChange={(val) => {
                         onChange('assignMemberId', val);
                         if (isError('assignMemberId')) onChange('errors', { ...formData.errors, assignMemberId: false });
                     }}
-                >
-                    <SelectTrigger className={`bg-white dark:bg-slate-900 dark:text-slate-100 ${isError('assignMemberId') ? 'border-red-300 ring-red-200 ring-1' : 'dark:border-slate-700'}`}>
-                        <SelectValue placeholder="Select team member..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
-                        {TEAM_MEMBERS.map(m => (
-                            <SelectItem key={m.id} value={m.id} className="cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-800">{m.name}</SelectItem>
-                        ))}
-                        <div className="h-px bg-slate-100 dark:bg-slate-800 my-1"></div>
-                        <SelectItem value="add-new" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer focus:bg-blue-50 dark:focus:bg-blue-900/20">+ Add New Team Member</SelectItem>
-                    </SelectContent>
-                </Select>
+                    onAddNew={() => onSwitchMode('staff')}
+                />
             </div>
 
             {/* Notification Method */}
