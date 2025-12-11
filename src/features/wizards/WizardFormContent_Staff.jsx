@@ -162,7 +162,7 @@ export default function WizardFormContentStaff({ step, formData, onChange }) {
                     {isError('staffRole') && <p className="text-xs text-red-500 mt-1">Role is required.</p>}
                 </div>
 
-                {/* Department Selection */}
+                {/* Department Selection (Multi-select) */}
                 <div>
                     <Label className="mb-2 flex items-center gap-2">
                         Department
@@ -172,14 +172,46 @@ export default function WizardFormContentStaff({ step, formData, onChange }) {
                                     <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                    <p>The department this staff member belongs to.</p>
+                                    <p>The department(s) this staff member belongs to.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </Label>
-                    <Select value={formData.staffDepartment} onValueChange={(val) => onChange('staffDepartment', val)}>
+
+                    {/* Selected Departments Badges */}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {formData.staffDepartments && formData.staffDepartments.length > 0 ? (
+                            formData.staffDepartments.map(deptVal => {
+                                const deptLabel = DEPARTMENTS.find(d => d.value === deptVal)?.label || deptVal;
+                                return (
+                                    <Badge key={deptVal} className="gap-1 pr-1.5 hover:opacity-80 transition-opacity cursor-pointer border-transparent bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                        {deptLabel}
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onChange('staffDepartments', formData.staffDepartments.filter(d => d !== deptVal));
+                                            }}
+                                            className="hover:bg-black/10 dark:hover:bg-white/10 rounded-full p-0.5"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </div>
+                                    </Badge>
+                                );
+                            })
+                        ) : null}
+                    </div>
+
+                    <Select
+                        onValueChange={(val) => {
+                            if (!formData.staffDepartments) {
+                                onChange('staffDepartments', [val]);
+                            } else if (!formData.staffDepartments.includes(val)) {
+                                onChange('staffDepartments', [...formData.staffDepartments, val]);
+                            }
+                        }}
+                    >
                         <SelectTrigger className="w-full bg-white dark:bg-slate-900">
-                            <SelectValue placeholder="Select Department..." />
+                            <SelectValue placeholder="Select Department(s)..." />
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
                             {DEPARTMENTS.map(dept => (
@@ -192,7 +224,7 @@ export default function WizardFormContentStaff({ step, formData, onChange }) {
                 <div>
                     <Label className="mb-2 block">Contact</Label>
                     <div className="grid grid-cols-2 gap-4">
-                        <Input placeholder="Phone Ext..." />
+                        <Input placeholder="Phone Number..." />
                         <Input placeholder="Email..." />
                     </div>
                 </div>
