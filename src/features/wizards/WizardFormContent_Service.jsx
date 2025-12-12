@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sparkles, FileCheck, X, Mic, Wand2, Info, ClipboardList, PhoneForwarded, Calendar, Mail, ShieldAlert, HelpCircle } from 'lucide-react';
+import { Sparkles, FileCheck, X, Mic, Wand2, Info, ClipboardList, PhoneForwarded, Calendar, Mail, ShieldAlert, HelpCircle, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -17,10 +17,12 @@ import { WizardAutoFillBanner } from './components/WizardAutoFillBanner';
 import { WizardField } from './components/WizardField';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
+import { callGemini } from '@/lib/gemini';
 
 export default function WizardFormContentService({ mode, step, formData, onChange, activeField, onSwitchMode }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
     const [showGlobalDefaultModal, setShowGlobalDefaultModal] = useState(false);
+    const [isGenerating, setIsGenerating] = useState({});
 
     const toggleTooltip = (id, e) => {
         if (e) e.preventDefault();
@@ -28,6 +30,58 @@ export default function WizardFormContentService({ mode, step, formData, onChang
     };
 
     const isError = (field) => formData.errors?.[field];
+
+    const handleAutoGenerate = async (field) => {
+        setIsGenerating(prev => ({ ...prev, [field]: true }));
+
+        let prompt = "";
+        const serviceName = formData.serviceName || "this service";
+
+        switch (field) {
+            case 'description':
+                prompt = `Write a professional, concise description (approx 30-40 words) for a business service named "${serviceName}". Focus on value and clarity.`;
+                break;
+            case 'aiResponse':
+                prompt = `Write a friendly, natural single-sentence response for an AI receptionist when a customer asks about "${serviceName}". It should sound helpful, professional, and confident.`;
+                break;
+            case 'serviceClosingScript':
+                prompt = `Write a polite, reassuring closing sentence for an AI receptionist to say to a customer after collecting their details for a "${serviceName}" inquiry. Ensure them that the team will be in touch.`;
+                break;
+            case 'customPriceMessage':
+                prompt = `Write a professional explanation (1-2 sentences) for why the price for "${serviceName}" requires a custom quote or consultation, instead of a fixed price.`;
+                break;
+            case 'serviceSmsMessage':
+                prompt = `Write a short, professional SMS message (under 160 chars) to send to a customer who just enquired about "${serviceName}", confirming their enquiry is received.`;
+                break;
+            case 'serviceEmailSubject':
+                prompt = `Write a clear, professional email subject line for an information packet about "${serviceName}".`;
+                break;
+            case 'serviceEmailBody':
+                prompt = `Write a professional, welcoming email body (3-4 sentences) sending information about "${serviceName}" to a customer who requested it. Keep it warm and direct.`;
+                break;
+            default:
+                prompt = `Write a short text for the field ${field} regarding ${serviceName}.`;
+        }
+
+        try {
+            const text = await callGemini(prompt);
+            if (text) {
+                onChange(field, text);
+                // Also clear error if it exists
+                if (isError(field)) onChange('errors', { ...formData.errors, [field]: false });
+
+                // If we customized it with AI, we should probably mark it as not auto-filled by the PDF context anymore to avoid confusion, or keep it. 
+                // For now, let's leave autoFilledFields logic alone or clear specific field flag.
+                if (formData.autoFilledFields?.[field]) {
+                    onChange('autoFilledFields', { ...formData.autoFilledFields, [field]: false });
+                }
+            }
+        } catch (error) {
+            console.error("Generation failed", error);
+        } finally {
+            setIsGenerating(prev => ({ ...prev, [field]: false }));
+        }
+    };
 
     // Ensure global message is initialized
     // In a real app, this might come from global settings
@@ -204,8 +258,12 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                 <Mic className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
+                            <div
+                                className={`w-8 h-8 rounded-full ${isGenerating['description'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                title="Generate with AI"
+                                onClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
+                            >
+                                {isGenerating['description'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                             </div>
                         </div>
                     </div>
@@ -489,8 +547,12 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                                 <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                     <Mic className="w-4 h-4" />
                                                 </div>
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                                    <Wand2 className="w-4 h-4" />
+                                                <div
+                                                    className={`w-8 h-8 rounded-full ${isGenerating['customPriceMessage'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                    title="Generate with AI"
+                                                    onClick={() => !isGenerating['customPriceMessage'] && handleAutoGenerate('customPriceMessage')}
+                                                >
+                                                    {isGenerating['customPriceMessage'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                                                 </div>
                                             </div>
                                         </div>
@@ -574,8 +636,12 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                 <Mic className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
+                            <div
+                                className={`w-8 h-8 rounded-full ${isGenerating['aiResponse'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                title="Generate with AI"
+                                onClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
+                            >
+                                {isGenerating['aiResponse'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                             </div>
                         </div>
                     </div>
@@ -648,8 +714,12 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                                 <Mic className="w-4 h-4" />
                                             </div>
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                                <Wand2 className="w-4 h-4" />
+                                            <div
+                                                className={`w-8 h-8 rounded-full ${isGenerating['serviceClosingScript'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                title="Generate with AI"
+                                                onClick={() => !isGenerating['serviceClosingScript'] && handleAutoGenerate('serviceClosingScript')}
+                                            >
+                                                {isGenerating['serviceClosingScript'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                                             </div>
                                         </div>
                                     </div>
@@ -728,12 +798,26 @@ export default function WizardFormContentService({ mode, step, formData, onChang
 
                                         <div>
                                             <Label className="mb-1.5 block text-xs uppercase text-slate-500 dark:text-slate-400">SMS Message</Label>
-                                            <Textarea
-                                                placeholder="e.g. Thanks for calling! Here is the info you requested..."
-                                                className="min-h-[80px]"
-                                                value={formData.serviceSmsMessage || ''}
-                                                onChange={(e) => onChange('serviceSmsMessage', e.target.value)}
-                                            />
+                                            <div className="relative">
+                                                <Textarea
+                                                    placeholder="e.g. Thanks for calling! Here is the info you requested..."
+                                                    className="min-h-[80px] pb-10"
+                                                    value={formData.serviceSmsMessage || ''}
+                                                    onChange={(e) => onChange('serviceSmsMessage', e.target.value)}
+                                                />
+                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                        <Mic className="w-4 h-4" />
+                                                    </div>
+                                                    <div
+                                                        className={`w-8 h-8 rounded-full ${isGenerating['serviceSmsMessage'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                        title="Generate with AI"
+                                                        onClick={() => !isGenerating['serviceSmsMessage'] && handleAutoGenerate('serviceSmsMessage')}
+                                                    >
+                                                        {isGenerating['serviceSmsMessage'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -750,12 +834,26 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                         </div>
                                         <div>
                                             <Label className="mb-1.5 block text-xs uppercase text-slate-500 dark:text-slate-400">Email Body</Label>
-                                            <Textarea
-                                                placeholder="Hi there, thanks for your interest..."
-                                                className="min-h-[120px]"
-                                                value={formData.serviceEmailBody || ''}
-                                                onChange={(e) => onChange('serviceEmailBody', e.target.value)}
-                                            />
+                                            <div className="relative">
+                                                <Textarea
+                                                    placeholder="Hi there, thanks for your interest..."
+                                                    className="min-h-[120px] pb-10"
+                                                    value={formData.serviceEmailBody || ''}
+                                                    onChange={(e) => onChange('serviceEmailBody', e.target.value)}
+                                                />
+                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                        <Mic className="w-4 h-4" />
+                                                    </div>
+                                                    <div
+                                                        className={`w-8 h-8 rounded-full ${isGenerating['serviceEmailBody'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                        title="Generate with AI"
+                                                        onClick={() => !isGenerating['serviceEmailBody'] && handleAutoGenerate('serviceEmailBody')}
+                                                    >
+                                                        {isGenerating['serviceEmailBody'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 )}

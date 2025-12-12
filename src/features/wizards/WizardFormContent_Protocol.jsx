@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info, Sparkles } from 'lucide-react';
+import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info, Sparkles, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
+import { callGemini } from '@/lib/gemini';
 import {
     Tooltip,
     TooltipContent,
@@ -17,6 +18,7 @@ import {
 
 export default function WizardFormContentProtocol({ step, formData, onChange, onSwitchMode, activeField }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
+    const [isGenerating, setIsGenerating] = useState({});
 
     const toggleTooltip = (id, e) => {
         if (e) e.preventDefault();
@@ -24,6 +26,45 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
     };
 
     const isError = (field) => formData.errors?.[field];
+
+    const handleAutoGenerate = async (field) => {
+        setIsGenerating(prev => ({ ...prev, [field]: true }));
+
+        let prompt = "";
+        const name = formData.scenarioName || "this scenario";
+        const trigger = formData.protocolTrigger || "a customer request";
+        const action = formData.protocolAction || "handle the situation";
+
+        switch (field) {
+            case 'description':
+                prompt = `Write a clear, concise description (1-2 sentences) for a customer service scenario named "${name}", triggered by "${trigger}". Focus on the purpose of this workflow.`;
+                break;
+            case 'aiResponse':
+                prompt = `Write a valid, natural response for an AI receptionist when a customer says something like "${trigger}". The context is "${name}". Keep it helpful and under 20 words.`;
+                break;
+            case 'protocolScript':
+                if (action === 'refuse') {
+                    prompt = `Write a polite but firm refusal script for an AI receptionist to say when a customer asks for "${trigger}" (${name}). Explain that we cannot accommodate this request.`;
+                } else {
+                    prompt = `Write a polite closing script for an AI receptionist to say after handling a request for "${name}". Confirm that the details are noted.`;
+                }
+                break;
+            default:
+                prompt = `Write text for ${field} in the context of ${name}.`;
+        }
+
+        try {
+            const text = await callGemini(prompt);
+            if (text) {
+                onChange(field, text);
+                if (isError(field)) onChange('errors', { ...formData.errors, [field]: false });
+            }
+        } catch (error) {
+            console.error("Generation failed", error);
+        } finally {
+            setIsGenerating(prev => ({ ...prev, [field]: false }));
+        }
+    };
 
     // --- STEP 1: SCENARIO DETAILS ---
     if (step === 1) {
@@ -121,8 +162,12 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                 <Mic className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
+                            <div
+                                className={`w-8 h-8 rounded-full ${isGenerating['description'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                title="Generate with AI"
+                                onClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
+                            >
+                                {isGenerating['description'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                             </div>
                         </div>
                     </div>
@@ -161,8 +206,12 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                 <Mic className="w-4 h-4" />
                             </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
+                            <div
+                                className={`w-8 h-8 rounded-full ${isGenerating['aiResponse'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                title="Generate with AI"
+                                onClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
+                            >
+                                {isGenerating['aiResponse'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                             </div>
                         </div>
                     </div>
@@ -266,8 +315,12 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                         <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
                                             <Mic className="w-4 h-4" />
                                         </div>
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                            <Wand2 className="w-4 h-4" />
+                                        <div
+                                            className={`w-8 h-8 rounded-full ${isGenerating['protocolScript'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                            title="Generate with AI"
+                                            onClick={() => !isGenerating['protocolScript'] && handleAutoGenerate('protocolScript')}
+                                        >
+                                            {isGenerating['protocolScript'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
                                         </div>
                                     </div>
                                 </div>
@@ -278,6 +331,5 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
             </div>
         );
     }
-
     return null;
 }
