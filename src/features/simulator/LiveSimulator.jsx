@@ -411,7 +411,11 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
            - After answering the customer's immediate query, transition immediately to asking the NEXT missing question.
            - Do not ask all questions at once. Ask one at a time.
         4. If the user asks something covered by the configuration, answer strictly based on it.
-        5. If the user asks something NOT covered, politely explain that you don't have that information yet or make a reasonable assumption based on the context.
+        5. CRITICAL: If the user asks for information that is NOT in the configuration (e.g. price is missing, specific answer is missing), DO NOT MAKE IT UP.
+           - Instead, "break character" and address the user (business owner) directly.
+           - Start your response with "[META]: "
+           - Explain that this information is missing from the current configuration and tell them where to add it in the wizard.
+           - Example: "[META]: I don't have a price configured for this service yet. You can add one in the 'Service Details' step."
         6. Keep responses concise and conversational (spoken word style).
         
         Customer says: "${currentInput}"`;
@@ -433,11 +437,31 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         setIsTyping(false);
         const finalText = botResponse || "I'm sorry, I'm having trouble connecting to the simulator right now.";
 
-        setMessages(prev => [...prev, { role: 'bot', text: finalText }]);
+        // Split response if it contains [META]: tag
+        if (finalText.includes('[META]:')) {
+            const parts = finalText.split('[META]:');
+            const inCharacterPart = parts[0].trim();
+            const metaPart = parts[1].trim();
 
-        // If in voice mode or triggered by voice input, speak the response
-        if (isVoice || simulatorTab === 'voice' || (mode === 'service' && convoPhaseRef.current === 'DONE')) {
-            speak(finalText);
+            if (inCharacterPart) {
+                setMessages(prev => [...prev, { role: 'bot', text: inCharacterPart }]);
+                // Speak only the in-character part
+                if ((isVoice || simulatorTab === 'voice' || (mode === 'service' && convoPhaseRef.current === 'DONE'))) {
+                    speak(inCharacterPart);
+                }
+            }
+
+            if (metaPart) {
+                setMessages(prev => [...prev, { role: 'system', text: metaPart }]);
+            }
+
+        } else {
+            // Normal response
+            setMessages(prev => [...prev, { role: 'bot', text: finalText }]);
+
+            if ((isVoice || simulatorTab === 'voice' || (mode === 'service' && convoPhaseRef.current === 'DONE'))) {
+                speak(finalText);
+            }
         }
     };
 
@@ -708,7 +732,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                                 <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white ${msg.role === 'bot' ? 'bg-blue-600' : msg.role === 'system' ? 'bg-orange-500' : 'bg-slate-400 dark:bg-slate-600'}`}>
                                     {msg.role === 'bot' ? <Headset className="w-4 h-4" /> : msg.role === 'system' ? <Zap className="w-4 h-4" /> : <div className="font-bold">U</div>}
                                 </div>
-                                <div className={`py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === 'bot' ? 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700' : msg.role === 'system' ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-800 dark:text-orange-200 border border-orange-100 dark:border-orange-900/30 w-full' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
+                                <div className={`py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === 'bot' ? 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700' : msg.role === 'system' ? 'bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/30 w-full italic font-medium' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
                                     {msg.text}
                                 </div>
                             </div>
