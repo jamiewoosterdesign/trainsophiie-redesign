@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 
 export default function SettingsModal({ onClose }) {
     return (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center animate-in fade-in duration-200">
             <div className="bg-white w-[500px] rounded-xl shadow-2xl overflow-hidden scale-100 animate-in zoom-in-95 duration-200">
                 <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                     <h3 className="font-bold text-slate-800">Global Settings</h3>

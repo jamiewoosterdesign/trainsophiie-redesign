@@ -383,8 +383,11 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 Current Scenario/Protocol Configuration:
                 - Scenario Name: ${formData.scenarioName || 'Unnamed Scenario'}
                 - Trigger: ${formData.protocolTrigger || 'No trigger defined'} (${formData.protocolTriggerType})
+                - Description: ${formData.description || 'No description provided'}
                 - Action: ${formData.protocolAction || 'Not specified'}
-                - Script/Response: ${formData.protocolScript || 'None'}
+                - Opening Script/AI Response: ${formData.aiResponse || 'None'}
+                - Closing/Refusal Script: ${formData.protocolScript || 'None'}
+                - Required Information to Collect (Follow-up Questions): ${formData.questions?.map(q => `Q: ${q.text} (Options: ${q.options?.map(o => o.text).join(', ') || 'None'})`).join('; ') || 'None'}
                 `;
                 break;
             case 'transfer':

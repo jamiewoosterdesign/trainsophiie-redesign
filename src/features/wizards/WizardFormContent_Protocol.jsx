@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info } from 'lucide-react';
+import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
+import QuestionRulesEditorComponent from './QuestionRulesEditor';
 import {
     Tooltip,
     TooltipContent,
@@ -14,7 +15,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function WizardFormContentProtocol({ step, formData, onChange, onSwitchMode }) {
+export default function WizardFormContentProtocol({ step, formData, onChange, onSwitchMode, activeField }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
 
     const toggleTooltip = (id, e) => {
@@ -23,6 +24,7 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
     };
 
     const isError = (field) => formData.errors?.[field];
+
     // --- STEP 1: SCENARIO DETAILS ---
     if (step === 1) {
         return (
@@ -90,215 +92,188 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                     />
                     {isError('protocolTrigger') && <p className="text-xs text-red-500 mt-1">Trigger Condition is required.</p>}
                 </div>
-            </div>
-        );
-    }
 
-    // --- STEP 2: ACTION LOGIC ---
-    if (step === 2) {
-        return (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div>
-                    <Label className="mb-4 flex items-center gap-2">
-                        Response Logic
+                    <Label className={`flex items-center gap-2 mb-2 ${isError('description') ? 'text-red-500' : ''}`}>
+                        Description (Optional)
                         <TooltipProvider>
-                            <Tooltip delayDuration={0} open={tooltipOpen['logic']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, logic: open }))}>
-                                <TooltipTrigger asChild onClick={(e) => toggleTooltip('logic', e)}>
+                            <Tooltip delayDuration={0} open={tooltipOpen['description']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, description: open }))}>
+                                <TooltipTrigger asChild onClick={(e) => toggleTooltip('description', e)}>
                                     <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                    <p>How Sophiie should respond.</p>
+                                    <p>A detailed explanation of this scenario for the AI.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
                     </Label>
+                    <div className="relative">
+                        <Textarea
+                            placeholder="Describe the context for this scenario..."
+                            className={`min-h-[100px] pb-10 resize-y ${isError('description') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                            value={formData.description || ''}
+                            onChange={(e) => {
+                                onChange('description', e.target.value);
+                                if (isError('description')) onChange('errors', { ...formData.errors, description: false });
+                            }}
+                        />
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                <Mic className="w-4 h-4" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
+                                <Wand2 className="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // --- STEP 2: CONVERSATION FLOW ---
+    if (step === 2) {
+        return (
+            <div className="space-y-8 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300">
+                {/* AI Response Section */}
+                <div>
+                    <Label className="mb-1.5 flex items-center gap-2">
+                        AI Response
+                        <TooltipProvider>
+                            <Tooltip delayDuration={0} open={tooltipOpen['aiResponse']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, aiResponse: open }))}>
+                                <TooltipTrigger asChild onClick={(e) => toggleTooltip('aiResponse', e)}>
+                                    <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                    <p>The specific response Sophiie gives when this trigger is met.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </Label>
+                    <div className="relative">
+                        <Textarea
+                            placeholder="e.g. I can help you with that refund request."
+                            className="min-h-[80px] pb-8 resize-y"
+                            value={formData.aiResponse || ''}
+                            onChange={(e) => onChange('aiResponse', e.target.value)}
+                        />
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                <Mic className="w-4 h-4" />
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
+                                <Wand2 className="w-4 h-4" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Question Rules Section */}
+                <div>
+                    <QuestionRulesEditorComponent
+                        questions={formData.questions || []}
+                        onChange={(newQuestions) => onChange('questions', newQuestions)}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    // --- STEP 3: OUTCOME ---
+    if (step === 3) {
+        return (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                <div>
+                    <div className="flex justify-between items-center mb-3">
+                        <Label className="block">Outcome</Label>
+                    </div>
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         {[
                             { id: 'collect', label: 'Collect Info', icon: ClipboardList, color: 'text-orange-500' },
                             { id: 'transfer', label: 'Transfer', icon: PhoneForwarded, color: 'text-blue-500' },
-                            { id: 'book', label: 'Booking', icon: Calendar, color: 'text-purple-500' },
+                            { id: 'booking', label: 'Booking', icon: Calendar, color: 'text-purple-500' },
                             { id: 'refuse', label: 'Refuse', icon: ShieldAlert, color: 'text-red-500' },
                         ].map(opt => (
                             <div
                                 key={opt.id}
                                 onClick={() => onChange('protocolAction', opt.id)}
-                                className={`cursor-pointer p-4 rounded-xl border-2 flex flex-col items-center text-center transition-all ${formData.protocolAction === opt.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                                className={`cursor-pointer h-24 rounded-xl border-2 flex flex-col items-center justify-center transition-all ${formData.protocolAction === opt.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                             >
-                                <div className={`w-10 h-10 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center mb-2 shadow-sm ${opt.color}`}>
-                                    <opt.icon className="w-5 h-5" />
+                                <div className={`mb-2 ${formData.protocolAction === opt.id ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                                    <opt.icon className={`w-6 h-6 ${formData.protocolAction === opt.id ? 'text-blue-600 dark:text-blue-400' : opt.color}`} />
                                 </div>
-                                <span className="text-sm font-semibold capitalize text-slate-900 dark:text-slate-200">{opt.label}</span>
+                                <div className={`font-semibold text-sm ${formData.protocolAction === opt.id ? 'text-blue-900 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'}`}>{opt.label}</div>
                             </div>
                         ))}
                     </div>
-                </div>
 
-                {/* Conditional UI based on Action */}
-
-                {/* Transfer Routing */}
-                {formData.protocolAction === 'transfer' && (
-                    <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800 animate-in fade-in">
-                        <Label className="mb-2 block">Routing</Label>
-                        <TransferRoutingSelector
-                            type={formData.protocolDestinationType || 'staff'}
-                            value={formData.protocolDestinationValue || ''}
-                            onChangeType={(val) => onChange('protocolDestinationType', val)}
-                            onChangeValue={(val) => onChange('protocolDestinationValue', val)}
-                            onAddNew={() => onSwitchMode('staff')}
-                        />
-                    </div>
-                )}
-
-                {/* Book UI */}
-                {formData.protocolAction === 'book' && (
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800 flex items-center gap-3 animate-in fade-in">
-                        <div className="w-10 h-10 bg-white dark:bg-purple-800/50 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm">
-                            <Calendar className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h4 className="text-sm font-bold text-purple-900 dark:text-purple-100">Calendar Active</h4>
-                            <p className="text-xs text-purple-700 dark:text-purple-300">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Script Editor & Questions */}
-                {(formData.protocolAction === 'script' || formData.protocolAction === 'collect') && (
-                    <div className="space-y-6 animate-in fade-in">
-                        <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-800">
-                            <Label className="text-xs text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-2">
-                                {formData.protocolAction === 'collect' ? 'AI Response' : 'Response Script'}
-                                <TooltipProvider>
-                                    <Tooltip delayDuration={0} open={tooltipOpen['aiResponse']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, aiResponse: open }))}>
-                                        <TooltipTrigger asChild onClick={(e) => toggleTooltip('aiResponse', e)}>
-                                            <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
-                                        </TooltipTrigger>
-                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                            <p>The initial phrase Sophiie will use to start collecting information.</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </Label>
-                            <div className="relative">
-                                <Textarea
-                                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
-                                    rows={3}
-                                    placeholder={formData.protocolAction === 'collect' ? "e.g. I need to take down some details first..." : "e.g. We do not offer refunds on sale items..."}
-                                    value={formData.protocolScript || ''}
-                                    onChange={(e) => onChange('protocolScript', e.target.value)}
-                                />
-                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                        <Mic className="w-4 h-4" />
-                                    </div>
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                        <Wand2 className="w-4 h-4" />
-                                    </div>
+                    {/* Conditional Configuration */}
+                    <div className="animate-in fade-in">
+                        {/* Transfer Routing */}
+                        {formData.protocolAction === 'transfer' && (
+                            <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
+                                <div>
+                                    <Label className="mb-2 block">Routing</Label>
+                                    <TransferRoutingSelector
+                                        type={formData.protocolDestinationType || 'staff'}
+                                        value={formData.protocolDestinationValue || ''}
+                                        onChangeType={(val) => onChange('protocolDestinationType', val)}
+                                        onChangeValue={(val) => onChange('protocolDestinationValue', val)}
+                                        onAddNew={() => onSwitchMode('staff')}
+                                    />
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Reusing Questions Logic */}
-                        <div>
-                            <Label className="mb-2 block">Follow-up Questions</Label>
-                            <div className="space-y-2 mb-3">
-                                {formData.questions && formData.questions.length > 0 ? (
-                                    formData.questions.map((q, i) => (
-                                        <div key={i} className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm flex justify-between group">
-                                            <span>{q.text || q}</span>
-                                            <Trash2 className="w-4 h-4 text-slate-300 cursor-pointer hover:text-red-500" />
+                        {/* Booking UI */}
+                        {formData.protocolAction === 'booking' && (
+                            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-6 flex items-center gap-4">
+                                <div className="w-12 h-12 bg-white dark:bg-purple-800/50 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
+                                    <Calendar className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-purple-900 dark:text-purple-100 text-base">Calendar Active</h4>
+                                    <p className="text-sm text-purple-700 dark:text-purple-300">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Refusal / Script for other actions */}
+                        {(formData.protocolAction === 'refuse' || formData.protocolAction === 'collect') && (
+                            <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
+                                <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500 dark:text-slate-400">
+                                    {formData.protocolAction === 'refuse' ? 'Refusal Script' : 'Closing Script (Optional)'}
+                                    <TooltipProvider>
+                                        <Tooltip delayDuration={0} open={tooltipOpen['protocolScript']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, protocolScript: open }))}>
+                                            <TooltipTrigger asChild onClick={(e) => toggleTooltip('protocolScript', e)}>
+                                                <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                <p>{formData.protocolAction === 'refuse' ? 'What Sophiie should say to politely refuse.' : 'What Sophiie should say before ending the interaction.'}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </Label>
+                                <div className="relative">
+                                    <Textarea
+                                        className={`w-full rounded-lg border p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10 bg-white dark:bg-slate-800 ${formData.protocolAction === 'refuse' ? 'border-red-200' : 'border-slate-300 dark:border-slate-700'}`}
+                                        rows={3}
+                                        placeholder={formData.protocolAction === 'refuse' ? "e.g. I apologize, but we are unable to process that request due to company policy." : "e.g. I'll make a note of that."}
+                                        value={formData.protocolScript || ''}
+                                        onChange={(e) => onChange('protocolScript', e.target.value)}
+                                    />
+                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                            <Mic className="w-4 h-4" />
                                         </div>
-                                    ))
-                                ) : (
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-sm flex justify-between group">
-                                        <span className="text-slate-800 dark:text-slate-200">Could you please provide the order number?</span>
-                                        <Trash2 className="w-4 h-4 text-slate-300 cursor-pointer group-hover:text-red-500" />
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
+                                            <Wand2 className="w-4 h-4" />
+                                        </div>
                                     </div>
-                                )}
-                            </div>
-                            <div className="flex gap-2">
-                                <Input placeholder="Add a question..." className="h-9" />
-                                <Button size="sm" variant="secondary">Add</Button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Refusal Script */}
-                {formData.protocolAction === 'refuse' && (
-                    <div className="p-4 bg-red-50 rounded-lg border border-red-200 animate-in fade-in">
-                        <Label className="text-xs text-red-800 uppercase block mb-2">Polite Refusal Script</Label>
-                        <div className="relative">
-                            <Textarea
-                                className="w-full rounded-lg border border-red-200 p-3 text-sm focus:ring-2 focus:ring-red-500 outline-none bg-white pb-10"
-                                rows={3}
-                                placeholder="e.g. I apologize, but we are unable to process that request due to company policy."
-                                value={formData.protocolScript || ''}
-                                onChange={(e) => onChange('protocolScript', e.target.value)}
-                            />
-                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                    <Mic className="w-4 h-4" />
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                    <Wand2 className="w-4 h-4" />
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
-                )}
-            </div>
-        );
-    }
-
-    // --- STEP 3: SUMMARY ---
-    if (step === 3) {
-        return (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200 dark:border-slate-800 text-center">
-                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ScrollText className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Scenario Summary</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Review the logic before activating.</p>
-                </div>
-
-                <div className="p-5 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm bg-white dark:bg-slate-800">
-                    <div className="flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
-                        <Badge variant="outline" className="dark:text-white dark:border-slate-600">IF</Badge>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                            User {formData.protocolTriggerType === 'intent' ? 'intends to' : 'says keyword'}:
-                            <strong> "{formData.protocolTrigger || '...'}"</strong>
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 mb-4 border-b border-slate-100 dark:border-slate-700 pb-3">
-                        <Badge variant="outline" className="dark:text-white dark:border-slate-600">THEN</Badge>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200 capitalize">
-                            Action: <strong>{formData.protocolAction}</strong>
-                        </span>
-                    </div>
-
-                    {formData.protocolAction === 'transfer' && (
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="dark:text-white dark:border-slate-600">TO</Badge>
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                                Routing: <strong>{formData.protocolDestinationValue || 'Selected Team'}</strong>
-                            </span>
-                        </div>
-                    )}
-
-                    {(formData.protocolAction === 'script' || formData.protocolAction === 'collect') && (
-                        <div className="flex items-start gap-2">
-                            <Badge variant="outline" className="dark:text-white dark:border-slate-600">AND</Badge>
-                            <div className="flex-1">
-                                <span className="text-sm font-medium text-slate-700 dark:text-slate-200 block mb-1">Ask Questions:</span>
-                                <ul className="list-disc list-inside text-xs text-slate-600 dark:text-slate-400">
-                                    {formData.questions && formData.questions.length > 0 ? formData.questions.map((q, i) => <li key={i}>{q.text || q}</li>) : <li>Default Questions</li>}
-                                </ul>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         );

@@ -365,7 +365,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
 
     return (
         <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200"
+            className="fixed inset-0 bg-slate-900/60 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200"
             onClick={(e) => {
                 // Check if click is on backdrop (not the modal content)
                 if (e.target === e.currentTarget) {
