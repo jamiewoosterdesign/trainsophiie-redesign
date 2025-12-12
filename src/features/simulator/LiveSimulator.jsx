@@ -90,7 +90,23 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
     // Initialize Simulation
     useEffect(() => {
         setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }]);
+
+        // Reset auto-expand tracking when mode changes (e.g. switching between wizards)
+        hasAutoExpandedRef.current = false;
+        setIsFlowExpanded(false);
     }, [mode]);
+
+    // Auto-expand Planned Flow when data is added
+    const hasAutoExpandedRef = useRef(false);
+    useEffect(() => {
+        const hasContent = (formData.aiResponse && formData.aiResponse.length > 0) ||
+            (formData.questions && formData.questions.length > 0);
+
+        if (hasContent && !hasAutoExpandedRef.current) {
+            setIsFlowExpanded(true);
+            hasAutoExpandedRef.current = true;
+        }
+    }, [formData.aiResponse, formData.questions]);
 
     // --- SHARED VOICE FUNCTIONS ---
     const speak = (text) => {
