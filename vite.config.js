@@ -1,3 +1,4 @@
+// Force restart
 import path from "path"
 import { fileURLToPath } from "url"
 import react from "@vitejs/plugin-react"

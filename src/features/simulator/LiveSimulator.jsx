@@ -330,7 +330,82 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
     }, [simulatorTab, mode]);
 
-    const handlePreviewSend = async (text) => {
+    const generateSystemPrompt = (mode, formData) => {
+        let context = "";
+
+        switch (mode) {
+            case 'service':
+                context = `
+                Current Service Configuration:
+                - Name: ${formData.serviceName || 'Unnamed Service'}
+                - Description: ${formData.description || 'No description provided'}
+                - Price: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'hourly' ? '$' + formData.price + '/hr' : formData.priceMode === 'range' ? '$' + formData.minPrice + ' - $' + formData.maxPrice : 'Not applicable'}
+                - Duration: ${formData.durationValue ? formData.durationValue + ' ' + formData.durationUnit : 'Not specified'}
+                - Outcome: ${formData.serviceOutcome || 'Not specified'}
+                `;
+                break;
+            case 'product':
+                context = `
+                Current Product Configuration:
+                - Name: ${formData.productName || 'Unnamed Product'}
+                - Description: ${formData.description || 'No description provided'}
+                - Price: ${formData.productPrice ? '$' + formData.productPrice : 'Not specified'}
+                - FAQs: ${formData.faqs?.map(q => `Q: ${q.question} A: ${q.answer}`).join('; ') || 'None'}
+                `;
+                break;
+            case 'policy':
+                context = `
+                Current Policy Draft:
+                - Title: ${formData.policyTitle || 'Unnamed Policy'}
+                - Content: ${formData.policyContent || 'No content provided'}
+                `;
+                break;
+            case 'faq':
+                context = `
+                Current FAQ Draft:
+                - Question: ${formData.faqQuestion || 'No question'}
+                - Answer: ${formData.faqAnswer || 'No answer'}
+                - Additional FAQs: ${formData.faqs?.map(q => `Q: ${q.question} A: ${q.answer}`).join('; ') || 'None'}
+                `;
+                break;
+            case 'protocol': // Scenarios
+                context = `
+                Current Scenario/Protocol Configuration:
+                - Scenario Name: ${formData.scenarioName || 'Unnamed Scenario'}
+                - Trigger: ${formData.protocolTrigger || 'No trigger defined'} (${formData.protocolTriggerType})
+                - Action: ${formData.protocolAction || 'Not specified'}
+                - Script/Response: ${formData.protocolScript || 'None'}
+                `;
+                break;
+            case 'transfer':
+                context = `
+                Current Transfer Rule Configuration:
+                - Name: ${formData.transferName || 'Unnamed Rule'}
+                - Type: ${formData.transferType || 'Warm Transfer'}
+                - Summary/Handoff Message: ${formData.transferSummary || 'Standard handoff'}
+                - Destination: ${formData.transferDestinationValue || 'Not specified'}
+                `;
+                break;
+            default:
+                context = "General Configuration Mode";
+        }
+
+        return `You are Sophiie, an AI receptionist. 
+        User is the business owner testing how you would respond to a customer based ONLY on the current configuration they are setting up.
+        
+        ${context}
+        
+        Instructions:
+        1. Roleplay as Sophiie receiving a call/chat from a customer.
+        2. Use the "Current Configuration" above as your source of truth.
+        3. If the user asks something covered by the configuration, answer strictly based on it.
+        4. If the user asks something NOT covered, politely explain that you don't have that information yet or make a reasonable assumption based on the context (e.g. "I'd need to check on that").
+        5. Keep responses concise and conversational (spoken word style).
+        
+        User (Owner testing the bot) says: "${previewInput}"`;
+    };
+
+    const handlePreviewSend = async (text, isVoice = false) => {
         if (!text.trim()) return;
 
         // User speaks
@@ -338,23 +413,20 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         setPreviewInput("");
         setIsTyping(true);
 
-        // Use Gemini for Dynamic Chat Simulation
-        const systemPrompt = `You are Sophiie, an AI receptionist for a company.
-          Current Configuration Context:
-          - Service/Product: ${formData.serviceName || formData.productName || 'Unknown'} (${formData.description || 'No description'})
-          - Pricing: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.productPrice ? '$' + formData.productPrice : formData.priceMode === 'na' ? formData.customPriceMessage : 'Standard rates'}
-          - Staff: ${formData.staffName || 'Unknown'} (${formData.staffRole || 'Staff'})
-          - Transfer Rule: ${formData.transferName || 'None'} -> ${formData.transferSummary || 'Standard transfer'}
-          - Questions: ${formData.questions?.map(q => q.text + (q.options ? ' (Options: ' + q.options.map(o => o.text).join(', ') + ')' : '')).join('; ') || 'None'}
-          
-          User (Owner testing the bot) says: "${text}"
-          
-          Reply briefly as Sophiie would to a customer, using the configuration context if relevant. If not relevant, just be helpful.`;
+        const systemPrompt = generateSystemPrompt(mode, formData);
 
-        const botResponse = await callGemini(systemPrompt);
+        // Pass key explicitly to bypass any env/HMR issues
+        const botResponse = await callGemini(systemPrompt, "AIzaSyBEq2HBFcSAjrmQdMX3tQugsLUrr4rrqLE");
 
         setIsTyping(false);
-        setMessages(prev => [...prev, { role: 'bot', text: botResponse || "I'm having trouble connecting to my brain right now." }]);
+        const finalText = botResponse || "I'm sorry, I'm having trouble connecting to the simulator right now.";
+
+        setMessages(prev => [...prev, { role: 'bot', text: finalText }]);
+
+        // If in voice mode or triggered by voice input, speak the response
+        if (isVoice || simulatorTab === 'voice' || (mode === 'service' && convoPhaseRef.current === 'DONE')) {
+            speak(finalText);
+        }
     };
 
     const handlePreviewMic = () => {
@@ -367,7 +439,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
-            setPreviewInput(transcript); // Fill input instead of auto-sending
+            handlePreviewSend(transcript, true);
         };
     };
 
