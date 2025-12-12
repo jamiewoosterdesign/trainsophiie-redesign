@@ -418,6 +418,10 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
            - Explain that this information is missing from the current configuration and tell them where to add it in the wizard.
            - Example: "[META]: I don't have a price configured for this service yet. You can add one in the 'Service Details' step."
         6. Keep responses concise and conversational (spoken word style).
+        7. FORMATTING RULES:
+           - Do NOT prefix your response with "Sophiie:" or "AI:".
+           - Do NOT repeat the greeting (e.g., "Hi, thanks for calling...") if it has already been said in the history.
+           - Output ONLY the raw response text that you would speak to the customer.
         
         Customer says: "${currentInput}"`;
     };
