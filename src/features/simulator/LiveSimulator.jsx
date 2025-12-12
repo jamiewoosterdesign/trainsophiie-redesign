@@ -342,6 +342,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 - Price: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'hourly' ? '$' + formData.price + '/hr' : formData.priceMode === 'range' ? '$' + formData.minPrice + ' - $' + formData.maxPrice : 'Not applicable'}
                 - Duration: ${formData.durationValue ? formData.durationValue + ' ' + formData.durationUnit : 'Not specified'}
                 - Outcome: ${formData.serviceOutcome || 'Not specified'}
+                - Opening Script/AI Response: ${formData.aiResponse || 'None'}
+                - Required Questions to Ask: ${formData.questions?.map(q => `Q: ${q.text} (Options: ${q.options?.map(o => o.text).join(', ') || 'None'})`).join('; ') || 'None'}
                 `;
                 break;
             case 'product':
@@ -637,7 +639,60 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
             {/* PREVIEW UI (Always visible in Global Mode, or if Preview Tab active) */}
             {mode !== 'document' && (simulatorTab === 'preview' || (simulatorTab === 'voice' && USE_GLOBAL_VOICE_UI)) && (
                 <div className="flex-1 flex flex-col min-h-0 animate-in fade-in zoom-in-95">
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0" ref={scrollRef}>
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0 custom-scrollbar" ref={scrollRef}>
+                        {/* CONVERSATION FLOW PREVIEW (Phantom State) */}
+                        {mode === 'service' && formData.questions?.length > 0 && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-6 mb-8 opacity-80 border-b-2 border-dashed border-slate-200 dark:border-slate-800 pb-8">
+                                <div className="flex items-center justify-center">
+                                    <span className="bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                                        Planned Conversation Flow
+                                    </span>
+                                </div>
+
+                                {/* Opening Script */}
+                                {formData.aiResponse && (
+                                    <div className="flex gap-3">
+                                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white bg-blue-600">
+                                            <Headset className="w-4 h-4" />
+                                        </div>
+                                        <div className="py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700">
+                                            {formData.aiResponse}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Questions Flow */}
+                                {formData.questions.map((q, idx) => (
+                                    <div key={q.id} className="space-y-4">
+                                        {/* Bot Question */}
+                                        <div className="flex gap-3">
+                                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white bg-blue-600">
+                                                <Headset className="w-4 h-4" />
+                                            </div>
+                                            <div className="py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700">
+                                                {q.text}
+                                            </div>
+                                        </div>
+
+                                        {/* User Options */}
+                                        {q.options?.length > 0 && (
+                                            <div className="flex flex-col items-end gap-2 pr-1">
+                                                {q.options.map((opt, optIdx) => (
+                                                    <div key={opt.id} className="flex flex-col items-end group cursor-pointer" onClick={() => setPreviewInput(opt.text)}>
+                                                        <span className="text-[10px] text-slate-300 dark:text-slate-600 uppercase font-bold tracking-wider mb-0.5 mr-1 group-hover:text-blue-400 transition-colors">Answer Option {optIdx + 1}</span>
+                                                        <div className="py-2 px-4 rounded-xl text-sm shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800 rounded-tr-sm hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                                                            {opt.text}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* LIVE CHAT */}
                         {messages.map((msg, idx) => (
                             <div key={idx} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                 <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white ${msg.role === 'bot' ? 'bg-blue-600' : msg.role === 'system' ? 'bg-orange-500' : 'bg-slate-400 dark:bg-slate-600'}`}>
