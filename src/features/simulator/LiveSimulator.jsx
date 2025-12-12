@@ -418,7 +418,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         const systemPrompt = generateSystemPrompt(mode, formData);
 
         // Pass key explicitly to bypass any env/HMR issues
-        const botResponse = await callGemini(systemPrompt, "AIzaSyBEq2HBFcSAjrmQdMX3tQugsLUrr4rrqLE");
+        const botResponse = await callGemini(systemPrompt);
 
         setIsTyping(false);
         const finalText = botResponse || "I'm sorry, I'm having trouble connecting to the simulator right now.";
