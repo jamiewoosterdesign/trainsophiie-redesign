@@ -88,7 +88,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
     // Initialize Simulation
     useEffect(() => {
-        setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }]);
+        setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }]);
     }, [mode]);
 
     // --- SHARED VOICE FUNCTIONS ---
@@ -397,6 +397,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         return `You are Sophiie, an AI receptionist. 
         User is the business owner testing how you would respond to a customer based ONLY on the current configuration they are setting up.
         
+        Business Name: Vision Electrical
         ${context}
 
         Conversation History:
@@ -516,7 +517,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 {/* Refresh Button */}
                 <div className="absolute left-6">
                     <button
-                        onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling ABC Plumbing. How can I help you today?" }])}
+                        onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }])}
                         className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 flex items-center justify-center transition-all shadow-sm"
                         title="Reset Preview"
                     >
