@@ -339,7 +339,14 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 Current Service Configuration:
                 - Name: ${formData.serviceName || 'Unnamed Service'}
                 - Description: ${formData.description || 'No description provided'}
-                - Price: ${formData.priceMode === 'fixed' ? '$' + formData.price : formData.priceMode === 'hourly' ? '$' + formData.price + '/hr' : formData.priceMode === 'range' ? '$' + formData.minPrice + ' - $' + formData.maxPrice : 'Not applicable'}
+                - Price: ${formData.priceMode === 'fixed'
+                        ? (formData.price ? '$' + formData.price : 'NOT CONFIGURED (Missing)')
+                        : formData.priceMode === 'hourly'
+                            ? (formData.price ? '$' + formData.price + '/hr' : 'NOT CONFIGURED (Missing)')
+                            : formData.priceMode === 'range'
+                                ? (formData.minPrice && formData.maxPrice ? '$' + formData.minPrice + ' - $' + formData.maxPrice : 'NOT CONFIGURED (Missing)')
+                                : 'Not applicable'
+                    }
                 - Duration: ${formData.durationValue ? formData.durationValue + ' ' + formData.durationUnit : 'Not specified'}
                 - Outcome: ${formData.serviceOutcome || 'Not specified'}
                 - Opening Script/AI Response: ${formData.aiResponse || 'None'}
@@ -412,11 +419,11 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
            - After answering the customer's immediate query, transition immediately to asking the NEXT missing question.
            - Do not ask all questions at once. Ask one at a time.
         4. If the user asks something covered by the configuration, answer strictly based on it.
-        5. CRITICAL: If the user asks for information that is NOT in the configuration (e.g. price is missing, specific answer is missing), DO NOT MAKE IT UP.
-           - Instead, "break character" and address the user (business owner) directly.
-           - Start your response with "[META]: "
-           - Explain that this information is missing from the current configuration and tell them where to add it in the wizard.
-           - Example: "[META]: I don't have a price configured for this service yet. You can add one in the 'Service Details' step."
+        5. CRITICAL: If the user asks for information that is NOT in the configuration (e.g. price is "NOT CONFIGURED" or missing, specific answer is missing):
+           - FIRST: Respond honestly as Sophiie, stating you don't have that information on hand (e.g., "I'm not exactly sure of the current pricing for that, I'd need to check with the team.").
+           - SECOND: Add a new line and use the tag "[META]: ".
+           - THIRD: After the tag, explain to the business owner what information is missing and where to add it in the wizard.
+           - Example Output: "I can't confirm the exact price right now, sorry about that. \n [META]: Pricing is not configured. Please add a price in the 'Service Details' step."
         6. Keep responses concise and conversational (spoken word style).
         7. FORMATTING RULES:
            - Do NOT prefix your response with "Sophiie:" or "AI:".
