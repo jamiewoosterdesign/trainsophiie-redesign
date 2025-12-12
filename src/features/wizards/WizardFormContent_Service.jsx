@@ -558,7 +558,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                     <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                    <p>How Sophiie should boldy introduce the conversation flow.</p>
+                                    <p>The specific response Sophiie gives when this service is requested. This is optional and fully customizable.</p>
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
