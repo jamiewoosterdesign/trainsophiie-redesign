@@ -6,7 +6,7 @@ import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
     Users, ArrowRightLeft, Bell, Tag,
     Mic, MessageSquare, Activity,
-    CheckCircle, ChevronRight, Mic2, ShoppingBag, Bot
+    ChevronRight, Mic2, ShoppingBag, Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -33,12 +33,12 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
 
             <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
                 <div className="flex items-center gap-2">
-                    {isComplete ? (
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                        <CheckCircle className="w-4 h-4 text-slate-300" />
-                    )}
-                    <span className={`text-xs font-medium ${statusColor || 'text-slate-600 dark:text-slate-400'}`}>{status}</span>
+                    <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors ${isComplete
+                        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                        : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                        }`}>
+                        {status}
+                    </div>
                 </div>
                 <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-300">
                     Edit <ChevronRight className="w-3 h-3 ml-1" />

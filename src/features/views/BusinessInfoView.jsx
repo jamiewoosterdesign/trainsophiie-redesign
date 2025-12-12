@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info } from 'lucide-react';
+import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -247,21 +247,21 @@ export default function BusinessInfoView() {
 
                             <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <Globe className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">Data Sourced from Website</h3>
+                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Data Sourced from Website</h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
                                             We pulled these details from <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">visionelectrical.com.au</a>.
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 w-full md:w-auto">
-                                    <Button variant="outline" size="sm" className="flex-1 md:flex-none gap-2 h-9 text-xs">
+                                    <Button className="flex-1 md:flex-none gap-2 h-9 text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
                                         <RefreshCw className="w-3.5 h-3.5" /> Refresh from URL
                                     </Button>
-                                    <Button variant="outline" size="sm" className="flex-1 md:flex-none gap-2 h-9 text-xs">
+                                    <Button variant="outline" size="sm" className="flex-1 md:flex-none gap-2 h-9 text-xs bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700">
                                         <Upload className="w-3.5 h-3.5" /> Upload Doc
                                     </Button>
                                 </div>
@@ -275,7 +275,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="3" rx="2" /><line x1="8" x2="16" y1="21" y2="21" /><line x1="12" x2="12" y1="17" y2="21" /></svg>
                                     </div>
                                 </div>
@@ -372,7 +372,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" /><path d="M4 20h16" /><path d="M4 20v-2c0-2.21 1.79-4 4-4h8c2.21 0 4 1.79 4 4v2" /></svg>
                                     </div>
                                 </div>
@@ -418,7 +418,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" x2="22" y1="12" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
                                     </div>
                                 </div>
@@ -489,8 +489,8 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                        <Wand2 className="w-5 h-5" />
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
+                                        <FileText className="w-5 h-5" />
                                     </div>
                                 </div>
                                 <div className="flex-1 flex flex-row items-center justify-between">
@@ -543,7 +543,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <MapPin className="w-5 h-5" />
                                     </div>
                                 </div>
@@ -707,7 +707,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                     </div>
                                 </div>
@@ -819,7 +819,7 @@ export default function BusinessInfoView() {
                                 className="relative p-6 flex flex-col md:flex-row md:items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
                                 <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">
                                         <Clock className="w-5 h-5" />
                                     </div>
                                 </div>

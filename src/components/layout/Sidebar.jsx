@@ -43,11 +43,14 @@ const SidebarItem = ({ icon, label, active, onClick, isComplete }) => (
             {React.cloneElement(icon, { size: 18, className: cn("flex-shrink-0", active ? 'text-blue-500 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500') })}
             <span className="flex-1 text-left leading-snug">{label}</span>
             {isComplete !== undefined && (
-                isComplete ? (
-                    <CheckCircle size={16} className="text-green-500 delay-500 duration-500 animate-in fade-in fill-mode-forwards dark:text-green-600 flex-shrink-0" />
-                ) : (
-                    <CheckCircle size={16} className="text-slate-300 dark:text-slate-600 flex-shrink-0" />
-                )
+                <div className={cn(
+                    "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border transition-colors",
+                    isComplete
+                        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                        : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                )}>
+                    {isComplete && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
+                </div>
             )}
         </button>
     </li>
