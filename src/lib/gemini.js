@@ -1,5 +1,4 @@
-// Force valid key in DEV mode to bypass stale env vars. Env var used in PROD.
-const defaultKey = import.meta.env.DEV ? "AIzaSyBEq2HBFcSAjrmQdMX3tQugsLUrr4rrqLE" : import.meta.env.VITE_GEMINI_API_KEY;
+const defaultKey = import.meta.env.VITE_GEMINI_API_KEY;
 
 export async function callGemini(prompt, apiKeyOverride = null) {
     const keyToUse = apiKeyOverride || defaultKey;
