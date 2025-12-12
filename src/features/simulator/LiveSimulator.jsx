@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
-import { Bot, Mic, MicOff, Square, Headset, Zap, Send, RotateCcw, Keyboard, Volume2, VolumeX, Play, Maximize2, FileText, Search, Highlighter, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X } from 'lucide-react';
+import { Bot, Mic, MicOff, Square, Headset, Zap, Send, RotateCcw, Keyboard, Volume2, VolumeX, Play, Maximize2, FileText, Search, Highlighter, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, X, List, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { callGemini } from '@/lib/gemini';
 import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
@@ -71,6 +71,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
     // Preview Chat State
     const [previewInput, setPreviewInput] = useState("");
+    const [isFlowExpanded, setIsFlowExpanded] = useState(false);
 
     // Refs for circular dependencies
     const listenRef = useRef(null);
@@ -414,11 +415,11 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         1. Roleplay as Sophiie receiving a call/chat from a customer.
         2. Use the "Current Configuration" above as your ABSOLUTE source of truth. 
            - The user may update the configuration during the chat. Your answers must reflect the CURRENT values above, not past history.
-        3. Answer the user's question DIRECTLY and CONCISELY.
-           - Do NOT provide information they did not ask for.
-           - Do NOT mention that fields like Price are "NOT CONFIGURED" unless the user specifically asks for them.
-        4. If "Required Information to Collect" questions are listed:
-           - AFTER answering the user's immediate question, ask the NEXT missing required question.
+        3. PRIORITY 1: Answer the user's immediate question DIRECTLY.
+           - If the user asks for the price, cost, or rates, AND the price is configured above, YOU MUST tell them the price.
+           - Do NOT ignore the question to ask a follow-up question. Answer FIRST, then ask.
+        4. PRIORITY 2: Only AFTER answering the specific question, check if there are "Required Information to Collect" questions.
+           - If yes, ask the NEXT missing question to keep the flow moving.
         5. CRITICAL: If the user EXPLICITLY asks for information that is missing or "NOT CONFIGURED":
            - FIRST: Respond honestly as Sophiie (e.g., "I'm not sure of the price right now, I'd need to check.").
            - SECOND: Add a new line and use the tag "[META]: ".
@@ -452,18 +453,15 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         if (finalText.includes('[META]:')) {
             const parts = finalText.split('[META]:');
             const inCharacterPart = parts[0].trim();
-            const metaPart = parts[1].trim();
 
+            // We set the FULL text (including META) to the chat so the bubble renders correctly with styling
+            setMessages(prev => [...prev, { role: 'bot', text: finalText }]);
+
+            // But we only SPEAK the in-character part
             if (inCharacterPart) {
-                setMessages(prev => [...prev, { role: 'bot', text: inCharacterPart }]);
-                // Speak only the in-character part
                 if ((isVoice || simulatorTab === 'voice' || (mode === 'service' && convoPhaseRef.current === 'DONE'))) {
                     speak(inCharacterPart);
                 }
-            }
-
-            if (metaPart) {
-                setMessages(prev => [...prev, { role: 'system', text: metaPart }]);
             }
 
         } else {
@@ -684,120 +682,182 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
             {/* PREVIEW UI (Always visible in Global Mode, or if Preview Tab active) */}
             {mode !== 'document' && (simulatorTab === 'preview' || (simulatorTab === 'voice' && USE_GLOBAL_VOICE_UI)) && (
                 <div className="flex-1 flex flex-col min-h-0 animate-in fade-in zoom-in-95">
-                    <div className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0 custom-scrollbar" ref={scrollRef}>
-                        {/* CONVERSATION FLOW PREVIEW (Phantom State) */}
-                        {mode === 'service' && formData.questions?.length > 0 && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-6 mb-8 opacity-80 border-b-2 border-dashed border-slate-200 dark:border-slate-800 pb-8">
-                                <div className="flex items-center justify-center">
-                                    <span className="bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
-                                        Planned Conversation Flow
-                                    </span>
+
+                    {/* Planned Conversation Flow Panel (Collapsible) */}
+                    {(mode === 'service' || mode === 'protocol') && (
+                        <div className={`border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 ease-in-out flex flex-col ${isFlowExpanded ? 'h-[40%]' : 'h-10'}`}>
+                            {/* Toggle Header */}
+                            <div
+                                onClick={() => setIsFlowExpanded(!isFlowExpanded)}
+                                className="flex items-center justify-between px-4 h-10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                            >
+                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                    <List className="w-3.5 h-3.5" />
+                                    Planned Conversation Flow
                                 </div>
+                                {isFlowExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                            </div>
 
-                                {/* Opening Script */}
-                                {formData.aiResponse && (
-                                    <div className="flex gap-3">
-                                        <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white bg-blue-600">
-                                            <Headset className="w-4 h-4" />
-                                        </div>
-                                        <div className="py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700">
-                                            {formData.aiResponse}
-                                        </div>
+                            {/* Content Area */}
+                            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${!isFlowExpanded && 'hidden'}`}>
+
+                                {/* AI Response Logic */}
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                        <MessageSquare className="w-4 h-4 text-purple-500" />
+                                        Initial AI Response
                                     </div>
-                                )}
-
-                                {/* Questions Flow */}
-                                {formData.questions.map((q, idx) => (
-                                    <div key={q.id} className="space-y-4">
-                                        {/* Bot Question */}
-                                        <div className="flex gap-3">
-                                            <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white bg-blue-600">
-                                                <Headset className="w-4 h-4" />
-                                            </div>
-                                            <div className="py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700">
-                                                {q.text}
-                                            </div>
-                                        </div>
-
-                                        {/* User Options */}
-                                        {q.options?.length > 0 && (
-                                            <div className="flex flex-col items-end gap-2 pr-1">
-                                                {q.options.map((opt, optIdx) => (
-                                                    <div key={opt.id} className="flex flex-col items-end group cursor-pointer" onClick={() => setPreviewInput(opt.text)}>
-                                                        <span className="text-[10px] text-slate-300 dark:text-slate-600 uppercase font-bold tracking-wider mb-0.5 mr-1 group-hover:text-blue-400 transition-colors">Answer Option {optIdx + 1}</span>
-                                                        <div className="py-2 px-4 rounded-xl text-sm shadow-sm bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800 rounded-tr-sm hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
-                                                            {opt.text}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                    <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/50 rounded-lg p-3 text-sm text-purple-900 dark:text-purple-100 relative">
+                                        {formData.aiResponse ? (
+                                            <>"{formData.aiResponse}"</>
+                                        ) : (
+                                            <span className="text-purple-400 italic">No custom response configured (Standard greeting will apply)</span>
                                         )}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                </div>
 
-                        {/* LIVE CHAT */}
-                        {messages.map((msg, idx) => (
-                            <div key={idx} className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white ${msg.role === 'bot' ? 'bg-blue-600' : msg.role === 'system' ? 'bg-orange-500' : 'bg-slate-400 dark:bg-slate-600'}`}>
-                                    {msg.role === 'bot' ? <Headset className="w-4 h-4" /> : msg.role === 'system' ? <Zap className="w-4 h-4" /> : <div className="font-bold">U</div>}
-                                </div>
-                                <div className={`py-2.5 px-3.5 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm ${msg.role === 'bot' ? 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-tl-sm border border-slate-100 dark:border-slate-700' : msg.role === 'system' ? 'bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/30 w-full italic font-medium' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
-                                    {msg.text}
+                                {/* Question Rules Logic */}
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                                        <List className="w-4 h-4 text-blue-500" />
+                                        Follow-up Questions
+                                    </div>
+                                    {formData.questions && formData.questions.length > 0 ? (
+                                        <div className="space-y-3">
+                                            {formData.questions.map((q, idx) => (
+                                                <div key={q.id || idx} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+                                                    <div className="flex gap-2">
+                                                        <span className="text-xs font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded flex items-center h-5">Q{idx + 1}</span>
+                                                        <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">{q.text}</p>
+                                                    </div>
+                                                    {q.options && q.options.length > 0 && (
+                                                        <div className="mt-2 pl-8 space-y-1">
+                                                            {q.options.map(opt => (
+                                                                <div key={opt.id} className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+                                                                    {opt.text}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-slate-400 italic pl-6">No follow-up questions configured.</div>
+                                    )}
                                 </div>
                             </div>
-                        ))}
-                        {isTyping && (
-                            <div className="flex gap-3 animate-in fade-in">
-                                <div className="w-8 h-8 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center text-white"><Headset className="w-4 h-4" /></div>
-                                <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 py-3 px-4 rounded-2xl rounded-tl-sm flex gap-1">
-                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" />
-                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce delay-75" />
-                                    <div className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce delay-150" />
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
-                    <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-                        <form
-                            className="flex gap-2"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handlePreviewSend(previewInput);
-                            }}
-                        >
-                            <div className="relative flex-1">
-                                <input
-                                    className="w-full h-10 bg-slate-100 dark:bg-slate-800 rounded-full border border-transparent px-4 pr-10 text-slate-700 dark:text-white text-sm focus:bg-white dark:focus:bg-slate-900 focus:border-blue-400 focus:outline-none transition-all"
-                                    placeholder="Type a message..."
-                                    value={previewInput}
-                                    onChange={(e) => {
-                                        setPreviewInput(e.target.value);
-                                        // Auto-switch to manual mode if typing
-                                        if (simulatorTab === 'voice') setSimulatorTab('preview');
-                                    }}
-                                    onFocus={() => {
-                                        if (simulatorTab === 'voice') setSimulatorTab('preview');
-                                    }}
-                                />
+
+                    {/* Simulator Area */}
+                    <div className="flex-1 flex flex-col min-h-0 relative">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-sm z-10 shadow-sm flex-none h-14">
+                            <div className="flex items-center gap-2">
+                                <span className="font-bold text-sm text-slate-900 dark:text-white">Live Preview</span>
+                                <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Test Mode</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                {/* Only show refresh if not global UI or we want it here */}
+                            </div>
+                        </div>
+
+                        {/* Chat Area */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth" ref={scrollRef}>
+                            {messages.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center text-slate-400 text-sm space-y-2 opacity-60">
+                                    <RotateCcw className="w-8 h-8 mb-2 opacity-50" />
+                                    <p>Interact with the preview to test your flow.</p>
+                                </div>
+                            )}
+
+                            {messages.map((msg, idx) => (
+                                <div key={idx} className={`flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-slate-400 text-white' : 'bg-blue-600 text-white'}`}>
+                                        {msg.role === 'user' ? (
+                                            <span className="font-bold text-xs">U</span>
+                                        ) : (
+                                            <Headset className="w-4 h-4" />
+                                        )}
+                                    </div>
+                                    <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                        ? 'bg-blue-600 text-white rounded-tr-sm'
+                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-sm'
+                                        }`}>
+                                        {msg.text.split('\n').map((line, i) => (
+                                            <React.Fragment key={i}>
+                                                {line.startsWith('[META]:') ? (
+                                                    <div className="mt-2 pt-2 border-t border-orange-200 dark:border-orange-900/30 text-orange-700 dark:text-orange-400 font-bold italic text-xs bg-orange-50 dark:bg-orange-900/10 p-2 rounded flex gap-2">
+                                                        <Zap className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                                                        <span>{line.replace('[META]:', '').trim()}</span>
+                                                    </div>
+                                                ) : (
+                                                    <p className={i > 0 ? 'mt-2' : ''}>{line}</p>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                            {isTyping && (
+                                <div className="flex items-start gap-3 animate-pulse">
+                                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-sm">
+                                        <Headset className="w-4 h-4" />
+                                    </div>
+                                    <div className="bg-slate-100 dark:bg-slate-800 px-4 py-3 rounded-2xl rounded-tl-sm">
+                                        <div className="flex gap-1.5 pt-1">
+                                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
+                                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-100" />
+                                            <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-200" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Chat Input */}
+                        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-none z-20 relative">
+                            {/* Refresh Button - Floating */}
+                            <div className="absolute -top-12 left-1/2 -translate-x-1/2">
                                 <button
-                                    type="button"
-                                    onClick={handlePreviewMic}
-                                    className="absolute right-1 top-1 p-1.5 rounded-full text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                                    onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }])}
+                                    className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center shadow-lg transition-all hover:scale-110"
+                                    title="Reset Preview"
                                 >
-                                    <Mic className="w-4 h-4" />
+                                    <RotateCcw className="w-3.5 h-3.5" />
                                 </button>
                             </div>
-                            <button
-                                type="submit"
-                                disabled={!previewInput.trim()}
-                                className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors"
-                            >
-                                <Send className="w-4 h-4 ml-0.5" />
-                            </button>
-                        </form>
+
+                            <div className="relative flex items-center">
+                                <input
+                                    value={previewInput}
+                                    onChange={(e) => setPreviewInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handlePreviewSend(previewInput);
+                                        }
+                                    }}
+                                    placeholder="Type a message..."
+                                    className="w-full pl-4 pr-24 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm text-slate-900 dark:text-white"
+                                />
+                                <div className="absolute right-2 flex items-center gap-1">
+                                    <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                                        <Mic className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => handlePreviewSend(previewInput)}
+                                        disabled={!previewInput.trim() || isTyping}
+                                        className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                                    >
+                                        <Send className="w-4 h-4 ml-0.5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

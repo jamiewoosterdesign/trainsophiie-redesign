@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Sparkles } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronRight, GripVertical, Sparkles, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-// Recursive component for Question Nodes
 // Recursive component for Question Nodes
 const QuestionNode = ({ question, onUpdate, onDelete, level = 0 }) => {
     const [isExpanded, setIsExpanded] = useState(true);
@@ -194,7 +199,19 @@ export default function QuestionRulesEditor({ questions, onChange }) {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <Label className="text-base font-bold text-slate-900 dark:text-white">Question Rules</Label>
+                <Label className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    Question Rules
+                    <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                            <TooltipTrigger asChild>
+                                <Info className="w-4 h-4 text-slate-400 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-slate-900 text-white border-slate-900 max-w-[250px]">
+                                <p>Optional follow-up questions Sophiie can ask to collect specific details (e.g. access type, location, etc).</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </Label>
                 <Button variant="outline" size="sm" onClick={addQuestion} className="dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
                     <Plus className="w-4 h-4 mr-2" /> Add new question
                 </Button>
