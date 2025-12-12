@@ -47,10 +47,10 @@ export function PageSectionNav({ sections, activeSection, onNavigate }) {
                                 >
                                     {/* Completion Indicator */}
                                     <div className={cn(
-                                        "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors",
+                                        "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 transition-colors border",
                                         section.isComplete
-                                            ? "bg-green-500 text-white"
-                                            : "border-2 border-slate-300 dark:border-slate-600"
+                                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                                            : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
                                     )}>
                                         {section.isComplete && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
                                     </div>
@@ -76,10 +76,10 @@ export function PageSectionNav({ sections, activeSection, onNavigate }) {
                             <SelectItem key={section.id} value={section.id}>
                                 <div className="flex items-center gap-2">
                                     <div className={cn(
-                                        "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0",
+                                        "w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border",
                                         section.isComplete
-                                            ? "bg-green-500 text-white"
-                                            : "border-2 border-slate-300 dark:border-slate-600"
+                                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                                            : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
                                     )}>
                                         {section.isComplete && <Check className="w-2.5 h-2.5" strokeWidth={3} />}
                                     </div>
