@@ -330,7 +330,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
     }, [simulatorTab, mode]);
 
-    const generateSystemPrompt = (mode, formData) => {
+    const generateSystemPrompt = (mode, formData, currentInput, history = []) => {
         let context = "";
 
         switch (mode) {
@@ -343,7 +343,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 - Duration: ${formData.durationValue ? formData.durationValue + ' ' + formData.durationUnit : 'Not specified'}
                 - Outcome: ${formData.serviceOutcome || 'Not specified'}
                 - Opening Script/AI Response: ${formData.aiResponse || 'None'}
-                - Required Questions to Ask: ${formData.questions?.map(q => `Q: ${q.text} (Options: ${q.options?.map(o => o.text).join(', ') || 'None'})`).join('; ') || 'None'}
+                - Required Information to Collect (Follow-up Questions): ${formData.questions?.map(q => `Q: ${q.text} (Options: ${q.options?.map(o => o.text).join(', ') || 'None'})`).join('; ') || 'None'}
                 `;
                 break;
             case 'product':
@@ -392,19 +392,29 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 context = "General Configuration Mode";
         }
 
+        const historyText = history.map(m => `${m.role === 'user' ? 'Customer' : 'Sophiie'}: ${m.text}`).join('\n');
+
         return `You are Sophiie, an AI receptionist. 
         User is the business owner testing how you would respond to a customer based ONLY on the current configuration they are setting up.
         
         ${context}
+
+        Conversation History:
+        ${historyText}
         
         Instructions:
         1. Roleplay as Sophiie receiving a call/chat from a customer.
         2. Use the "Current Configuration" above as your source of truth.
-        3. If the user asks something covered by the configuration, answer strictly based on it.
-        4. If the user asks something NOT covered, politely explain that you don't have that information yet or make a reasonable assumption based on the context (e.g. "I'd need to check on that").
-        5. Keep responses concise and conversational (spoken word style).
+        3. CRITICAL: If "Required Information to Collect" questions are listed, you MUST proactively ask them one by one to the customer.
+           - Look at the Conversation History.
+           - Identify which required questions have NOT been asked/answered yet.
+           - After answering the customer's immediate query, transition immediately to asking the NEXT missing question.
+           - Do not ask all questions at once. Ask one at a time.
+        4. If the user asks something covered by the configuration, answer strictly based on it.
+        5. If the user asks something NOT covered, politely explain that you don't have that information yet or make a reasonable assumption based on the context.
+        6. Keep responses concise and conversational (spoken word style).
         
-        User (Owner testing the bot) says: "${previewInput}"`;
+        Customer says: "${currentInput}"`;
     };
 
     const handlePreviewSend = async (text, isVoice = false) => {
@@ -415,7 +425,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         setPreviewInput("");
         setIsTyping(true);
 
-        const systemPrompt = generateSystemPrompt(mode, formData);
+        const systemPrompt = generateSystemPrompt(mode, formData, text, messages);
 
         // Pass key explicitly to bypass any env/HMR issues
         const botResponse = await callGemini(systemPrompt);
