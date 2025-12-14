@@ -231,196 +231,77 @@ export default function NotificationsView() {
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    {/* Toolbar */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-row justify-between items-center gap-4">
-                            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                <Bell className="w-5 h-5 text-slate-500" /> Notifications Settings
-                            </h2>
-                            <ViewToggle view={view} onViewChange={setView} />
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <Input
-                                    placeholder="Search team members..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 w-full"
-                                />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+                        {/* Toolbar */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-row justify-between items-center gap-4">
+                                <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                    <Bell className="w-5 h-5 text-slate-500" /> Notifications Settings
+                                </h2>
+                                <ViewToggle view={view} onViewChange={setView} />
                             </div>
-                            <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
-                                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                                    <SelectTrigger className="w-[130px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">All Status</SelectItem>
-                                        <SelectItem value="active">Enabled</SelectItem>
-                                        <SelectItem value="inactive">Disabled</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
-                                        <SelectValue placeholder="Sort by" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="date">Date Added</SelectItem>
-                                        <SelectItem value="member">Name (A-Z)</SelectItem>
-                                        <SelectItem value="status">Status</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Grid View (Cards) */}
-                    {view === 'grid' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            <AddNewCard
-                                title="Assign New Team Member"
-                                description="Set up alerts for a team member"
-                                onClick={handleNew}
-                            />
-
-                            {/* Mobile Add Button (Top) */}
-                            {currentPage === 1 && (
-                                <div className="md:hidden">
-                                    <AddNewCard
-                                        title="Assign New Team Member"
-                                        onClick={handleNew}
-                                        variant="compact"
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Input
+                                        placeholder="Search team members..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 w-full"
                                     />
                                 </div>
-                            )}
-
-                            {paginatedAssignments.map((assignment) => (
-                                <Card key={assignment.id} onClick={() => handleEdit(assignment)} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full min-h-[280px] group relative ${assignment.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${assignment.id === highlightedAssignmentId ? 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50' : ''}`}>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                                            {assignment.member.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                                        </div>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                    <MoreHorizontal className="w-4 h-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                <DropdownMenuItem onClick={() => handleEdit(assignment)}>
-                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleDuplicateAssignment(assignment)}>
-                                                    <Copy className="w-4 h-4 mr-2" /> Duplicate
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => handleToggleAssignment(assignment.id)}>
-                                                    <Power className={`w-4 h-4 mr-2 ${assignment.enabled ? "text-green-500" : "text-slate-400"}`} /> {assignment.enabled ? 'Disable' : 'Enable'}
-                                                </DropdownMenuItem>
-                                                <DropdownMenuSeparator />
-                                                <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(assignment.id)}>
-                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-
-                                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2 line-clamp-1" title={assignment.member}>{assignment.member}</h3>
-
-                                    {/* Text-based Methods (Email/SMS) */}
-                                    <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
-                                        {assignment.methods.map(method => (
-                                            <div key={method} className="flex items-center gap-2">
-                                                {method === 'sms' ? <MessageSquare className="w-4 h-4 text-slate-400" /> : <Mail className="w-4 h-4 text-slate-400" />}
-                                                <span className="capitalize">{method === 'sms' ? 'SMS' : 'Email'}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Methods (renamed from Sources) */}
-                                    <div className="mb-4">
-                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
-                                            <Globe className="w-3 h-3" /> Methods
-                                        </div>
-                                        <div className="flex flex-wrap gap-1.5 text-slate-600 dark:text-slate-400">
-                                            {assignment.sources.map(s => (
-                                                <div key={s} className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 px-2 h-6 rounded text-xs capitalize">
-                                                    {s}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Tags */}
-                                    <div className="mb-4">
-                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
-                                            <UserPlus className="w-3 h-3" /> Tags
-                                        </div>
-                                        <div className="flex flex-wrap gap-1.5">
-                                            {assignment.tags.slice(0, 3).map(tag => (
-                                                <span key={tag} className={`px-2 h-6 flex items-center rounded text-xs font-medium border truncate max-w-[150px] ${getTagStyle(tag)}`}>
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                            {assignment.tags.length > 3 && (
-                                                <span className="text-[10px] text-slate-400 flex items-center">+{assignment.tags.length - 3}</span>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-                                        <div>
-                                            {assignment.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
-                                        </div>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Table View */}
-                    {view === 'table' && (
-                        <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                            <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                <div className="col-span-3">Team Member</div>
-                                <div className="col-span-2">Tags</div>
-                                <div className="col-span-3">Sources</div>
-                                <div className="col-span-2">Methods</div>
-                                <div className="col-span-1 text-right">Status</div>
-                                <div className="col-span-1 text-right">Actions</div>
+                                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                                        <SelectTrigger className="w-[130px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Status</SelectItem>
+                                            <SelectItem value="active">Enabled</SelectItem>
+                                            <SelectItem value="inactive">Disabled</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={sortBy} onValueChange={setSortBy}>
+                                        <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                            <SelectValue placeholder="Sort by" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="date">Date Added</SelectItem>
+                                            <SelectItem value="member">Name (A-Z)</SelectItem>
+                                            <SelectItem value="status">Status</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                        </div>
+
+                        {/* Grid View (Cards) */}
+                        {view === 'grid' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <AddNewCard
+                                    title="Assign New Team Member"
+                                    description="Set up alerts for a team member"
+                                    onClick={handleNew}
+                                />
+
+                                {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (
-                                    <div onClick={handleNew} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
-                                        <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
-                                            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
-                                                <Plus className="w-4 h-4" />
-                                            </div>
-                                            Assign New Team Member
-                                        </div>
+                                    <div className="md:hidden">
+                                        <AddNewCard
+                                            title="Assign New Team Member"
+                                            onClick={handleNew}
+                                            variant="compact"
+                                        />
                                     </div>
                                 )}
-                                {paginatedAssignments.map(a => (
-                                    <div key={a.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${a.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${a.id === highlightedAssignmentId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`} onClick={() => handleEdit(a)}>
-                                        <div className="col-span-3 font-medium text-slate-900 dark:text-white">{a.member}</div>
-                                        <div className="col-span-2 flex flex-wrap gap-1">
-                                            {a.tags.slice(0, 2).map(tag => (
-                                                <span key={tag} className={`px-1.5 py-0.5 rounded text-[10px] border ${getTagStyle(tag)}`}>{tag}</span>
-                                            ))}
-                                            {a.tags.length > 2 && <span className="text-[10px] text-slate-400">+{a.tags.length - 2}</span>}
-                                        </div>
-                                        <div className="col-span-3 text-sm text-slate-500 dark:text-slate-400 flex flex-wrap gap-1">
-                                            {a.sources.map(s => <span key={s} className="capitalize">{s}</span>).reduce((prev, curr) => [prev, ', ', curr])}
-                                        </div>
-                                        <div className="col-span-2 flex gap-1">
-                                            {a.methods.map(m => (
-                                                <Badge key={m} variant="secondary" className="px-1 py-0 h-5 text-[10px] uppercase">{m}</Badge>
-                                            ))}
-                                        </div>
-                                        <div className="col-span-1 text-right">
-                                            {a.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
-                                        </div>
-                                        <div className="col-span-1 text-right flex justify-end">
+
+                                {paginatedAssignments.map((assignment) => (
+                                    <Card key={assignment.id} onClick={() => handleEdit(assignment)} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full min-h-[280px] group relative ${assignment.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${assignment.id === highlightedAssignmentId ? 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50' : ''}`}>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                                {assignment.member.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                                            </div>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                                     <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
@@ -428,45 +309,119 @@ export default function NotificationsView() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                    <DropdownMenuItem onClick={() => handleEdit(a)}>
+                                                    <DropdownMenuItem onClick={() => handleEdit(assignment)}>
                                                         <Edit2 className="w-4 h-4 mr-2" /> Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDuplicateAssignment(a)}>
+                                                    <DropdownMenuItem onClick={() => handleDuplicateAssignment(assignment)}>
                                                         <Copy className="w-4 h-4 mr-2" /> Duplicate
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleToggleAssignment(a.id)}>
-                                                        <Power className={`w-4 h-4 mr-2 ${a.enabled ? "text-green-500" : "text-slate-400"}`} /> {a.enabled ? 'Disable' : 'Enable'}
+                                                    <DropdownMenuItem onClick={() => handleToggleAssignment(assignment.id)}>
+                                                        <Power className={`w-4 h-4 mr-2 ${assignment.enabled ? "text-green-500" : "text-slate-400"}`} /> {assignment.enabled ? 'Disable' : 'Enable'}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(a.id)}>
+                                                    <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(assignment.id)}>
                                                         <Trash2 className="w-4 h-4 mr-2" /> Delete
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-                                    </div>
+
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2 line-clamp-1" title={assignment.member}>{assignment.member}</h3>
+
+                                        {/* Text-based Methods (Email/SMS) */}
+                                        <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-sm text-slate-500 dark:text-slate-400">
+                                            {assignment.methods.map(method => (
+                                                <div key={method} className="flex items-center gap-2">
+                                                    {method === 'sms' ? <MessageSquare className="w-4 h-4 text-slate-400" /> : <Mail className="w-4 h-4 text-slate-400" />}
+                                                    <span className="capitalize">{method === 'sms' ? 'SMS' : 'Email'}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Methods (renamed from Sources) */}
+                                        <div className="mb-4">
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+                                                <Globe className="w-3 h-3" /> Methods
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5 text-slate-600 dark:text-slate-400">
+                                                {assignment.sources.map(s => (
+                                                    <div key={s} className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 px-2 h-6 rounded text-xs capitalize">
+                                                        {s}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Tags */}
+                                        <div className="mb-4">
+                                            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1 mb-2">
+                                                <UserPlus className="w-3 h-3" /> Tags
+                                            </div>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {assignment.tags.slice(0, 3).map(tag => (
+                                                    <span key={tag} className={`px-2 h-6 flex items-center rounded text-xs font-medium border truncate max-w-[150px] ${getTagStyle(tag)}`}>
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                                {assignment.tags.length > 3 && (
+                                                    <span className="text-[10px] text-slate-400 flex items-center">+{assignment.tags.length - 3}</span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                                            <div>
+                                                {assignment.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
+                                            </div>
+                                        </div>
+                                    </Card>
                                 ))}
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Mobile List View fallback */}
-                    <div className="md:hidden space-y-4">
+                        {/* Table View */}
                         {view === 'table' && (
-                            <>
-                                {currentPage === 1 && (
-                                    <AddNewCard
-                                        title="Assign New"
-                                        onClick={handleNew}
-                                        variant="compact"
-                                    />
-                                )}
-                                {paginatedAssignments.map(a => (
-                                    <div key={a.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${a.id === highlightedAssignmentId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`} onClick={() => handleEdit(a)}>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-bold text-slate-900 dark:text-white">{a.member}</h3>
-                                            <div className="flex items-center gap-2">
+                            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                    <div className="col-span-3">Team Member</div>
+                                    <div className="col-span-2">Tags</div>
+                                    <div className="col-span-3">Sources</div>
+                                    <div className="col-span-2">Methods</div>
+                                    <div className="col-span-1 text-right">Status</div>
+                                    <div className="col-span-1 text-right">Actions</div>
+                                </div>
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {currentPage === 1 && (
+                                        <div onClick={handleNew} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                            <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
+                                                    <Plus className="w-4 h-4" />
+                                                </div>
+                                                Assign New Team Member
+                                            </div>
+                                        </div>
+                                    )}
+                                    {paginatedAssignments.map(a => (
+                                        <div key={a.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${a.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''} ${a.id === highlightedAssignmentId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`} onClick={() => handleEdit(a)}>
+                                            <div className="col-span-3 font-medium text-slate-900 dark:text-white">{a.member}</div>
+                                            <div className="col-span-2 flex flex-wrap gap-1">
+                                                {a.tags.slice(0, 2).map(tag => (
+                                                    <span key={tag} className={`px-1.5 py-0.5 rounded text-[10px] border ${getTagStyle(tag)}`}>{tag}</span>
+                                                ))}
+                                                {a.tags.length > 2 && <span className="text-[10px] text-slate-400">+{a.tags.length - 2}</span>}
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-500 dark:text-slate-400 flex flex-wrap gap-1">
+                                                {a.sources.map(s => <span key={s} className="capitalize">{s}</span>).reduce((prev, curr) => [prev, ', ', curr])}
+                                            </div>
+                                            <div className="col-span-2 flex gap-1">
+                                                {a.methods.map(m => (
+                                                    <Badge key={m} variant="secondary" className="px-1 py-0 h-5 text-[10px] uppercase">{m}</Badge>
+                                                ))}
+                                            </div>
+                                            <div className="col-span-1 text-right">
                                                 {a.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
+                                            </div>
+                                            <div className="col-span-1 text-right flex justify-end">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                                         <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
@@ -491,51 +446,98 @@ export default function NotificationsView() {
                                                 </DropdownMenu>
                                             </div>
                                         </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                                            Via: {a.methods.map(m => m.toUpperCase()).join(', ')}
-                                        </p>
-                                        <div className="flex flex-wrap gap-1">
-                                            {a.tags.map(tag => (
-                                                <span key={tag} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] border border-slate-200 dark:border-slate-700">{tag}</span>
-                                            ))}
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Mobile List View fallback */}
+                        <div className="md:hidden space-y-4">
+                            {view === 'table' && (
+                                <>
+                                    {currentPage === 1 && (
+                                        <AddNewCard
+                                            title="Assign New"
+                                            onClick={handleNew}
+                                            variant="compact"
+                                        />
+                                    )}
+                                    {paginatedAssignments.map(a => (
+                                        <div key={a.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${a.id === highlightedAssignmentId ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10' : ''}`} onClick={() => handleEdit(a)}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="font-bold text-slate-900 dark:text-white">{a.member}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    {a.enabled ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>}
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                                <MoreHorizontal className="w-4 h-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                            <DropdownMenuItem onClick={() => handleEdit(a)}>
+                                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleDuplicateAssignment(a)}>
+                                                                <Copy className="w-4 h-4 mr-2" /> Duplicate
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleToggleAssignment(a.id)}>
+                                                                <Power className={`w-4 h-4 mr-2 ${a.enabled ? "text-green-500" : "text-slate-400"}`} /> {a.enabled ? 'Disable' : 'Enable'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteAssignment(a.id)}>
+                                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                                                Via: {a.methods.map(m => m.toUpperCase()).join(', ')}
+                                            </p>
+                                            <div className="flex flex-wrap gap-1">
+                                                {a.tags.map(tag => (
+                                                    <span key={tag} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded text-[10px] border border-slate-200 dark:border-slate-700">{tag}</span>
+                                                ))}
+                                            </div>
                                         </div>
+                                    ))}
+                                </>
+                            )}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between pt-4">
+                                <div className="text-sm text-slate-500 dark:text-slate-400">
+                                    Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssignments.length)}</span> of <span className="font-medium">{filteredAssignments.length}</span> results
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </Button>
+                                    <div className="text-sm font-medium text-slate-900 dark:text-white px-2">
+                                        Page {currentPage} of {totalPages}
                                     </div>
-                                ))}
-                            </>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
                         )}
                     </div>
-
-                    {/* Pagination Controls */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between pt-4">
-                            <div className="text-sm text-slate-500 dark:text-slate-400">
-                                Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredAssignments.length)}</span> of <span className="font-medium">{filteredAssignments.length}</span> results
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                    disabled={currentPage === 1}
-                                    className="h-8 w-8 p-0"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                <div className="text-sm font-medium text-slate-900 dark:text-white px-2">
-                                    Page {currentPage} of {totalPages}
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="h-8 w-8 p-0"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 

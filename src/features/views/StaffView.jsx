@@ -219,7 +219,7 @@ export default function StaffView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     {/* Departments Section */}
-                    <div className="space-y-6">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
                         <div className="flex flex-row justify-between items-center gap-4">
                             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                 <LayoutGrid className="w-5 h-5 text-slate-500" /> Departments
@@ -371,7 +371,7 @@ export default function StaffView() {
                     </div>
 
                     {/* Staff Section */}
-                    <div className="space-y-6 pt-8 border-t border-slate-200 dark:border-slate-800">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
                         {/* Toolbar */}
                         <div className="flex flex-col gap-4">
                             <div className="flex flex-row justify-between items-center gap-4">

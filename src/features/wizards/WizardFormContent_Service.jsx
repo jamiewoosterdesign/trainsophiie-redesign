@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Sparkles, FileCheck, X, Mic, Wand2, Info, ClipboardList, PhoneForwarded, Calendar, Mail, ShieldAlert, HelpCircle, Loader2 } from 'lucide-react';
+import { Sparkles, FileCheck, X, Mic, Wand2, Info, ClipboardList, PhoneForwarded, Calendar, Mail, ShieldAlert, HelpCircle, Loader2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,26 @@ export default function WizardFormContentService({ mode, step, formData, onChang
     const [tooltipOpen, setTooltipOpen] = useState({});
     const [showGlobalDefaultModal, setShowGlobalDefaultModal] = useState(false);
     const [isGenerating, setIsGenerating] = useState({});
+
+    // Template Form States
+    const [showSmsTemplateForm, setShowSmsTemplateForm] = useState(false);
+    const [newSmsTemplate, setNewSmsTemplate] = useState({ name: '', content: '' });
+
+    const [showEmailTemplateForm, setShowEmailTemplateForm] = useState(false);
+    const [newEmailTemplate, setNewEmailTemplate] = useState({ name: '', subject: '', content: '' });
+
+    const handleSaveSmsTemplate = () => {
+        onChange('serviceSmsMessage', newSmsTemplate.content);
+        setShowSmsTemplateForm(false);
+        setNewSmsTemplate({ name: '', content: '' });
+    };
+
+    const handleSaveEmailTemplate = () => {
+        onChange('serviceEmailSubject', newEmailTemplate.subject);
+        onChange('serviceEmailBody', newEmailTemplate.content);
+        setShowEmailTemplateForm(false);
+        setNewEmailTemplate({ name: '', subject: '', content: '' });
+    };
 
     const toggleTooltip = (id, e) => {
         if (e) e.preventDefault();
@@ -788,7 +808,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                 </div>
 
                                 {formData.serviceSendInfoType === 'sms' && (
-                                    <div className="animate-in fade-in space-y-4 pt-2">
+                                    <div className="animate-in fade-in space-y-6 pt-2">
                                         <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg flex gap-3 border border-blue-100 dark:border-blue-900/50">
                                             <div className="text-blue-500 dark:text-blue-400 mt-0.5"><ShieldAlert className="w-4 h-4" /></div>
                                             <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
@@ -797,11 +817,12 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                         </div>
 
                                         <div>
-                                            <Label className="mb-1.5 block text-xs uppercase text-slate-500 dark:text-slate-400">SMS Message</Label>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">SMS Content</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the SMS content that will be sent to your customer</p>
                                             <div className="relative">
                                                 <Textarea
                                                     placeholder="e.g. Thanks for calling! Here is the info you requested..."
-                                                    className="min-h-[80px] pb-10"
+                                                    className="min-h-[120px] pb-10 bg-white dark:bg-slate-800"
                                                     value={formData.serviceSmsMessage || ''}
                                                     onChange={(e) => onChange('serviceSmsMessage', e.target.value)}
                                                 />
@@ -819,25 +840,84 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {/* SMS Custom Templates UI */}
+                                        <div className="pt-2">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-semibold text-slate-900 dark:text-white">SMS Templates</h4>
+                                                {!showSmsTemplateForm && (
+                                                    <Button variant="outline" size="sm" onClick={() => setShowSmsTemplateForm(true)} className="bg-white dark:bg-slate-800">
+                                                        <Plus className="w-4 h-4 mr-2" /> New Template
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {showSmsTemplateForm && (
+                                                <div className="bg-sky-50 dark:bg-slate-800/50 border border-sky-100 dark:border-slate-700 rounded-xl p-5 animate-in slide-in-from-top-2">
+                                                    <h5 className="font-medium text-slate-700 dark:text-slate-300 mb-4">New SMS Template</h5>
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Template Name</Label>
+                                                            <Input
+                                                                placeholder="Enter template name"
+                                                                value={newSmsTemplate.name}
+                                                                onChange={(e) => setNewSmsTemplate({ ...newSmsTemplate, name: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
+                                                            <Textarea
+                                                                placeholder="Enter SMS message content"
+                                                                value={newSmsTemplate.content}
+                                                                onChange={(e) => setNewSmsTemplate({ ...newSmsTemplate, content: e.target.value })}
+                                                                className="min-h-[100px] bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div className="flex justify-end gap-3 pt-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setShowSmsTemplateForm(false)}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={handleSaveSmsTemplate}
+                                                                className="bg-sky-600 hover:bg-sky-700 text-white"
+                                                                disabled={!newSmsTemplate.content}
+                                                            >
+                                                                Save and Use Template
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 )}
 
                                 {formData.serviceSendInfoType === 'email' && (
-                                    <div className="animate-in fade-in space-y-4 pt-2">
+                                    <div className="animate-in fade-in space-y-6 pt-2">
                                         <div>
-                                            <Label className="mb-1.5 block text-xs uppercase text-slate-500 dark:text-slate-400">Subject Line</Label>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">Email Subject</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the subject line for your customer will see</p>
                                             <Input
                                                 placeholder="e.g. Information about [Service Name]"
                                                 value={formData.serviceEmailSubject || ''}
                                                 onChange={(e) => onChange('serviceEmailSubject', e.target.value)}
+                                                className="bg-white dark:bg-slate-800"
                                             />
                                         </div>
                                         <div>
-                                            <Label className="mb-1.5 block text-xs uppercase text-slate-500 dark:text-slate-400">Email Body</Label>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">Email Content</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the email content that will be sent to your customer</p>
                                             <div className="relative">
                                                 <Textarea
                                                     placeholder="Hi there, thanks for your interest..."
-                                                    className="min-h-[120px] pb-10"
+                                                    className="min-h-[160px] pb-10 bg-white dark:bg-slate-800"
                                                     value={formData.serviceEmailBody || ''}
                                                     onChange={(e) => onChange('serviceEmailBody', e.target.value)}
                                                 />
@@ -854,6 +934,71 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        {/* Email Custom Templates UI */}
+                                        <div className="pt-2">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-semibold text-slate-900 dark:text-white">Email Templates</h4>
+                                                {!showEmailTemplateForm && (
+                                                    <Button variant="outline" size="sm" onClick={() => setShowEmailTemplateForm(true)} className="bg-white dark:bg-slate-800">
+                                                        <Plus className="w-4 h-4 mr-2" /> New Template
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {showEmailTemplateForm && (
+                                                <div className="bg-sky-50 dark:bg-slate-800/50 border border-sky-100 dark:border-slate-700 rounded-xl p-5 animate-in slide-in-from-top-2">
+                                                    <h5 className="font-medium text-slate-700 dark:text-slate-300 mb-4">New Email Template</h5>
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Template Name</Label>
+                                                            <Input
+                                                                placeholder="Enter template name"
+                                                                value={newEmailTemplate.name}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, name: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Subject</Label>
+                                                            <Input
+                                                                placeholder="Email subject"
+                                                                value={newEmailTemplate.subject}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, subject: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
+                                                            <Textarea
+                                                                placeholder="Enter email message content"
+                                                                value={newEmailTemplate.content}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, content: e.target.value })}
+                                                                className="min-h-[100px] bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div className="flex justify-end gap-3 pt-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setShowEmailTemplateForm(false)}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={handleSaveEmailTemplate}
+                                                                className="bg-sky-600 hover:bg-sky-700 text-white"
+                                                                disabled={!newEmailTemplate.content}
+                                                            >
+                                                                Save and Use Template
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}

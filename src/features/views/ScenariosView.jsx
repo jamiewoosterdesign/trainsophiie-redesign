@@ -183,9 +183,9 @@ export default function ScenariosView() {
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    <div>
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
                         {/* Toolbar */}
-                        <div className="flex flex-col gap-4 mb-6">
+                        <div className="flex flex-col gap-4">
                             <div className="flex flex-row justify-between items-center gap-4">
                                 <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                     <Waypoints className="w-5 h-5 text-slate-500" /> Scenarios
@@ -428,11 +428,12 @@ export default function ScenariosView() {
                     </div>
 
                     {/* Global Restrictions & Guardrails (Unchanged) */}
-                    <div>
-                        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-2">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+                        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                             <ShieldAlert className="w-5 h-5 text-slate-500" /> Restrictions
                         </h2>
-                        <Card className="p-6 dark:bg-slate-900 dark:border-slate-800">
+
+                        <div>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Define strict limits for the AI (Negative Constraints). These apply to every call.</p>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
@@ -469,7 +470,7 @@ export default function ScenariosView() {
                                     <Button variant="danger">Add Restriction</Button>
                                 </div>
                             </div>
-                        </Card>
+                        </div>
                     </div>
                 </div>
             </div>

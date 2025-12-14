@@ -207,185 +207,65 @@ export default function FAQsView() {
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    {/* Toolbar */}
-                    <div className="flex flex-col gap-4">
-                        <div className="flex flex-row justify-between items-center gap-4">
-                            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                                <HelpCircle className="w-5 h-5 text-slate-500" /> Question Bank
-                            </h2>
-                            <ViewToggle view={view} onViewChange={setView} />
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                                <Input
-                                    placeholder="Search questions..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 w-full"
-                                />
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+                        {/* Toolbar */}
+                        <div className="flex flex-col gap-4">
+                            <div className="flex flex-row justify-between items-center gap-4">
+                                <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                                    <HelpCircle className="w-5 h-5 text-slate-500" /> Question Bank
+                                </h2>
+                                <ViewToggle view={view} onViewChange={setView} />
                             </div>
-                            <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
-                                <Select value={sortBy} onValueChange={setSortBy}>
-                                    <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
-                                        <SelectValue placeholder="Sort by" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="date">Date Added</SelectItem>
-                                        <SelectItem value="name">Question (A-Z)</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Grid View */}
-                    {view === 'grid' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            <AddNewCard
-                                title="Add New FAQ"
-                                description="Add common Q&A for the AI"
-                                onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
-                            />
-                            {/* Mobile Add Button (Top) */}
-                            {currentPage === 1 && (
-                                <div className="md:hidden">
-                                    <AddNewCard
-                                        title="Add New FAQ"
-                                        onClick={() => openWizard('faq')}
-                                        variant="compact"
+                            <div className="flex flex-col sm:flex-row gap-3">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Input
+                                        placeholder="Search questions..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="pl-9 h-9 bg-white dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 w-full"
                                     />
                                 </div>
-                            )}
-                            {paginatedFAQs.map(faq => (
-                                <Card key={faq.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 ${faq.isDraft ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
-                                            <MessageCircle className="w-5 h-5" />
-                                        </div>
-                                        <div onClick={(e) => e.stopPropagation()}>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <span className="sr-only">Open menu</span>
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
-                                                        <Edit2 className="mr-2 h-4 w-4" /> Edit
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
-                                                        <Copy className="mr-2 h-4 w-4" /> Duplicate
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
-                                                        <Power className="mr-2 h-4 w-4" />
-                                                        {faq.active === false ? 'Enable' : 'Disable'}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
-                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{faq.question}</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow mb-4">{faq.answer}</p>
-                                    <div className="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800 flex gap-1">
-                                        {faq.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
-                                        {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
-                                    </div>
-                                </Card>
-                            ))}
-
-
-                        </div>
-                    )}
-
-                    {/* Table View */}
-                    {view === 'table' && (
-                        <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                            <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                <div className="col-span-4">Question</div>
-                                <div className="col-span-5">Answer</div>
-                                <div className="col-span-2">Status</div>
-                                <div className="col-span-1 text-right">Actions</div>
+                                <div className="flex gap-2 overflow-x-auto pb-1 sm:pb-0">
+                                    <Select value={sortBy} onValueChange={setSortBy}>
+                                        <SelectTrigger className="w-[140px] h-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">
+                                            <SelectValue placeholder="Sort by" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="date">Date Added</SelectItem>
+                                            <SelectItem value="name">Question (A-Z)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                        </div>
+
+                        {/* Grid View */}
+                        {view === 'grid' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                <AddNewCard
+                                    title="Add New FAQ"
+                                    description="Add common Q&A for the AI"
+                                    onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
+                                />
+                                {/* Mobile Add Button (Top) */}
                                 {currentPage === 1 && (
-                                    <div onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
-                                        <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
-                                            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
-                                                <Plus className="w-4 h-4" />
+                                    <div className="md:hidden">
+                                        <AddNewCard
+                                            title="Add New FAQ"
+                                            onClick={() => openWizard('faq')}
+                                            variant="compact"
+                                        />
+                                    </div>
+                                )}
+                                {paginatedFAQs.map(faq => (
+                                    <Card key={faq.id} className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group flex flex-col h-full min-h-[240px] dark:bg-slate-900 dark:border-slate-800 ${faq.isDraft ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg">
+                                                <MessageCircle className="w-5 h-5" />
                                             </div>
-                                            Add New FAQ
-                                        </div>
-                                    </div>
-                                )}
-                                {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${(faq.isDraft || faq.active === false) ? 'opacity-70' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('faq')}>
-                                        <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                            {faq.question}
-                                        </div>
-                                        <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">{faq.answer}</div>
-                                        <div className="col-span-2">
-                                            {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
-                                            {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
-                                        </div>
-                                        <div className="col-span-1 text-right flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                                        <span className="sr-only">Open menu</span>
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                    <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
-                                                        <Edit2 className="mr-2 h-4 w-4" /> Edit
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
-                                                        <Copy className="mr-2 h-4 w-4" /> Duplicate
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
-                                                        <Power className="mr-2 h-4 w-4" />
-                                                        {faq.active === false ? 'Enable' : 'Disable'}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
-                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Mobile List View fallback */}
-                    <div className="md:hidden space-y-4">
-                        {view === 'table' && (
-                            <>
-                                {currentPage === 1 && (
-                                    <AddNewCard
-                                        title="Add New FAQ"
-                                        onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
-                                        variant="compact"
-                                    />
-                                )}
-                                {paginatedFAQs.map(faq => (
-                                    <div key={faq.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(faq.isDraft || faq.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('faq')}>
-                                        <div className="flex justify-between items-start mb-1">
-                                            <h3 className="font-bold text-slate-900 dark:text-white mb-1">{faq.question}</h3>
-                                            <div className="flex items-center gap-2">
-                                                {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
-                                                {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                            <div onClick={(e) => e.stopPropagation()}>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -413,44 +293,166 @@ export default function FAQsView() {
                                                 </DropdownMenu>
                                             </div>
                                         </div>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{faq.answer}</p>
-                                    </div>
+                                        <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{faq.question}</h3>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow mb-4">{faq.answer}</p>
+                                        <div className="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800 flex gap-1">
+                                            {faq.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                            {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                        </div>
+                                    </Card>
                                 ))}
-                            </>
+
+
+                            </div>
+                        )}
+
+                        {/* Table View */}
+                        {view === 'table' && (
+                            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                    <div className="col-span-4">Question</div>
+                                    <div className="col-span-5">Answer</div>
+                                    <div className="col-span-2">Status</div>
+                                    <div className="col-span-1 text-right">Actions</div>
+                                </div>
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {currentPage === 1 && (
+                                        <div onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                            <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
+                                                    <Plus className="w-4 h-4" />
+                                                </div>
+                                                Add New FAQ
+                                            </div>
+                                        </div>
+                                    )}
+                                    {paginatedFAQs.map(faq => (
+                                        <div key={faq.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${(faq.isDraft || faq.active === false) ? 'opacity-70' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('faq')}>
+                                            <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
+                                                {faq.question}
+                                            </div>
+                                            <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">{faq.answer}</div>
+                                            <div className="col-span-2">
+                                                {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                            </div>
+                                            <div className="col-span-1 text-right flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                        <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
+                                                            <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
+                                                            <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
+                                                            <Power className="mr-2 h-4 w-4" />
+                                                            {faq.active === false ? 'Enable' : 'Disable'}
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Mobile List View fallback */}
+                        <div className="md:hidden space-y-4">
+                            {view === 'table' && (
+                                <>
+                                    {currentPage === 1 && (
+                                        <AddNewCard
+                                            title="Add New FAQ"
+                                            onClick={() => openWizard('faq', {}, (data) => handleCreateFaq(data))}
+                                            variant="compact"
+                                        />
+                                    )}
+                                    {paginatedFAQs.map(faq => (
+                                        <div key={faq.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(faq.isDraft || faq.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${highlightedFaqIds.includes(faq.id) ? (faq.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('faq')}>
+                                            <div className="flex justify-between items-start mb-1">
+                                                <h3 className="font-bold text-slate-900 dark:text-white mb-1">{faq.question}</h3>
+                                                <div className="flex items-center gap-2">
+                                                    {faq.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                    {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                <span className="sr-only">Open menu</span>
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem onClick={() => openWizard('faq', faq)}>
+                                                                <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleDuplicateFaq(faq)}>
+                                                                <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleToggleFaqStatus(faq.id)}>
+                                                                <Power className="mr-2 h-4 w-4" />
+                                                                {faq.active === false ? 'Enable' : 'Disable'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteFaq(faq.id)}>
+                                                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{faq.answer}</p>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                        </div>
+
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between pt-4">
+                                <div className="text-sm text-slate-500 dark:text-slate-400">
+                                    Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredFAQs.length)}</span> of <span className="font-medium">{filteredFAQs.length}</span> results
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                        disabled={currentPage === 1}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </Button>
+                                    <div className="text-sm font-medium text-slate-900 dark:text-white px-2">
+                                        Page {currentPage} of {totalPages}
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
                         )}
                     </div>
-
-                    {/* Pagination Controls */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between pt-4">
-                            <div className="text-sm text-slate-500 dark:text-slate-400">
-                                Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredFAQs.length)}</span> of <span className="font-medium">{filteredFAQs.length}</span> results
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                    disabled={currentPage === 1}
-                                    className="h-8 w-8 p-0"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                <div className="text-sm font-medium text-slate-900 dark:text-white px-2">
-                                    Page {currentPage} of {totalPages}
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="h-8 w-8 p-0"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

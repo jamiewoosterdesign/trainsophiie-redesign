@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info, Sparkles, Loader2 } from 'lucide-react';
+import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash2, ScrollText, X, Info, Sparkles, Loader2, Plus, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,26 @@ import {
 export default function WizardFormContentProtocol({ step, formData, onChange, onSwitchMode, activeField }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
     const [isGenerating, setIsGenerating] = useState({});
+
+    // Template Form States
+    const [showSmsTemplateForm, setShowSmsTemplateForm] = useState(false);
+    const [newSmsTemplate, setNewSmsTemplate] = useState({ name: '', content: '' });
+
+    const [showEmailTemplateForm, setShowEmailTemplateForm] = useState(false);
+    const [newEmailTemplate, setNewEmailTemplate] = useState({ name: '', subject: '', content: '' });
+
+    const handleSaveSmsTemplate = () => {
+        onChange('protocolSmsMessage', newSmsTemplate.content);
+        setShowSmsTemplateForm(false);
+        setNewSmsTemplate({ name: '', content: '' });
+    };
+
+    const handleSaveEmailTemplate = () => {
+        onChange('protocolEmailSubject', newEmailTemplate.subject);
+        onChange('protocolEmailBody', newEmailTemplate.content);
+        setShowEmailTemplateForm(false);
+        setNewEmailTemplate({ name: '', subject: '', content: '' });
+    };
 
     const toggleTooltip = (id, e) => {
         if (e) e.preventDefault();
@@ -48,6 +68,15 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                 } else {
                     prompt = `Write a polite closing script for an AI receptionist to say after handling a request for "${name}". Confirm that the details are noted.`;
                 }
+                break;
+            case 'protocolSmsMessage':
+                prompt = `Write a short, professional SMS message (under 160 chars) to send to a customer regarding "${name}", confirming their request is being processed.`;
+                break;
+            case 'protocolEmailSubject':
+                prompt = `Write a clear, professional email subject line for an update about "${name}".`;
+                break;
+            case 'protocolEmailBody':
+                prompt = `Write a professional email body (3-4 sentences) regarding "${name}" to a customer. Keep it warm and direct.`;
                 break;
             default:
                 prompt = `Write text for ${field} in the context of ${name}.`;
@@ -240,7 +269,7 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                         {[
                             { id: 'collect', label: 'Collect Info', icon: ClipboardList, color: 'text-orange-500' },
                             { id: 'transfer', label: 'Transfer', icon: PhoneForwarded, color: 'text-blue-500' },
-                            { id: 'booking', label: 'Booking', icon: Calendar, color: 'text-purple-500' },
+                            { id: 'send_info', label: 'Send Info', icon: Mail, color: 'text-green-500' },
                             { id: 'refuse', label: 'Refuse', icon: ShieldAlert, color: 'text-red-500' },
                         ].map(opt => (
                             <div
@@ -274,21 +303,8 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                             </div>
                         )}
 
-                        {/* Booking UI */}
-                        {formData.protocolAction === 'booking' && (
-                            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-6 flex items-center gap-4">
-                                <div className="w-12 h-12 bg-white dark:bg-purple-800/50 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-300 shadow-sm flex-shrink-0">
-                                    <Calendar className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-purple-900 dark:text-purple-100 text-base">Calendar Active</h4>
-                                    <p className="text-sm text-purple-700 dark:text-purple-300">Bookings will be added to <strong>Main Calendar (Synced)</strong>.</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Refusal / Script for other actions */}
-                        {(formData.protocolAction === 'refuse' || formData.protocolAction === 'collect') && (
+                        {/* Collect / Refuse Script */}
+                        {(formData.protocolAction === 'collect' || formData.protocolAction === 'refuse') && (
                             <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
                                 <Label className="mb-1.5 flex items-center gap-2 text-xs uppercase text-slate-500 dark:text-slate-400">
                                     {formData.protocolAction === 'refuse' ? 'Refusal Script' : 'Closing Script (Optional)'}
@@ -324,6 +340,223 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Send Info */}
+                        {formData.protocolAction === 'send_info' && (
+                            <div className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 space-y-4">
+                                {/* Tabs for SMS / Email */}
+                                <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-lg flex mb-4">
+                                    <button
+                                        className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${(formData.protocolSendInfoType || 'sms') === 'sms' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                                        onClick={() => onChange('protocolSendInfoType', 'sms')}
+                                    >
+                                        SMS
+                                    </button>
+                                    <button
+                                        className={`flex-1 py-1.5 text-sm font-medium rounded-md transition-all ${formData.protocolSendInfoType === 'email' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                                        onClick={() => onChange('protocolSendInfoType', 'email')}
+                                    >
+                                        Email
+                                    </button>
+                                </div>
+
+                                {(formData.protocolSendInfoType || 'sms') === 'sms' && (
+                                    <div className="animate-in fade-in space-y-6 pt-2">
+                                        <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg flex gap-3 border border-blue-100 dark:border-blue-900/50">
+                                            <div className="text-blue-500 dark:text-blue-400 mt-0.5"><ShieldAlert className="w-4 h-4" /></div>
+                                            <p className="text-xs text-blue-800 dark:text-blue-200 leading-relaxed">
+                                                This action only works for <strong>phone calls</strong>. For chatbot and web calls, it will automatically fallback to "Continue Call".
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">SMS Content</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the SMS content that will be sent to your customer</p>
+                                            <div className="relative">
+                                                <Textarea
+                                                    placeholder="e.g. Thanks for calling! Here is the info you requested..."
+                                                    className="min-h-[120px] pb-10 bg-white dark:bg-slate-800"
+                                                    value={formData.protocolSmsMessage || ''}
+                                                    onChange={(e) => onChange('protocolSmsMessage', e.target.value)}
+                                                />
+                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                        <Mic className="w-4 h-4" />
+                                                    </div>
+                                                    <div
+                                                        className={`w-8 h-8 rounded-full ${isGenerating['protocolSmsMessage'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                        title="Generate with AI"
+                                                        onClick={() => !isGenerating['protocolSmsMessage'] && handleAutoGenerate('protocolSmsMessage')}
+                                                    >
+                                                        {isGenerating['protocolSmsMessage'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* SMS Custom Templates UI */}
+                                        <div className="pt-2">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-semibold text-slate-900 dark:text-white">SMS Templates</h4>
+                                                {!showSmsTemplateForm && (
+                                                    <Button variant="outline" size="sm" onClick={() => setShowSmsTemplateForm(true)} className="bg-white dark:bg-slate-800">
+                                                        <Plus className="w-4 h-4 mr-2" /> New Template
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {showSmsTemplateForm && (
+                                                <div className="bg-sky-50 dark:bg-slate-800/50 border border-sky-100 dark:border-slate-700 rounded-xl p-5 animate-in slide-in-from-top-2">
+                                                    <h5 className="font-medium text-slate-700 dark:text-slate-300 mb-4">New SMS Template</h5>
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Template Name</Label>
+                                                            <Input
+                                                                placeholder="Enter template name"
+                                                                value={newSmsTemplate.name}
+                                                                onChange={(e) => setNewSmsTemplate({ ...newSmsTemplate, name: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
+                                                            <Textarea
+                                                                placeholder="Enter SMS message content"
+                                                                value={newSmsTemplate.content}
+                                                                onChange={(e) => setNewSmsTemplate({ ...newSmsTemplate, content: e.target.value })}
+                                                                className="min-h-[100px] bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div className="flex justify-end gap-3 pt-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setShowSmsTemplateForm(false)}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={handleSaveSmsTemplate}
+                                                                className="bg-sky-600 hover:bg-sky-700 text-white"
+                                                                disabled={!newSmsTemplate.content}
+                                                            >
+                                                                Save and Use Template
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {formData.protocolSendInfoType === 'email' && (
+                                    <div className="animate-in fade-in space-y-6 pt-2">
+                                        <div>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">Email Subject</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the subject line for your customer will see</p>
+                                            <Input
+                                                placeholder="e.g. Information about [Scenario Name]"
+                                                value={formData.protocolEmailSubject || ''}
+                                                onChange={(e) => onChange('protocolEmailSubject', e.target.value)}
+                                                className="bg-white dark:bg-slate-800"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">Email Content</Label>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the email content that will be sent to your customer</p>
+                                            <div className="relative">
+                                                <Textarea
+                                                    placeholder="Hi there..."
+                                                    className="min-h-[160px] pb-10 bg-white dark:bg-slate-800"
+                                                    value={formData.protocolEmailBody || ''}
+                                                    onChange={(e) => onChange('protocolEmailBody', e.target.value)}
+                                                />
+                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
+                                                        <Mic className="w-4 h-4" />
+                                                    </div>
+                                                    <div
+                                                        className={`w-8 h-8 rounded-full ${isGenerating['protocolEmailBody'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
+                                                        title="Generate with AI"
+                                                        onClick={() => !isGenerating['protocolEmailBody'] && handleAutoGenerate('protocolEmailBody')}
+                                                    >
+                                                        {isGenerating['protocolEmailBody'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Email Custom Templates UI */}
+                                        <div className="pt-2">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-semibold text-slate-900 dark:text-white">Email Templates</h4>
+                                                {!showEmailTemplateForm && (
+                                                    <Button variant="outline" size="sm" onClick={() => setShowEmailTemplateForm(true)} className="bg-white dark:bg-slate-800">
+                                                        <Plus className="w-4 h-4 mr-2" /> New Template
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {showEmailTemplateForm && (
+                                                <div className="bg-sky-50 dark:bg-slate-800/50 border border-sky-100 dark:border-slate-700 rounded-xl p-5 animate-in slide-in-from-top-2">
+                                                    <h5 className="font-medium text-slate-700 dark:text-slate-300 mb-4">New Email Template</h5>
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Template Name</Label>
+                                                            <Input
+                                                                placeholder="Enter template name"
+                                                                value={newEmailTemplate.name}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, name: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Subject</Label>
+                                                            <Input
+                                                                placeholder="Email subject"
+                                                                value={newEmailTemplate.subject}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, subject: e.target.value })}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
+                                                            <Textarea
+                                                                placeholder="Enter email message content"
+                                                                value={newEmailTemplate.content}
+                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, content: e.target.value })}
+                                                                className="min-h-[100px] bg-white dark:bg-slate-800"
+                                                            />
+                                                        </div>
+                                                        <div className="flex justify-end gap-3 pt-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setShowEmailTemplateForm(false)}
+                                                                className="bg-white dark:bg-slate-800"
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button
+                                                                size="sm"
+                                                                onClick={handleSaveEmailTemplate}
+                                                                className="bg-sky-600 hover:bg-sky-700 text-white"
+                                                                disabled={!newEmailTemplate.content}
+                                                            >
+                                                                Save and Use Template
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

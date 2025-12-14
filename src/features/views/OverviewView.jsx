@@ -224,8 +224,8 @@ export default function OverviewView() {
 
                     {/* Sections */}
                     {sections.map((section, idx) => (
-                        <div key={idx}>
-                            <div className="flex flex-row justify-between items-center mb-6">
+                        <div key={idx} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+                            <div className="flex flex-row justify-between items-center">
                                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{section.title}</h2>
                                 <ViewToggle
                                     view={views[idx] || 'grid'}

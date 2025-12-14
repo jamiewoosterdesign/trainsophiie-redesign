@@ -509,7 +509,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                         {
                                             service: ['Service Details', 'Conversation Flow', 'Outcome'],
                                             staff: ['Details', 'Responsibilities', 'Availability'],
-                                            protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
+                                            protocol: ['Trigger & Condition', 'Response Logic', 'Outcome'],
                                             transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                             document: ['Upload', 'Review', 'Apply'],
                                         }[mode] || ['Step 1', 'Step 2', 'Step 3']
@@ -567,7 +567,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                             {
                                                 service: ['Service Details', 'Conversation Flow', 'Outcome'],
                                                 staff: ['Details', 'Responsibilities', 'Availability'],
-                                                protocol: ['Trigger & Condition', 'Response Logic', 'Review'],
+                                                protocol: ['Trigger & Condition', 'Response Logic', 'Outcome'],
                                                 transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
                                                 document: ['Upload', 'Review', 'Apply'],
                                             }[mode] || ['Step 1', 'Step 2', 'Step 3']

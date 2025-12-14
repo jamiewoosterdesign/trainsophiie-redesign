@@ -161,7 +161,7 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
     }, [searchQuery, filterStatus, filterAction, sortBy, view]);
 
     return (
-        <div className="space-y-4">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
             {/* Section Header */}
             <div className="flex flex-col gap-4">
                 <div className="flex flex-row justify-between items-center gap-4">
