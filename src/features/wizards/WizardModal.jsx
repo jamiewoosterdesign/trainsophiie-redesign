@@ -593,71 +593,73 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 >
 
                     {/* Desktop Header */}
-                    <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-start bg-white dark:bg-slate-900 flex-shrink-0">
-                        <div className="flex items-center gap-3 w-full md:w-auto">
-                            <div className="w-full md:w-auto">
-                                <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{getWizardTitle()}</h2>
-                                {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
-                                    <div className="flex flex-wrap items-center gap-3 mt-3">
-                                        {(
-                                            {
-                                                service: ['Service Details', 'Conversation Flow', 'Outcome'],
-                                                staff: ['Details', 'Responsibilities', 'Availability'],
-                                                protocol: ['Trigger & Condition', 'Response Logic', 'Outcome'],
-                                                transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
-                                                document: ['Upload', 'Review', 'Apply'],
-                                            }[mode] || ['Step 1', 'Step 2', 'Step 3']
-                                        ).map((label, idx) => (
-                                            <div key={idx} className="flex items-center gap-3">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-2.5 h-2.5 rounded-full ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
-                                                    <span className={`text-xs font-medium ${step === idx + 1 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} ${step !== idx + 1 ? 'hidden sm:inline' : ''}`}>{label}</span>
-                                                </div>
-                                                {idx < 2 && <div className="hidden sm:block w-8 h-[1px] bg-slate-200 dark:bg-slate-700" />}
-                                            </div>
-                                        ))}
+                    <div className="hidden md:flex flex-col border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
+                        {/* Top Row: Title and Actions */}
+                        <div className="flex px-8 pt-6 pb-2 justify-between items-start">
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{getWizardTitle()}</h2>
+
+                            {/* Voice Toggle Button & Close (Right Aligned) */}
+                            <div className="relative flex items-center gap-2">
+                                {showVoiceTooltip && (
+                                    <div className="absolute top-10 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
+                                        <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
+                                        Toggle Voice Setup anytime here
                                     </div>
+                                )}
+                                <button
+                                    onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
+                                    className={`flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold whitespace-nowrap ${simulatorTab === 'voice'
+                                        ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                        }`}
+                                >
+                                    {simulatorTab === 'voice' ? (
+                                        <>
+                                            <Mic className="w-3.5 h-3.5 animate-pulse flex-shrink-0" /> Voice On
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Mic className="w-3.5 h-3.5 flex-shrink-0" /> Voice Off
+                                        </>
+                                    )}
+                                </button>
+
+                                {/* Close Button - Only for single panel modes */}
+                                {isSinglePanelMode && (
+                                    <button
+                                        onClick={handleClose}
+                                        className="hidden md:flex w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 items-center justify-center transition-colors"
+                                        title="Close"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
                                 )}
                             </div>
                         </div>
 
-                        {/* Voice Toggle Button (Desktop) */}
-                        <div className="relative pt-1 pl-4 flex items-center gap-2">
-                            {showVoiceTooltip && (
-                                <div className="absolute top-14 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
-                                    <div className="absolute -top-1 right-4 w-2 h-2 bg-slate-900 rotate-45" />
-                                    Toggle Voice Setup anytime here
+                        {/* Bottom Row: Steps Indicators */}
+                        {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
+                            <div className="w-full overflow-x-auto no-scrollbar px-8 pb-4">
+                                <div className="flex items-center gap-6 min-w-max">
+                                    {(
+                                        {
+                                            service: ['Service Details', 'Conversation Flow', 'Outcome'],
+                                            staff: ['Details', 'Responsibilities', 'Availability'],
+                                            protocol: ['Trigger & Condition', 'Response Logic', 'Outcome'],
+                                            transfer: ['Rule Details', 'Handoff Message', 'Routing Logic'],
+                                            document: ['Upload', 'Review', 'Apply'],
+                                        }[mode] || ['Step 1', 'Step 2', 'Step 3']
+                                    ).map((label, idx) => (
+                                        <div key={idx} className="flex items-center gap-2">
+                                            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${step > idx ? 'bg-blue-600' : step === idx + 1 ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                                            <span className={`text-xs font-medium whitespace-nowrap ${step === idx + 1 ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                                                {label}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
-                            )}
-                            <button
-                                onClick={() => setSimulatorTab(simulatorTab === 'voice' ? 'preview' : 'voice')}
-                                className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all text-xs font-bold ${simulatorTab === 'voice'
-                                    ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                                    }`}
-                            >
-                                {simulatorTab === 'voice' ? (
-                                    <>
-                                        <Mic className="w-3.5 h-3.5 animate-pulse" /> Voice On
-                                    </>
-                                ) : (
-                                    <>
-                                        <Mic className="w-3.5 h-3.5" /> Voice Off
-                                    </>
-                                )}
-                            </button>
-
-                            {/* Close Button - Only for single panel modes */}
-                            {isSinglePanelMode && (
-                                <button
-                                    onClick={handleClose}
-                                    className="hidden md:flex w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 items-center justify-center transition-colors"
-                                    title="Close"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Form Content */}
