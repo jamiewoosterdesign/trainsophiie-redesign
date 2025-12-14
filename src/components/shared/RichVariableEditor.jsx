@@ -3,6 +3,13 @@ import { cn } from '@/lib/utils';
 import { Mic, Wand2, Play, AlertCircle, Volume2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Plus } from "lucide-react";
 
 export default function RichVariableEditor({
     value = "",
@@ -172,15 +179,16 @@ export default function RichVariableEditor({
     return (
         <div className={cn("flex flex-col gap-3", className)} ref={containerRef}>
 
-            {/* Editor Area */}
+            {/* Editor Container with Toolbar */}
             <div className={cn(
-                "relative rounded-xl border bg-white dark:bg-slate-800 transition-all overflow-hidden",
+                "group relative rounded-xl border bg-white dark:bg-slate-800 transition-all overflow-hidden flex flex-col",
                 isFocused ? "border-blue-500 ring-2 ring-blue-500/10" : "border-slate-200 dark:border-slate-700",
                 disabled && "opacity-60 pointer-events-none"
             )}>
+                {/* Scrollable Text Area */}
                 <div
                     ref={editorRef}
-                    className="w-full p-4 outline-none text-base text-slate-800 dark:text-slate-100 whitespace-pre-wrap leading-relaxed min-h-[120px]"
+                    className="w-full p-4 outline-none text-base text-slate-800 dark:text-slate-100 whitespace-pre-wrap leading-relaxed min-h-[120px] flex-1"
                     style={{ minHeight }}
                     contentEditable={!disabled}
                     onInput={handleInput}
@@ -195,91 +203,101 @@ export default function RichVariableEditor({
                     data-placeholder={placeholder}
                 />
 
-                {/* Empty Placeholder overlay logic handled via CSS usually, but simple text fallback: */}
+                {/* Empty Placeholder overlay */}
                 {!value && (
                     <div className="absolute top-4 left-4 text-slate-400 pointer-events-none select-none">
                         {placeholder}
                     </div>
                 )}
 
-                {/* Floating Actions (Mic, AI) */}
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <TooltipProvider>
-                        {onRecord && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div
-                                        onClick={onRecord}
-                                        className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+                {/* Integrated Toolbar */}
+                <div className="flex items-center justify-between p-2 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700/50">
+                    <div className="flex items-center gap-1">
+                        {variables.length > 0 && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 gap-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/20"
                                     >
-                                        <Mic className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Voice Input</TooltipContent>
-                            </Tooltip>
+                                        <Plus className="w-4 h-4" />
+                                        <span className="text-xs font-semibold">Insert Variable</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="start" className="w-[240px]">
+                                    {variables.map((v) => (
+                                        <DropdownMenuItem
+                                            key={v.code}
+                                            onClick={() => insertVariable(v)}
+                                            className="flex flex-col items-start py-2 cursor-pointer"
+                                        >
+                                            <span className="font-medium text-sm text-slate-900 dark:text-slate-200">
+                                                {v.label}
+                                            </span>
+                                            {v.description && (
+                                                <span className="text-xs text-slate-500 dark:text-slate-400">
+                                                    {v.description}
+                                                </span>
+                                            )}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         )}
-                        {onAI && (
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div
-                                        onClick={onAI}
-                                        className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
-                                    >
-                                        <Wand2 className="w-4 h-4" />
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Generate with AI</TooltipContent>
-                            </Tooltip>
-                        )}
-                    </TooltipProvider>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                        <TooltipProvider>
+                            {onRecord && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={onRecord}
+                                            className="h-8 w-8 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:text-slate-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/20 rounded-full"
+                                        >
+                                            <Mic className="w-4 h-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Voice Input</TooltipContent>
+                                </Tooltip>
+                            )}
+                            {onAI && (
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={onAI}
+                                            className="h-8 w-8 text-slate-500 hover:text-purple-600 hover:bg-purple-50 dark:text-slate-400 dark:hover:text-purple-400 dark:hover:bg-purple-900/20 rounded-full"
+                                        >
+                                            <Wand2 className="w-4 h-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Generate with AI</TooltipContent>
+                                </Tooltip>
+                            )}
+                        </TooltipProvider>
+                    </div>
                 </div>
             </div>
 
-            {/* Toolbar Area */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-
-                {/* Variable Suggestions */}
-                {variables.length > 0 && (
-                    <div className="flex-1 space-y-2">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Add Variables:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {variables.map((v) => (
-                                <button
-                                    key={v.code}
-                                    onClick={() => insertVariable(v)}
-                                    className="group flex flex-col items-start px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/10 hover:shadow-sm transition-all text-left max-w-[200px]"
-                                >
-                                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-0.5 group-hover:underline">
-                                        {v.label}
-                                    </span>
-                                    {v.description && (
-                                        <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate w-full">
-                                            {v.description}
-                                        </span>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Main Actions (Preview, etc) */}
-                {previewAudio && (
-                    <div className="flex-shrink-0">
-                        <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={previewAudio}
-                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 gap-2"
-                        >
-                            <Play className="w-3.5 h-3.5" />
-                            Preview Audio
-                        </Button>
-                    </div>
-                )}
-            </div>
+            {/* External Actions (Preview Audio) */}
+            {previewAudio && (
+                <div className="flex justify-end">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={previewAudio}
+                        className="gap-2 text-slate-600 dark:text-slate-300"
+                    >
+                        <Play className="w-3.5 h-3.5" />
+                        Preview Audio
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
