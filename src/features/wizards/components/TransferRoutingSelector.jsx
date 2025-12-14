@@ -13,7 +13,7 @@ export function TransferRoutingSelector({ type, value, onChangeType, onChangeVal
                         onClick={() => onChangeType(t)}
                         className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${type === t ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
-                        {t === 'staff' ? 'Staff' : t === 'queue' ? 'Queue' : 'External'}
+                        {t === 'staff' ? 'Staff' : t === 'queue' ? 'Department' : 'External'}
                     </button>
                 ))}
             </div>
@@ -28,7 +28,7 @@ export function TransferRoutingSelector({ type, value, onChangeType, onChangeVal
                     value={value}
                     onChange={(e) => onChangeValue(e.target.value)}
                 >
-                    <option value="">Select Queue...</option>
+                    <option value="">Select Department...</option>
                     <option value="general">General Support</option>
                     <option value="sales">Sales Team</option>
                     <option value="urgent">Urgent / Escalations</option>

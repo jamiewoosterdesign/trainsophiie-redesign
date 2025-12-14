@@ -109,8 +109,8 @@ function AddServiceDropdown({ onAdd }) {
     );
 }
 
-function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId }) {
-    const [view, setView] = useState('grid');
+function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId, view, onViewChange }) {
+    // const [view, setView] = useState('grid'); // Removed local state
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterAction, setFilterAction] = useState('all');
@@ -168,7 +168,7 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         {Icon && <Icon className="w-5 h-5 text-slate-500" />} {title}
                     </h2>
-                    <ViewToggle view={view} onViewChange={setView} />
+                    <ViewToggle view={view} onViewChange={onViewChange} />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -429,6 +429,7 @@ export default function ServicesView() {
     const [buildServices, setBuildServices] = useState(MOCK_BUILDERS);
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
     const [highlightedServiceId, setHighlightedServiceId] = useState(null);
+    const [viewMode, setViewMode] = useState('grid');
 
     const handleCreateService = (data, category) => {
         // Create new service object from wizard data
@@ -550,6 +551,8 @@ export default function ServicesView() {
                         onDuplicate={(s) => handleDuplicateService(s, 'Electricians')}
                         onToggle={(id) => handleToggleServiceStatus(id, 'Electricians')}
                         onDelete={(id) => handleDeleteService(id, 'Electricians')}
+                        view={viewMode}
+                        onViewChange={setViewMode}
                     />
 
                     <ServiceSection
@@ -562,6 +565,8 @@ export default function ServicesView() {
                         onDuplicate={(s) => handleDuplicateService(s, 'Builders')}
                         onToggle={(id) => handleToggleServiceStatus(id, 'Builders')}
                         onDelete={(id) => handleDeleteService(id, 'Builders')}
+                        view={viewMode}
+                        onViewChange={setViewMode}
                     />
                 </div>
             </div>

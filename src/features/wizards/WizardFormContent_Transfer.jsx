@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
+import RichVariableEditor from '@/components/shared/RichVariableEditor';
 import {
     Tooltip,
     TooltipContent,
@@ -94,6 +95,12 @@ export default function WizardFormContentTransfer({ step, formData, onChange, on
 
     // --- STEP 2: HANDOFF MESSAGE ---
     if (step === 2) {
+        const HANDOFF_VARS = [
+            { code: '{Caller Name}', label: 'Caller Name', description: 'Name of the caller' },
+            { code: '{Reason}', label: 'Reason', description: 'Why they are calling' },
+            { code: '{Key Details}', label: 'Key Details', description: 'Important info gathered' }
+        ];
+
         return (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                 <div>
@@ -111,27 +118,43 @@ export default function WizardFormContentTransfer({ step, formData, onChange, on
                         </TooltipProvider>
                     </Label>
                     <p className="text-xs text-slate-500 mb-3">What the AI says to the Team Member before connecting.</p>
-                    <div className="relative">
-                        <Textarea
-                            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm font-mono bg-slate-50 dark:bg-slate-900/50 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none leading-relaxed min-h-[100px] pb-10"
-                            value={formData.transferSummary || ''}
-                            onChange={(e) => onChange('transferSummary', e.target.value)}
-                        />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide mr-1">Vars:</span>
-                        {['{Caller Name}', '{Reason}', '{Key Details}'].map(v => (
-                            <Badge key={v} variant="outline" className="bg-white dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 hover:border-blue-300 hover:text-blue-600 cursor-pointer transition-colors">{v}</Badge>
-                        ))}
-                    </div>
+
+                    <RichVariableEditor
+                        value={formData.transferSummary || ''}
+                        onChange={(val) => onChange('transferSummary', val)}
+                        variables={HANDOFF_VARS}
+                        placeholder="e.g. Caller {Caller Name} is on the line regarding {Reason}..."
+                        onRecord={() => { }}
+                        onAI={() => { }}
+                        minHeight="120px"
+                    />
+                </div>
+
+                <div>
+                    <Label className="mb-2 flex items-center gap-2">
+                        Transfer Reasoning (Optional)
+                        <TooltipProvider>
+                            <Tooltip delayDuration={0} open={tooltipOpen['reasoning']} onOpenChange={(open) => setTooltipOpen(prev => ({ ...prev, reasoning: open }))}>
+                                <TooltipTrigger asChild onClick={(e) => toggleTooltip('reasoning', e)}>
+                                    <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                    <p>Explain why this transfer rule should be triggered.</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </Label>
+                    <p className="text-xs text-slate-500 mb-3">Context for when this transfer should be applied.</p>
+
+                    <RichVariableEditor
+                        value={formData.transferReasoning || ''}
+                        onChange={(val) => onChange('transferReasoning', val)}
+                        variables={[]}
+                        placeholder="e.g. Only transfer if the caller specifically asks for technical support..."
+                        onRecord={() => { }}
+                        onAI={() => { }}
+                        minHeight="100px"
+                    />
                 </div>
             </div>
         );

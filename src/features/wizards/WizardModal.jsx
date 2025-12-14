@@ -275,7 +275,10 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 if (!formData.description?.trim()) newErrors.description = true;
                 if (formData.priceMode === 'fixed' && !formData.price) newErrors.price = true;
                 if (formData.priceMode === 'hourly' && !formData.price) newErrors.price = true;
-                if (formData.priceMode === 'range' && !formData.price) newErrors.price = true;
+                if (formData.priceMode === 'range' && !formData.minPrice) newErrors.price = true;
+            }
+            if (currentStep === 2) {
+                // No validation needed for question rules step (it's optional or handled internally)
             }
             if (currentStep === 3) {
                 if (formData.serviceOutcome === 'send_info') {
@@ -363,17 +366,54 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
         }
     };
 
+    // Resizable Panel Logic
+    const [leftPanelPercentage, setLeftPanelPercentage] = useState(55);
+    const [isDragging, setIsDragging] = useState(false);
+    const containerRef = useRef(null);
+
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+
+        // Add global listeners
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!containerRef.current) return;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const newLeftWidth = e.clientX - containerRect.left;
+        const newPercentage = (newLeftWidth / containerRect.width) * 100;
+
+        // Clamp between 30% and 70%
+        if (newPercentage >= 30 && newPercentage <= 70) {
+            setLeftPanelPercentage(newPercentage);
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        // Remove global listeners
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    // Determine if right panel is hidden based on mode
+    const isSinglePanelMode = ['staff', 'department', 'notification_assignment', 'product', 'policy', 'faq', 'transfer'].includes(mode);
+
     return (
         <div
             className="fixed inset-0 bg-slate-900/60 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200"
             onClick={(e) => {
-                // Check if click is on backdrop (not the modal content)
-                if (e.target === e.currentTarget) {
-                    handleClose();
-                }
+                if (e.target === e.currentTarget) handleClose();
             }}
         >
-
             {/* Toast Notification */}
             {showToast && (
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-in slide-in-from-top-2 fade-in duration-300 flex items-center gap-2">
@@ -399,7 +439,6 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 />
             )}
 
-
             {/* Save Confirmation Dialog */}
             {showSaveConfirm && (
                 <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
@@ -413,20 +452,16 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         </button>
 
                         <div className="flex gap-5">
-                            {/* Icon */}
-                            {/* Icon - Hidden on mobile */}
                             <div className="hidden sm:flex w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center flex-shrink-0 text-slate-600 dark:text-slate-300">
                                 <PenLine className="w-6 h-6" />
                             </div>
 
-                            {/* Content */}
                             <div className="flex-1 pt-1">
                                 <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Unsaved Changes</h3>
                                 <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
                                     Do you want to discard your changes, save them or keep editing?
                                 </p>
 
-                                {/* Buttons */}
                                 <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 mt-8">
                                     <button
                                         className="text-sm font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2 px-1"
@@ -441,11 +476,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                             className="sm:w-auto w-full h-10 px-6 border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
                                             onClick={() => {
                                                 setShowSaveConfirm(false);
-                                                if (returnToMode) {
-                                                    handleBack();
-                                                } else {
-                                                    onClose();
-                                                }
+                                                if (returnToMode) handleBack();
+                                                else onClose();
                                             }}
                                         >
                                             Discard
@@ -464,9 +496,12 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 </div>
             )}
 
-            <div className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'md:max-w-3xl' : 'md:max-w-6xl'} md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}>
+            <div
+                ref={containerRef}
+                className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] ${isSinglePanelMode ? 'md:max-w-3xl' : 'md:max-w-6xl'} md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}
+            >
 
-                {/* SHARED HEADER (Mobile Only) - Allows switching regardless of tab */}
+                {/* SHARED HEADER (Mobile Only) */}
                 <div className="md:hidden flex-none">
                     <div className={`px-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 transition-all duration-300 ${scrollDirection === 'down' ? 'pt-2 pb-2 gap-2' : 'py-4 gap-4'}`}>
                         <div className="w-full">
@@ -474,10 +509,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">{getWizardTitle()}</h2>
                                 </div>
-
-                                {/* Mobile Controls (Voice & Close) */}
                                 <div className="flex items-center gap-2">
-                                    {/* Mobile Voice Toggle */}
                                     <div className="relative">
                                         {showVoiceTooltip && (
                                             <div className="absolute top-12 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-40 text-center pointer-events-none">
@@ -496,7 +528,6 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                             {simulatorTab === 'voice' ? 'On' : 'Off'}
                                         </button>
                                     </div>
-
                                     <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                                         <X className="w-6 h-6" />
                                     </button>
@@ -526,8 +557,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             )}
                         </div>
 
-                        {/* Mobile Tabs */}
-                        {!['staff', 'department', 'notification_assignment'].includes(mode) && (
+                        {!isSinglePanelMode && (
                             <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-full mt-2">
                                 <button
                                     onClick={() => setMobileTab('wizard')}
@@ -553,10 +583,16 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 </div>
 
 
-                {/* LEFT PANEL: WIZARD FORM (Visible if 'wizard' tab active on mobile, always on desktop) */}
-                <div className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'md:w-full' : 'md:w-[55%] border-r'} flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}>
+                {/* LEFT PANEL: WIZARD FORM */}
+                <div
+                    className={`${mobileTab === 'wizard' ? 'flex' : 'hidden'} md:flex w-full flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 relative z-10 flex-1 md:flex-auto min-h-0`}
+                    style={{
+                        width: isSinglePanelMode ? '100%' : (!window.matchMedia('(min-width: 768px)').matches ? '100%' : `${leftPanelPercentage}%`),
+                        borderRightWidth: isSinglePanelMode ? '0' : '1px'
+                    }}
+                >
 
-                    {/* Desktop Header (Hidden on Mobile) */}
+                    {/* Desktop Header */}
                     <div className="hidden md:flex px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-start bg-white dark:bg-slate-900 flex-shrink-0">
                         <div className="flex items-center gap-3 w-full md:w-auto">
                             <div className="w-full md:w-auto">
@@ -585,7 +621,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             </div>
                         </div>
 
-                        {/* Voice Toggle Button (Desktop) - Top Aligned */}
+                        {/* Voice Toggle Button (Desktop) */}
                         <div className="relative pt-1 pl-4 flex items-center gap-2">
                             {showVoiceTooltip && (
                                 <div className="absolute top-14 right-0 z-50 bg-slate-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl animate-in fade-in slide-in-from-top-2 w-48 text-center pointer-events-none">
@@ -611,8 +647,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                                 )}
                             </button>
 
-                            {/* Close Button (Moved here for wizards without preview pane) */}
-                            {['staff', 'department', 'notification_assignment'].includes(mode) && (
+                            {/* Close Button - Only for single panel modes */}
+                            {isSinglePanelMode && (
                                 <button
                                     onClick={handleClose}
                                     className="hidden md:flex w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-300 items-center justify-center transition-colors"
@@ -681,8 +717,21 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                     </div>
                 </div>
 
-                {/* RIGHT PANEL: LIVE SIMULATOR (Visible if 'preview' tab active on mobile, always on desktop unless preview disabled) */}
-                <div className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} ${['staff', 'department', 'notification_assignment'].includes(mode) ? 'hidden' : 'md:flex'} w-full md:w-[45%] bg-slate-50 dark:bg-slate-950 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}>
+                {/* GRAGGBLE HANDLE */}
+                {!isSinglePanelMode && (
+                    <div
+                        className="hidden md:flex w-2 bg-slate-50 dark:bg-slate-800 border-l border-r border-slate-100 dark:border-slate-700 cursor-col-resize hover:bg-blue-500 hover:border-blue-500 transition-colors z-20 items-center justify-center group"
+                        onMouseDown={handleMouseDown}
+                    >
+                        <div className="w-0.5 h-8 bg-slate-300 dark:bg-slate-600 group-hover:bg-white rounded-full transition-colors" />
+                    </div>
+                )}
+
+                {/* RIGHT PANEL: LIVE SIMULATOR */}
+                <div
+                    className={`${mobileTab === 'preview' ? 'flex' : 'hidden'} ${isSinglePanelMode ? 'hidden' : 'md:flex'} w-full bg-slate-50 dark:bg-slate-950 flex-col relative overflow-hidden transition-all duration-300 md:h-auto flex-1 md:flex-auto min-h-0`}
+                    style={{ width: isSinglePanelMode ? '0%' : (!window.matchMedia('(min-width: 768px)').matches ? '100%' : `${100 - leftPanelPercentage}%`) }}
+                >
                     <LiveSimulator
                         mode={mode}
                         formData={formData}
@@ -694,7 +743,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                         setSimulatorTab={setSimulatorTab}
                         setActiveField={setActiveField}
                         showVoiceTooltip={showVoiceTooltip}
-                        isMobile={true} // Hint to simulator
+                        isMobile={true}
                         onWizardClose={handleClose}
                     />
                 </div>

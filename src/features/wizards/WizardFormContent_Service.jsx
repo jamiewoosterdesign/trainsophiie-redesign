@@ -352,7 +352,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                     </div>
                 </div>
 
-                {/* Pricing */}
+                {/* Pricing (Moved from Step 2) */}
                 <div>
                     <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
                         <Label className="flex items-center gap-2">
@@ -630,7 +630,8 @@ export default function WizardFormContentService({ mode, step, formData, onChang
     if (step === 2) {
         return (
             <div className="space-y-8 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300">
-                {/* AI Response Section */}
+
+                {/* AI Response Section (Moved from Step 1) */}
                 <div>
                     <Label className="mb-1.5 flex items-center gap-2">
                         AI Response
@@ -674,7 +675,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                         onChange={(newQuestions) => onChange('questions', newQuestions)}
                     />
                 </div>
-            </div>
+            </div >
         );
     }
 

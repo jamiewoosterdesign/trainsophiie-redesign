@@ -123,8 +123,7 @@ export default function StaffView() {
         setStaffList(prev => prev.filter(s => s.id !== id));
     };
 
-    const [departmentView, setDepartmentView] = useState('grid');
-    const [view, setView] = useState('grid');
+    const [viewMode, setViewMode] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterRole, setFilterRole] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -159,7 +158,7 @@ export default function StaffView() {
     // Reset page
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, filterRole, filterStatus, sortBy, view]);
+    }, [searchQuery, filterRole, filterStatus, sortBy, viewMode]);
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
@@ -224,10 +223,10 @@ export default function StaffView() {
                             <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                 <LayoutGrid className="w-5 h-5 text-slate-500" /> Departments
                             </h2>
-                            <ViewToggle view={departmentView} onViewChange={setDepartmentView} />
+                            <ViewToggle view={viewMode} onViewChange={setViewMode} />
                         </div>
 
-                        {departmentView === 'grid' && (
+                        {viewMode === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 <AddNewCard
                                     title="Add Department"
@@ -291,7 +290,7 @@ export default function StaffView() {
                             </div>
                         )}
 
-                        {departmentView === 'table' && (
+                        {viewMode === 'table' && (
                             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                                 <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                     <div className="col-span-3">Department</div>
@@ -378,7 +377,7 @@ export default function StaffView() {
                                 <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                                     <Users className="w-5 h-5 text-slate-500" /> Staff
                                 </h2>
-                                <ViewToggle view={view} onViewChange={setView} />
+                                <ViewToggle view={viewMode} onViewChange={setViewMode} />
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-3">
@@ -433,7 +432,7 @@ export default function StaffView() {
                         </div>
 
                         {/* Grid View */}
-                        {view === 'grid' && (
+                        {viewMode === 'grid' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 <AddNewCard
                                     title="Add New Staff"
@@ -493,7 +492,7 @@ export default function StaffView() {
                         )}
 
                         {/* Table View */}
-                        {view === 'table' && (
+                        {viewMode === 'table' && (
                             <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
                                 <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                     <div className="col-span-3">Team Member</div>
@@ -546,7 +545,7 @@ export default function StaffView() {
 
                         {/* Mobile List View fallback */}
                         <div className="md:hidden space-y-4">
-                            {view === 'table' && (
+                            {viewMode === 'table' && (
                                 <>
                                     {currentPage === 1 && (
                                         <AddNewCard

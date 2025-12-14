@@ -67,7 +67,7 @@ function KnowledgeSection({ title, icon: Icon, data, openWizard, highlightedId, 
     const [filterSource, setFilterSource] = useState('all');
     const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 12; // Adjusted for better grid fit
+    const ITEMS_PER_PAGE = 11; // 11 items + 1 add card = 12 items (perfect grid)
 
     // Filter & Sort Logic
     const filteredData = data

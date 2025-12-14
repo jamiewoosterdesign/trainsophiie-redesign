@@ -53,7 +53,7 @@ export default function OverviewView() {
     const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
-    const [views, setViews] = React.useState({});
+    const [viewMode, setViewMode] = React.useState('grid');
     const navigate = useNavigate();
 
     const sections = [
@@ -228,11 +228,11 @@ export default function OverviewView() {
                             <div className="flex flex-row justify-between items-center">
                                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{section.title}</h2>
                                 <ViewToggle
-                                    view={views[idx] || 'grid'}
-                                    onViewChange={(v) => setViews(prev => ({ ...prev, [idx]: v }))}
+                                    view={viewMode}
+                                    onViewChange={setViewMode}
                                 />
                             </div>
-                            {(views[idx] || 'grid') === 'grid' ? (
+                            {viewMode === 'grid' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                     {section.items.map((item, itemIdx) => (
                                         <OverviewCard key={itemIdx} {...item} />

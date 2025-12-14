@@ -87,26 +87,44 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
         window.speechSynthesis.onvoiceschanged = loadVoices;
     }, []);
 
-    // Initialize Simulation
+    // Initialize Simulation & React to Wizard Changes
     useEffect(() => {
-        setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }]);
+        // If the user has already typed something, don't interrupt their flow (unless they hit reset manually)
+        const hasUserInteraction = messages.some(m => m.role === 'user');
+        if (hasUserInteraction) return;
 
-        // Reset auto-expand tracking when mode changes (e.g. switching between wizards)
-        hasAutoExpandedRef.current = false;
-        setIsFlowExpanded(false);
-    }, [mode]);
+        // Construct the expected initial flow based on wizard data
+        const newMessages = [];
 
-    // Auto-expand Planned Flow when data is added
-    const hasAutoExpandedRef = useRef(false);
-    useEffect(() => {
-        const hasContent = (formData.aiResponse && formData.aiResponse.length > 0) ||
-            (formData.questions && formData.questions.length > 0);
+        // 1. Initial Greeting
+        let greeting = "Hi, thanks for calling Vision Electrical. How can I help you today?";
 
-        if (hasContent && !hasAutoExpandedRef.current) {
-            setIsFlowExpanded(true);
-            hasAutoExpandedRef.current = true;
+        if (formData.aiResponse && formData.aiResponse.trim()) {
+            greeting = formData.aiResponse;
+        } else if (formData.description && formData.description.trim()) {
+            // Heuristic fallback if we know the service but no script relative
+            greeting = `Hi, I can certainly help you with ${formData.serviceName || 'that service'}. ${formData.description.substring(0, 50)}...`;
+        } else if (formData.serviceName) {
+            greeting = `Hi, asking about ${formData.serviceName}? How can I help?`;
         }
-    }, [formData.aiResponse, formData.questions]);
+
+        newMessages.push({ role: 'bot', text: greeting });
+
+        // 2. Queue Follow-up Questions (Preview Mode)
+        // This visualizes the questions Sophiie IS PLANNED to ask next.
+        if (formData.questions && formData.questions.length > 0) {
+            formData.questions.forEach(q => {
+                if (q.text && q.text.trim()) {
+                    newMessages.push({ role: 'bot', text: q.text });
+                }
+            });
+        }
+
+        // Only update if changes detected to avoid loops/flickers
+        if (JSON.stringify(newMessages) !== JSON.stringify(messages)) {
+            setMessages(newMessages);
+        }
+    }, [mode, formData.aiResponse, formData.questions, formData.description, formData.serviceName]); // Re-run when these fields change
 
     // --- SHARED VOICE FUNCTIONS ---
     const speak = (text) => {
@@ -544,7 +562,7 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
                 {/* Refresh Button */}
                 <div className="absolute left-6">
                     <button
-                        onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }])}
+                        onClick={() => setMessages([{ role: 'bot', text: formData.aiResponse || "Hi, thanks for calling Vision Electrical. How can I help you today?" }])}
                         className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 flex items-center justify-center transition-all shadow-sm"
                         title="Reset Preview"
                     >
@@ -702,88 +720,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
             {mode !== 'document' && (simulatorTab === 'preview' || (simulatorTab === 'voice' && USE_GLOBAL_VOICE_UI)) && (
                 <div className="flex-1 flex flex-col min-h-0 animate-in fade-in zoom-in-95">
 
-                    {/* Planned Conversation Flow Panel (Collapsible) */}
-                    {(mode === 'service' || mode === 'protocol') && (
-                        <div className={`border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 ease-in-out flex flex-col ${isFlowExpanded ? 'h-[40%]' : 'h-10'}`}>
-                            {/* Toggle Header */}
-                            <div
-                                onClick={() => setIsFlowExpanded(!isFlowExpanded)}
-                                className="flex items-center justify-between px-4 h-10 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                            >
-                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                    <List className="w-3.5 h-3.5" />
-                                    Planned Conversation Flow
-                                </div>
-                                {isFlowExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                            </div>
-
-                            {/* Content Area */}
-                            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${!isFlowExpanded && 'hidden'}`}>
-
-                                {/* AI Response Logic */}
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                        <MessageSquare className="w-4 h-4 text-purple-500" />
-                                        Initial AI Response
-                                    </div>
-                                    <div className="bg-purple-50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-800/50 rounded-lg p-3 text-sm text-purple-900 dark:text-purple-100 relative">
-                                        {formData.aiResponse ? (
-                                            <>"{formData.aiResponse}"</>
-                                        ) : (
-                                            <span className="text-purple-400 italic">No custom response configured (Standard greeting will apply)</span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Question Rules Logic */}
-                                <div>
-                                    <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                        <List className="w-4 h-4 text-blue-500" />
-                                        Follow-up Questions
-                                    </div>
-                                    {formData.questions && formData.questions.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {formData.questions.map((q, idx) => (
-                                                <div key={q.id || idx} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-                                                    <div className="flex gap-2">
-                                                        <span className="text-xs font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded flex items-center h-5">Q{idx + 1}</span>
-                                                        <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">{q.text}</p>
-                                                    </div>
-                                                    {q.options && q.options.length > 0 && (
-                                                        <div className="mt-2 pl-8 space-y-1">
-                                                            {q.options.map(opt => (
-                                                                <div key={opt.id} className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                                                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
-                                                                    {opt.text}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-sm text-slate-400 italic pl-6">No follow-up questions configured.</div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-
                     {/* Simulator Area */}
                     <div className="flex-1 flex flex-col min-h-0 relative">
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50 backdrop-blur-sm z-10 shadow-sm flex-none h-14">
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-sm text-slate-900 dark:text-white">Live Preview</span>
-                                <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Test Mode</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                {/* Only show refresh if not global UI or we want it here */}
-                            </div>
-                        </div>
-
                         {/* Chat Area */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4 scroll-smooth" ref={scrollRef}>
                             {messages.length === 0 && (
@@ -839,16 +777,8 @@ export default function LiveSimulator({ mode, formData, step, onChange, updateFo
 
                         {/* Chat Input */}
                         <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-none z-20 relative">
-                            {/* Refresh Button - Floating */}
-                            <div className="absolute -top-12 left-1/2 -translate-x-1/2">
-                                <button
-                                    onClick={() => setMessages([{ role: 'bot', text: "Hi, thanks for calling Vision Electrical. How can I help you today?" }])}
-                                    className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-center shadow-lg transition-all hover:scale-110"
-                                    title="Reset Preview"
-                                >
-                                    <RotateCcw className="w-3.5 h-3.5" />
-                                </button>
-                            </div>
+                            {/* Refresh Button - Floating REMOVED */}
+
 
                             <div className="relative flex items-center">
                                 <input

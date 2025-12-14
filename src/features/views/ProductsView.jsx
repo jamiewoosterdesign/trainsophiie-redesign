@@ -88,8 +88,8 @@ function AddProductDropdown({ onAdd }) {
     );
 }
 
-function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId }) {
-    const [view, setView] = useState('grid');
+function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId, view, onViewChange }) {
+    // const [view, setView] = useState('grid'); // Removed local state
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [sortBy, setSortBy] = useState('date');
@@ -138,7 +138,7 @@ function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onD
                     <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         {Icon && <Icon className="w-5 h-5 text-slate-500" />} {title}
                     </h2>
-                    <ViewToggle view={view} onViewChange={setView} />
+                    <ViewToggle view={view} onViewChange={onViewChange} />
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -410,6 +410,7 @@ export default function ProductsView() {
     const [buildProducts, setBuildProducts] = useState(MOCK_BUILDERS_PRODUCTS);
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' });
     const [highlightedProductId, setHighlightedProductId] = useState(null);
+    const [viewMode, setViewMode] = useState('grid');
 
     const handleCreateProduct = (data, category) => {
         // Create new product object from wizard data
@@ -531,6 +532,8 @@ export default function ProductsView() {
                         onDuplicate={(p) => handleDuplicateProduct(p, 'Electricians')}
                         onToggle={(id) => handleToggleProductStatus(id, 'Electricians')}
                         onDelete={(id) => handleDeleteProduct(id, 'Electricians')}
+                        view={viewMode}
+                        onViewChange={setViewMode}
                     />
 
                     <ProductSection
@@ -543,6 +546,8 @@ export default function ProductsView() {
                         onDuplicate={(p) => handleDuplicateProduct(p, 'Builders')}
                         onToggle={(id) => handleToggleProductStatus(id, 'Builders')}
                         onDelete={(id) => handleDeleteProduct(id, 'Builders')}
+                        view={viewMode}
+                        onViewChange={setViewMode}
                     />
                 </div>
             </div>
