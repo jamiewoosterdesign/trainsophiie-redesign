@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { SetupProgressTracker } from '@/components/shared/SetupProgressTracker';
+import { ViewToggle } from '@/components/shared/ViewToggle';
 
 const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, statusColor }) => {
     const navigate = useNavigate();
@@ -52,6 +53,9 @@ export default function OverviewView() {
     const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
+    const [views, setViews] = React.useState({});
+    const navigate = useNavigate();
+
     const sections = [
         {
             title: "Knowledge Base",
@@ -221,12 +225,61 @@ export default function OverviewView() {
                     {/* Sections */}
                     {sections.map((section, idx) => (
                         <div key={idx}>
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{section.title}</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {section.items.map((item, itemIdx) => (
-                                    <OverviewCard key={itemIdx} {...item} />
-                                ))}
+                            <div className="flex flex-row justify-between items-center mb-6">
+                                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{section.title}</h2>
+                                <ViewToggle
+                                    view={views[idx] || 'grid'}
+                                    onViewChange={(v) => setViews(prev => ({ ...prev, [idx]: v }))}
+                                />
                             </div>
+                            {(views[idx] || 'grid') === 'grid' ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {section.items.map((item, itemIdx) => (
+                                        <OverviewCard key={itemIdx} {...item} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {section.items.map((item, itemIdx) => {
+                                            const Icon = item.icon;
+                                            const isComplete = item.status === 'Complete' || item.status === 'Services added' || item.status === 'Documents added' || item.status === 'Policy added' || item.status === 'Faqs added' || item.status === 'Team added';
+                                            const iconColorClass = isComplete
+                                                ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                                                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
+
+                                            return (
+                                                <div
+                                                    key={itemIdx}
+                                                    onClick={() => navigate(item.link)}
+                                                    className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                                                >
+                                                    <div className="col-span-1">
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconColorClass}`}>
+                                                            <Icon className="w-4 h-4" />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-span-3 font-bold text-slate-900 dark:text-white">
+                                                        {item.title}
+                                                    </div>
+                                                    <div className="col-span-6 text-sm text-slate-500 dark:text-slate-400">
+                                                        {item.description}
+                                                    </div>
+                                                    <div className="col-span-2 text-right flex items-center justify-end gap-3">
+                                                        <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${isComplete
+                                                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                                                            : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                            }`}>
+                                                            {item.status}
+                                                        </div>
+                                                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

@@ -249,7 +249,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
             case 'document': return 'Upload Document';
             case 'policy': return 'Add Policy';
             case 'faq': return 'Add FAQ';
-            case 'notification_assignment': return 'Assign Team Member';
+            case 'notification_assignment': return 'Assign Team Member Notifications';
             default: return 'Configuration';
         }
     };

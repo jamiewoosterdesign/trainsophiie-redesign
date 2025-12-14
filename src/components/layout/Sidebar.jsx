@@ -25,12 +25,30 @@ const NavIcon = ({ icon, active, onClick }) => (
     </button>
 );
 
-const SidebarGroup = ({ title, children }) => (
-    <div>
-        <h3 className="px-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">{title}</h3>
-        <ul className="space-y-1">{children}</ul>
-    </div>
-);
+const SidebarGroup = ({ title, children, open = true }) => {
+    const [isOpen, setIsOpen] = React.useState(open);
+
+    return (
+        <div>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center justify-between px-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 hover:text-slate-600 dark:hover:text-slate-300 transition-colors group"
+            >
+                <span>{title}</span>
+                <ChevronDown className={cn(
+                    "w-3 h-3 transition-transform duration-200 opacity-0 group-hover:opacity-100",
+                    isOpen ? "rotate-0" : "-rotate-90"
+                )} />
+            </button>
+            <div className={cn(
+                "grid transition-all duration-200 ease-in-out",
+                isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+            )}>
+                <ul className="space-y-1 overflow-hidden min-h-0">{children}</ul>
+            </div>
+        </div>
+    );
+};
 
 const SidebarItem = ({ icon, label, active, onClick, isComplete }) => (
     <li>
