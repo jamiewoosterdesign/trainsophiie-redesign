@@ -37,9 +37,9 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
         if (!el) return;
 
         const handleScroll = () => {
-            // Check if we are within 100px of bottom
+            // Check if we are within 20px of bottom
             const { scrollTop, scrollHeight, clientHeight } = el;
-            const isBottom = scrollHeight - scrollTop - clientHeight < 100;
+            const isBottom = scrollHeight - scrollTop - clientHeight < 20;
             if (isBottom !== isNearBottom) {
                 setIsNearBottom(isBottom);
             }
