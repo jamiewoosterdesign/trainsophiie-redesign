@@ -109,7 +109,10 @@ export function SetupProgressTracker() {
                             alt="Sophiie"
                             className="relative w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-xl"
                         />
-                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                        <div className={cn(
+                            "absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center",
+                            areRequiredComplete ? "bg-green-500" : "bg-slate-300 dark:bg-slate-600"
+                        )}>
                             <Check className="w-3 h-3 text-white" strokeWidth={4} />
                         </div>
                     </div>
