@@ -182,6 +182,27 @@ export default function TransfersView() {
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
+                    {/* Global Settings Banner */}
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 shadow-sm">
+                        <div
+                            onClick={openSettings}
+                            className="bg-slate-50/50 dark:bg-slate-800/50 rounded-lg p-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                        >
+                            <div className="flex items-center gap-4">
+                                <Settings className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors" />
+                                <div>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">General Transfer Settings</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">Configure timeouts, hold messages, and fallback behaviors.</p>
+                                </div>
+                            </div>
+                            <div className="mr-2">
+                                <div className="w-8 h-8 rounded-full bg-slate-200/50 dark:bg-slate-700/50 flex items-center justify-center text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200 transition-colors">
+                                    <Edit2 className="w-4 h-4" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
                         {/* Toolbar */}
                         <div className="flex flex-col gap-4">
