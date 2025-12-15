@@ -3,9 +3,11 @@ import { Check, X, Sparkles, Briefcase, Wrench, ShoppingBag, Book, ListChecks, H
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import sophiieAvatar from '@/avatars/sophiie-avatar.png';
+import { useDemo } from '@/context/DemoContext';
 
 export function SetupProgressModal({ isOpen, onClose }) {
     const navigate = useNavigate();
+    const { setupProgress: allSections } = useDemo();
 
     // Mapping icons to sections
     const sectionConfig = {
@@ -25,24 +27,6 @@ export function SetupProgressModal({ isOpen, onClose }) {
         'greetings': { icon: MessageSquare, route: '/greetings' },
         'behaviors': { icon: Activity, route: '/behaviors' },
     };
-
-    // Consolidated data source to match SetupProgressTracker
-    const allSections = [
-        { id: 'business-info', title: 'Business Info', subtitle: 'Basic info, Location, Trading Hours', route: '/business-info', isComplete: true, tags: ['Required'] },
-        { id: 'services', title: 'Services', subtitle: 'Service Name, Duration, Price', route: '/services', isComplete: true, tags: ['Required'] },
-        { id: 'faqs', title: 'FAQs', subtitle: 'Common customer questions', route: '/faqs', isComplete: true, tags: ['Recommended'] },
-        { id: 'products', title: 'Products', subtitle: 'Product catalog', route: '/products', isComplete: true, tags: ['Optional'] },
-        { id: 'documents', title: 'Documents', subtitle: 'Upload PDFs & Files', route: '/knowledge', isComplete: true, tags: ['Optional'] },
-        { id: 'policies', title: 'Policies', subtitle: 'Rules & Procedures', route: '/policies', isComplete: true, tags: ['Optional'] },
-        { id: 'scenarios', title: 'Scenarios', subtitle: 'Edge cases', route: '/scenarios', isComplete: false, tags: ['Advanced'] },
-        { id: 'staff', title: 'Staff & Departments', subtitle: 'Team members & groups', route: '/staff', isComplete: true, tags: ['Recommended'] },
-        { id: 'transfers', title: 'Transfers', subtitle: 'Call handoff logic', route: '/transfers', isComplete: true, tags: ['Recommended'] },
-        { id: 'notifications', title: 'Notifications', subtitle: 'Alert settings', route: '/notifications', isComplete: true, tags: ['Advanced'] },
-        { id: 'tags', title: 'Tags', subtitle: 'Conversation labeling', route: '/tags', isComplete: true, tags: ['Advanced'] },
-        { id: 'greetings', title: 'Greetings & Closings', subtitle: 'Custom conversation scripts', route: '/greetings', isComplete: true, tags: ['Recommended'] },
-        { id: 'voice', title: 'Voice & Personality', subtitle: 'Tone, Attitude, Voice selection', route: '/voice', isComplete: false, tags: ['Advanced'] },
-        { id: 'behaviors', title: 'Behaviors', subtitle: 'Interruption & Speed', route: '/behaviors', isComplete: false, tags: ['Advanced'] }
-    ];
 
     const completedCount = allSections.filter(s => s.isComplete).length;
     const totalCount = allSections.length;

@@ -64,6 +64,8 @@ const SidebarItem = ({ icon, label, active, onClick }) => (
     </li>
 );
 
+import { useDemo } from '@/context/DemoContext';
+
 export default function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,9 +74,15 @@ export default function Sidebar() {
     const [isSubMenuOpen, setIsSubMenuOpen] = React.useState(true);
     const { theme, setTheme } = useTheme();
     const [showSettingsPopover, setShowSettingsPopover] = React.useState(false);
+    const [showProfilePopover, setShowProfilePopover] = React.useState(false);
     const [showMobileSettings, setShowMobileSettings] = React.useState(false);
     const [showProgressModal, setShowProgressModal] = React.useState(false);
     const settingsRef = React.useRef(null);
+    const { isBlankState, switchProfile, setupProgress } = useDemo();
+
+    const completedCount = setupProgress.filter(s => s.isComplete).length;
+    const totalCount = setupProgress.length;
+    const progressPercentage = Math.round((completedCount / totalCount) * 100);
 
     // Click outside handler for desktop popover
     React.useEffect(() => {
@@ -238,7 +246,69 @@ export default function Sidebar() {
                         <NavIcon icon={<HelpCircle />} />
                     </div>
                 </nav>
-                <div className="mt-4 w-10 h-10 rounded-xl bg-gradient-to-b from-lime-400 to-emerald-500 cursor-pointer shadow-lg hover:opacity-90 transition-opacity">
+                <div className="relative">
+                    <button
+                        onClick={() => setShowProfilePopover(!showProfilePopover)}
+                        className={cn(
+                            "mt-4 w-10 h-10 rounded-xl cursor-pointer shadow-lg hover:opacity-90 transition-all flex items-center justify-center",
+                            isBlankState ? "bg-slate-200 dark:bg-slate-700" : "bg-gradient-to-b from-lime-400 to-emerald-500"
+                        )}
+                        title="Switch Profile"
+                    >
+                        {isBlankState ? (
+                            <Users className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                        ) : (
+                            <div className="text-white font-bold text-xs">VE</div>
+                        )}
+                    </button>
+
+                    {showProfilePopover && (
+                        <div className="absolute left-full bottom-0 ml-4 w-72 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800 p-4 z-50 animate-in slide-in-from-left-2 zoom-in-95 duration-200">
+                            <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-wider">Switch Profile</h4>
+                            <div className="space-y-2">
+                                <button
+                                    onClick={() => { switchProfile('vision-electrical'); setShowProfilePopover(false); }}
+                                    className={cn(
+                                        "w-full flex items-center gap-3 p-3 rounded-lg transition-colors border text-left",
+                                        !isBlankState
+                                            ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                                            : "hover:bg-slate-50 dark:hover:bg-slate-800 border-transparent"
+                                    )}
+                                >
+                                    <div className="w-10 h-10 rounded-lg bg-gradient-to-b from-lime-400 to-emerald-500 flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                                        VE
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-slate-900 dark:text-white">Vision Electrical</div>
+                                        <div className="text-xs text-slate-500 dark:text-slate-400">Demo Mode (Full)</div>
+                                    </div>
+                                    {!isBlankState && <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                                </button>
+
+                                <button
+                                    onClick={() => { switchProfile('blank-state'); setShowProfilePopover(false); }}
+                                    className={cn(
+                                        "w-full flex items-center gap-3 p-3 rounded-lg transition-colors border text-left",
+                                        isBlankState
+                                            ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                                            : "hover:bg-slate-50 dark:hover:bg-slate-800 border-transparent"
+                                    )}
+                                >
+                                    <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 shadow-sm">
+                                        <Users className="w-5 h-5" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-bold text-slate-900 dark:text-white">Blank State</div>
+                                        <div className="text-xs text-slate-500 dark:text-slate-400">New User (Empty)</div>
+                                    </div>
+                                    {isBlankState && <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                                </button>
+                            </div>
+
+                            {/* Triangle Pointer */}
+                            <div className="absolute left-0 bottom-6 -translate-x-1/2 w-3 h-3 bg-white dark:bg-slate-900 rotate-45 border-l border-b border-slate-100 dark:border-slate-800" />
+                        </div>
+                    )}
                 </div>
             </aside>
 
@@ -286,10 +356,10 @@ export default function Sidebar() {
                 >
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Setup Progress</span>
-                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">85%</span>
+                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{progressPercentage}%</span>
                     </div>
                     <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                        <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
                 </button>
             </aside>

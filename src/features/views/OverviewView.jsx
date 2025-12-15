@@ -49,12 +49,22 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
     );
 };
 
+import { useDemo } from '@/context/DemoContext';
+
+// ... (OverviewCard component remains the same)
+
 export default function OverviewView() {
     const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
     const [viewMode, setViewMode] = React.useState('grid');
     const navigate = useNavigate();
+    const { setupProgress } = useDemo();
+
+    const getStatus = (id, successText = 'Complete', defaultText = 'Pending') => {
+        const item = setupProgress.find(i => i.id === id);
+        return item?.isComplete ? successText : defaultText;
+    };
 
     const sections = [
         {
@@ -64,7 +74,7 @@ export default function OverviewView() {
                     title: "Business Information",
                     description: "Logo, name, industry, working hours",
                     icon: Briefcase,
-                    status: "Complete",
+                    status: getStatus('business-info'),
                     link: "/business-info",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -73,7 +83,7 @@ export default function OverviewView() {
                     title: "Services",
                     description: "Core services offered",
                     icon: Wrench,
-                    status: "Services added",
+                    status: getStatus('services', 'Services added'),
                     link: "/services",
                     colorClass: `bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 ${voiceFlowStep === 'OVERVIEW' ? 'ring-4 ring-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.4)] scale-105 transition-all duration-500' : ''}`,
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -82,7 +92,7 @@ export default function OverviewView() {
                     title: "Products",
                     description: "Manage product catalog",
                     icon: ShoppingBag,
-                    status: "Optional",
+                    status: getStatus('products', 'Optional', 'Optional'),
                     link: "/products",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-500 dark:text-slate-400"
@@ -91,7 +101,7 @@ export default function OverviewView() {
                     title: "Documents",
                     description: "PDFs and files Sophiie learns from.",
                     icon: Book,
-                    status: "Documents added",
+                    status: getStatus('documents', 'Documents added', 'Optional'),
                     link: "/knowledge",
                     colorClass: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -100,7 +110,7 @@ export default function OverviewView() {
                     title: "Policies & Procedures",
                     description: "Cancellations, payment terms, procedures",
                     icon: ListChecks,
-                    status: "Policy added",
+                    status: getStatus('policies', 'Policy added', 'Optional'),
                     link: "/policies",
                     colorClass: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -109,7 +119,7 @@ export default function OverviewView() {
                     title: "FAQs",
                     description: "Common questions Sophiie can answer",
                     icon: HelpCircle,
-                    status: "Faqs added",
+                    status: getStatus('faqs', 'Faqs added', 'Optional'),
                     link: "/faqs",
                     colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -118,7 +128,7 @@ export default function OverviewView() {
                     title: "Scenarios",
                     description: "For situations that aren't products, services or FAQs",
                     icon: ShieldAlert,
-                    status: "Complete",
+                    status: getStatus('scenarios', 'Complete', 'Pending'),
                     link: "/scenarios",
                     colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -132,7 +142,7 @@ export default function OverviewView() {
                     title: "Staff & Departments",
                     description: "Add staff contacts for routing",
                     icon: Users,
-                    status: "Team added",
+                    status: getStatus('staff', 'Team added', 'Pending'),
                     link: "/staff",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -141,7 +151,7 @@ export default function OverviewView() {
                     title: "Transfers",
                     description: "Set up call transfer logic and parameters",
                     icon: ArrowRightLeft,
-                    status: "Optional",
+                    status: getStatus('transfers', 'Transfers set', 'Pending'),
                     link: "/transfers",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-500 dark:text-slate-400"
@@ -150,7 +160,7 @@ export default function OverviewView() {
                     title: "Notifications",
                     description: "Set up SMS/email/push alerts",
                     icon: Bell,
-                    status: "Complete",
+                    status: getStatus('notifications', 'Complete', 'Pending'),
                     link: "/notifications",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -159,7 +169,7 @@ export default function OverviewView() {
                     title: "Tags",
                     description: "Organize or label conversations",
                     icon: Tag,
-                    status: "Optional",
+                    status: getStatus('tags', 'Complete', 'Pending'),
                     link: "/tags",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-500 dark:text-slate-400"
@@ -173,7 +183,7 @@ export default function OverviewView() {
                     title: "Voice & Personality",
                     description: "Choose voice, tone, attitude",
                     icon: Mic,
-                    status: "Optional",
+                    status: getStatus('voice', 'Voice Selected', 'Optional'),
                     link: "/voice",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-500 dark:text-slate-400"
@@ -182,7 +192,7 @@ export default function OverviewView() {
                     title: "Greetings & Closings",
                     description: "Custom intro/outro lines for voice calls",
                     icon: MessageSquare,
-                    status: "Complete",
+                    status: getStatus('greetings', 'Complete', 'Pending'),
                     link: "/greetings",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
                     statusColor: "text-slate-900 dark:text-slate-200"
@@ -191,7 +201,7 @@ export default function OverviewView() {
                     title: "Interruption & Speed",
                     description: "How Sophie handles interruptions and speaking pace",
                     icon: Activity,
-                    status: "Optional",
+                    status: getStatus('behaviors', 'Complete', 'Optional'),
                     link: "/behaviors",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
                     statusColor: "text-slate-500 dark:text-slate-400"

@@ -32,6 +32,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import WizardModal from '@/features/wizards/WizardModal';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
+import { useDemo } from '@/context/DemoContext';
 
 // Expanded Mock Data
 const MOCK_ASSIGNMENTS = [
@@ -55,9 +56,18 @@ const MOCK_ASSIGNMENTS = [
 export default function NotificationsView() {
     const navigate = useNavigate();
     const { startGlobalVoiceFlow } = useOutletContext();
+    const { isBlankState } = useDemo();
     const [showAssignModal, setShowAssignModal] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState(null);
     const [assignments, setAssignments] = useState(MOCK_ASSIGNMENTS);
+
+    React.useEffect(() => {
+        if (isBlankState) {
+            setAssignments([]);
+        } else {
+            setAssignments(MOCK_ASSIGNMENTS);
+        }
+    }, [isBlankState]);
     const [showSuccess, setShowSuccess] = useState(false);
     const [highlightedAssignmentId, setHighlightedAssignmentId] = useState(null);
 

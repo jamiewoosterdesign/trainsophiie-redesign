@@ -26,6 +26,8 @@ import {
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
+import { useDemo } from '@/context/DemoContext';
+
 // Expanded Mock Staff Data
 const MOCK_STAFF = [
     { id: 1, name: "Sarah Jenkins", role: "Sales", status: "Available", initials: "SJ", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Handles new customer inquiries and pricing.", ext: "101", createdAt: 1700000000000 },
@@ -45,6 +47,10 @@ const MOCK_STAFF = [
     { id: 15, name: "Jenny Griffith", role: "Support", status: "Available", initials: "JG", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "Consultant and paralegal.", ext: "115" },
 ];
 
+const BLANK_STAFF = [
+    { id: 'admin', name: "Admin User", role: "Admin", status: "Available", initials: "AU", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400", desc: "System Administrator", ext: "000", createdAt: 0 }
+];
+
 // Mock Departments Data
 const MOCK_DEPARTMENTS = [
     { id: 'dept-1', name: 'Accounts', status: 'Active', members: 3, openStatus: 'Closed', routing: 'Call forwarding configured', color: 'bg-sky-100 text-sky-600 dark:bg-sky-900/40 dark:text-sky-400' },
@@ -55,9 +61,20 @@ const MOCK_DEPARTMENTS = [
 export default function StaffView() {
     const { openWizard, openSettings, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
 
     const [staffList, setStaffList] = useState(MOCK_STAFF);
     const [departments, setDepartments] = useState(MOCK_DEPARTMENTS);
+
+    React.useEffect(() => {
+        if (isBlankState) {
+            setStaffList(BLANK_STAFF);
+            setDepartments([]);
+        } else {
+            setStaffList(MOCK_STAFF);
+            setDepartments(MOCK_DEPARTMENTS);
+        }
+    }, [isBlankState]);
 
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created', message: '' });
     const [highlightedStaffId, setHighlightedStaffId] = useState(null);

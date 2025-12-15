@@ -26,6 +26,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDemo } from '@/context/DemoContext';
 
 const MOCK_ELECTRICIANS_PRODUCTS = [
     { id: 'prod-elec-1', name: 'Solar Panel', desc: 'Solar panels to harness the suns light and transfer it in clean electricity', price: '$2,999.99', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1700000000000 },
@@ -402,6 +403,7 @@ function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onD
 export default function ProductsView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
 
@@ -411,6 +413,17 @@ export default function ProductsView() {
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' });
     const [highlightedProductId, setHighlightedProductId] = useState(null);
     const [viewMode, setViewMode] = useState('grid');
+
+    // Switch Data based on Profile
+    React.useEffect(() => {
+        if (isBlankState) {
+            setElecProducts([]);
+            setBuildProducts([]);
+        } else {
+            setElecProducts(MOCK_ELECTRICIANS_PRODUCTS);
+            setBuildProducts(MOCK_BUILDERS_PRODUCTS);
+        }
+    }, [isBlankState]);
 
     const handleCreateProduct = (data, category) => {
         // Create new product object from wizard data

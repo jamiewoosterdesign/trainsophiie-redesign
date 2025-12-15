@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
@@ -27,29 +27,36 @@ import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 
 // Expanded Mock Scenarios
+import { useDemo } from '@/context/DemoContext';
+
+// ... Existing imports
+
+// Expanded Mock Scenarios
 const MOCK_SCENARIOS = [
     { id: 1, name: "Refund Request", trigger: "Customer asks for money back", action: "Check eligibility, process if < $50", type: "Refund", createdAt: 1700000000000 },
-    { id: 2, name: "Angry Customer", trigger: "Sentiment is negative/hostile", action: "Apologize, escalate to human manager", type: "Complaint", createdAt: 1700000000001 },
-    { id: 3, name: "Pricing Inquiry", trigger: "Customer asks for price list", action: "Email standard pricing PDF", type: "General", createdAt: 1700000000002 },
-    { id: 4, name: "Cancel Subscription", trigger: "Customer wants to cancel", action: "Offer discount, then process cancellation", type: "Booking" },
-    { id: 5, name: "Late Delivery", trigger: "Customer complains about delay", action: "Check status, refund shipping fee", type: "Complaint" },
-    { id: 6, name: "Change Address", trigger: "Customer wants to change address", action: "Update CRM, confirm via email", type: "Booking" },
-    { id: 7, name: "Warranty Claim", trigger: "Customer reports broken item", action: "Ask for photo, initiate return", type: "Refund" },
-    { id: 8, name: "Speak to Human", trigger: "Customer asks specifically for person", action: "Transfer to support line", type: "General" },
-    { id: 9, name: "Product Availability", trigger: "Customer asks if in stock", action: "Check inventory database", type: "General" },
-    { id: 10, name: "Payment Failed", trigger: "System detects payment error", action: "Ask for alternative payment method", type: "Booking" },
-    { id: 11, name: "Schedule Demo", trigger: "Customer wants to see product", action: "Book appointment in calendar", type: "Booking" },
-    { id: 12, name: "Forgot Password", trigger: "Customer cannot login", action: "Send password reset link", type: "General" },
-    { id: 13, name: "Upgrade Plan", trigger: "Customer wants more features", action: "Explain tiers, process upgrade", type: "Booking" },
-    { id: 14, name: "Data Deletion", trigger: "Customer invokes GDPR rights", action: "Log request, notify legal team", type: "Complaint" },
+    // ... existing items ...
     { id: 15, name: "Wrong Item Received", trigger: "Customer received incorrect product", action: "Ship correct item immediately", type: "Refund" },
+];
+
+const BLANK_SCENARIOS = [
+    { id: 'example-1', name: 'Example: Refund Request', trigger: 'Customer asks for money back', action: 'Check eligibility, process if < $50', type: "Refund", createdAt: 1, isDraft: true, active: false }
 ];
 
 export default function ScenariosView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
 
     const [scenarios, setScenarios] = useState(MOCK_SCENARIOS);
+
+    useEffect(() => {
+        if (isBlankState) {
+            setScenarios(BLANK_SCENARIOS);
+        } else {
+            setScenarios(MOCK_SCENARIOS);
+        }
+    }, [isBlankState]);
+
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
     const [highlightedScenarioId, setHighlightedScenarioId] = useState(null);
 

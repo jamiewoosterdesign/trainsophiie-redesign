@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, MessageCircle, Edit2, Trash2, HelpCircle, ArrowLeft, Search, ChevronLeft, ChevronRight, LayoutGrid, List, CheckCircle, X } from 'lucide-react';
+import { Plus, MessageCircle, Edit2, Trash2, HelpCircle, ArrowLeft, Search, ChevronLeft, ChevronRight, LayoutGrid, List, CheckCircle, X, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,11 +27,12 @@ import { MoreHorizontal, Power, Copy } from 'lucide-react';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { useNavigate } from 'react-router-dom';
 import { ViewToggle } from '@/components/shared/ViewToggle';
+import { useDemo } from '@/context/DemoContext';
 
 // Expanded Mock Data
 const MOCK_FAQS = [
-    { id: 1, question: 'What are your opening hours?', answer: 'We are open Monday to Friday from 9am to 5pm, and Saturdays from 10am to 2pm. We are closed on Sundays and public holidays.', createdAt: 1700000000000 },
-    { id: 2, question: 'Do you offer free quotes?', answer: 'Yes, we provide free, no-obligation quotes for all our services. You can request one online or over the phone.', createdAt: 1700000000001 },
+    { id: 1, question: 'What are your opening hours?', answer: 'We are open Monday to Friday from 9am to 5pm, and Saturdays from 10am to 2pm. We are closed on Sundays and public holidays.', createdAt: 1700000000000, source: 'web' },
+    { id: 2, question: 'Do you offer free quotes?', answer: 'Yes, we provide free, no-obligation quotes for all our services. You can request one online or over the phone.', createdAt: 1700000000001, source: 'web' },
     { id: 3, question: 'How long does a service take?', answer: 'A standard service typically takes between 45 to 60 minutes, depending on the complexity of the issue.', createdAt: 1700000000002 },
     { id: 4, question: 'What payment methods do you accept?', answer: 'We accept cash, credit cards (Visa, Mastercard), and bank transfers.' },
     { id: 5, question: 'Do you provide warranties?', answer: 'Yes, all our services come with a 30-day satisfaction guarantee and a 1-year warranty on parts.' },
@@ -40,20 +41,35 @@ const MOCK_FAQS = [
     { id: 8, question: 'Do you offer emergency services?', answer: 'Yes, we have a 24/7 emergency hotline for urgent issues that cannot wait until business hours.' },
     { id: 9, question: 'How can I contact support?', answer: 'You can reach our support team via email at support@company.com or by calling our main line.' },
     { id: 10, question: 'Do you have a loyalty program?', answer: 'Yes, we offer a loyalty program where you earn points for every service booked.' },
-    { id: 11, question: 'What areas do you serve?', answer: 'We serve the entire metropolitan area and surrounding suburbs within a 50km radius.' },
+    { id: 11, question: 'What areas do you serve?', answer: 'We serve the entire metropolitan area and surrounding suburbs within a 50km radius.', source: 'web' },
     { id: 12, question: 'How do I track my request?', answer: 'You will receive an SMS and email with a tracking link once your request has been assigned.' },
     { id: 13, question: 'Is my data secure?', answer: 'We take data security seriously and use industry-standard encryption to protect your personal information.' },
     { id: 14, question: 'Can I reschedule my appointment?', answer: 'Yes, you can reschedule your appointment online or by calling us, subject to availability.' },
     { id: 15, question: 'Do you do commercial work?', answer: 'Yes, we provide services for both residential and commercial properties.' },
 ];
 
+const BLANK_FAQS = [
+    { id: 'web-1', question: 'What payment methods do you accept?', answer: 'We accept all major credit cards and cash.', source: 'web', createdAt: 3 },
+    { id: 'web-2', question: 'Do you offer same-day service?', answer: 'Yes, subjected to availability.', source: 'web', createdAt: 2 },
+    { id: 'web-3', question: 'Where are you located?', answer: 'We are based in the city center.', source: 'web', createdAt: 1 }
+];
+
 export default function FAQsView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
 
     const [faqs, setFaqs] = useState(MOCK_FAQS);
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created', count: 1 }); // Added count
     const [highlightedFaqIds, setHighlightedFaqIds] = useState([]); // Changed to array
+
+    useEffect(() => {
+        if (isBlankState) {
+            setFaqs(BLANK_FAQS);
+        } else {
+            setFaqs(MOCK_FAQS);
+        }
+    }, [isBlankState]);
 
     const handleCreateFaq = (data) => {
         // Check if we have multiple FAQs
@@ -145,7 +161,7 @@ export default function FAQsView() {
     );
 
     // Reset page
-    React.useEffect(() => {
+    useEffect(() => {
         setCurrentPage(1);
     }, [searchQuery, sortBy, view]);
 
@@ -295,9 +311,17 @@ export default function FAQsView() {
                                         </div>
                                         <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{faq.question}</h3>
                                         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-4 flex-grow mb-4">{faq.answer}</p>
-                                        <div className="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800 flex gap-1">
-                                            {faq.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
-                                            {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                        <div className="pt-4 mt-auto border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                            <div className="flex gap-1">
+                                                {faq.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                                {!faq.isDraft && (faq.active === false ? <Badge variant="secondary">Inactive</Badge> : <Badge variant="success">Active</Badge>)}
+                                            </div>
+                                            {faq.source === 'web' && (
+                                                <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-full border border-slate-200 dark:border-slate-700" title="Sourced from website">
+                                                    <Globe className="w-3 h-3" />
+                                                    <span>Web</span>
+                                                </div>
+                                            )}
                                         </div>
                                     </Card>
                                 ))}

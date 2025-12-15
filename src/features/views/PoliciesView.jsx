@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
@@ -27,6 +27,7 @@ import { MoreHorizontal, Power, Copy } from 'lucide-react';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { useNavigate } from 'react-router-dom';
 import { ViewToggle } from '@/components/shared/ViewToggle';
+import { useDemo } from '@/context/DemoContext';
 
 // Expanded Mock Data
 const MOCK_POLICIES = [
@@ -50,10 +51,19 @@ const MOCK_POLICIES = [
 export default function PoliciesView() {
     const { openWizard, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
 
     const [policies, setPolicies] = useState(MOCK_POLICIES);
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
     const [highlightedPolicyId, setHighlightedPolicyId] = useState(null);
+
+    useEffect(() => {
+        if (isBlankState) {
+            setPolicies([]);
+        } else {
+            setPolicies(MOCK_POLICIES);
+        }
+    }, [isBlankState]);
 
     const handleCreatePolicy = (data) => {
         // Create new policy object

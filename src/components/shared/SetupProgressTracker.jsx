@@ -5,10 +5,16 @@ import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import sophiieAvatar from '@/avatars/sophiie-avatar.png';
 
+import { useDemo } from '@/context/DemoContext';
+
 export function SetupProgressTracker() {
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(1);
     const [isExpanded, setIsExpanded] = useState(false);
+    const { setupProgress } = useDemo();
+
+    // Helper to find item from context
+    const getItem = (id) => setupProgress.find(i => i.id === id) || { id, title: id, subtitle: '', route: '#', isComplete: false, tags: [] };
 
     const steps = [
         {
@@ -17,13 +23,13 @@ export function SetupProgressTracker() {
             description: "Build the foundation of your AI's knowledge.",
             tip: "Make sure you complete all red required fields before diverting your calls to Sophiie.",
             items: [
-                { id: 'business-info', title: 'Business Info', subtitle: 'Basic info, Location, Trading Hours', route: '/business-info', isComplete: true, tags: ['Required'] },
-                { id: 'services', title: 'Services', subtitle: 'Service Name, Duration, Price', route: '/services', isComplete: true, tags: ['Required'] },
-                { id: 'faqs', title: 'FAQs', subtitle: 'Common customer questions', route: '/faqs', isComplete: true, tags: ['Recommended'] },
-                { id: 'products', title: 'Products', subtitle: 'Product catalog', route: '/products', isComplete: true, tags: ['Optional'] },
-                { id: 'documents', title: 'Documents', subtitle: 'Upload PDFs & Files', route: '/knowledge', isComplete: true, tags: ['Optional'] },
-                { id: 'policies', title: 'Policies', subtitle: 'Rules & Procedures', route: '/policies', isComplete: true, tags: ['Optional'] },
-                { id: 'scenarios', title: 'Scenarios', subtitle: 'Edge cases', route: '/scenarios', isComplete: false, tags: ['Advanced'] }
+                getItem('business-info'),
+                getItem('services'),
+                getItem('faqs'),
+                getItem('products'),
+                getItem('documents'),
+                getItem('policies'),
+                getItem('scenarios')
             ]
         },
         {
@@ -32,10 +38,10 @@ export function SetupProgressTracker() {
             description: "Define how calls and messages are distributed.",
             tip: "Setting up your team ensures calls reach the right person every time.",
             items: [
-                { id: 'staff', title: 'Staff & Departments', subtitle: 'Team members & groups', route: '/staff', isComplete: true, tags: ['Recommended'] },
-                { id: 'transfers', title: 'Transfers', subtitle: 'Call handoff logic', route: '/transfers', isComplete: true, tags: ['Recommended'] },
-                { id: 'notifications', title: 'Notifications', subtitle: 'Alert settings', route: '/notifications', isComplete: true, tags: ['Advanced'] },
-                { id: 'tags', title: 'Tags', subtitle: 'Conversation labeling', route: '/tags', isComplete: true, tags: ['Advanced'] }
+                getItem('staff'),
+                getItem('transfers'),
+                getItem('notifications'),
+                getItem('tags')
             ]
         },
         {
@@ -44,9 +50,9 @@ export function SetupProgressTracker() {
             description: "Fine-tune how Sophiie speaks and interacts.",
             tip: "Review these settings to ensure Sophiie matches your brand's voice and handles conversations seamlessly.",
             items: [
-                { id: 'greetings', title: 'Greetings & Closings', subtitle: 'Custom conversation scripts', route: '/greetings', isComplete: true, tags: ['Recommended'] },
-                { id: 'voice', title: 'Voice & Personality', subtitle: 'Tone, Attitude, Voice selection', route: '/voice', isComplete: false, tags: ['Advanced'] },
-                { id: 'behaviors', title: 'Behaviors', subtitle: 'Interruption & Speed', route: '/behaviors', isComplete: false, tags: ['Advanced'] }
+                getItem('greetings'),
+                getItem('voice'),
+                getItem('behaviors')
             ]
         }
     ];

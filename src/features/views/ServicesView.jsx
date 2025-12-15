@@ -27,6 +27,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDemo } from '@/context/DemoContext';
 
 const MOCK_ELECTRICIANS = [
     { id: 'elec-1', name: 'Switchboard Upgrade', desc: 'Upgrade old fuse box to modern circuit breaker panel with RCD protection.', time: '4 hrs', action: 'Book', active: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1 },
@@ -58,6 +59,13 @@ const MOCK_BUILDERS = [
     { id: 'build-4', name: 'Pergola Construction', desc: 'Custom designed pergolas and patios for outdoor entertaining.', time: '4 Days', action: 'Transfer', active: true, icon: <Hammer className="w-5 h-5 text-slate-500" />, createdAt: 1 },
     { id: 'build-5', name: 'Structural Wall Removal', desc: 'Removal of load-bearing walls and installation of support beams.', time: '5 Days', action: 'Transfer', active: false, icon: <Hammer className="w-5 h-5 text-slate-500" />, createdAt: 1 }
 ];
+
+const BLANK_ELEC = [
+    { id: 'example-1', name: 'Example: General Enquiry', desc: 'Standard enquiry for general electrical work.', time: 'Varies', action: 'Book', active: false, isDraft: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 1 },
+    { id: 'example-2', name: 'Example: Emergency', desc: 'Urgent electrical safety issues.', time: '1 hr', action: 'Transfer', active: false, isDraft: true, icon: <Zap className="w-5 h-5 text-amber-500" />, createdAt: 2 }
+];
+
+const BLANK_BUILD = [];
 
 function AddServiceDropdown({ onAdd }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -110,15 +118,14 @@ function AddServiceDropdown({ onAdd }) {
 }
 
 function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onDuplicate, onToggle, onDelete, highlightedId, view, onViewChange }) {
-    // const [view, setView] = useState('grid'); // Removed local state
     const [searchQuery, setSearchQuery] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterAction, setFilterAction] = useState('all');
     const [sortBy, setSortBy] = useState('date');
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 11;
-    const scrollRef = useRef(null);
-    const scrollDirection = useScrollDirection(scrollRef);
+    const scrollRef = useRef(null); // Added useRef for scroll although it might not be attached to anything scrollable inside the component itself if not needed.
+    // const scrollDirection = useScrollDirection(scrollRef); // Not used inside section
 
     // Filter & Sort
     const filteredServices = services
@@ -139,8 +146,6 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
             if (sortBy === 'date') {
                 const dateA = a.createdAt || 0;
                 const dateB = b.createdAt || 0;
-                // Treat equal as stable (keep existing order if possible, though JS sort isn't always stable)
-                // New items created with Date.now() will be larger, effectively appearing first
                 return dateB - dateA;
             }
             if (sortBy === 'active') {
@@ -423,6 +428,7 @@ export default function ServicesView() {
     const navigate = useNavigate();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
+    const { isBlankState } = useDemo();
 
     // State for services
     const [elecServices, setElecServices] = useState(MOCK_ELECTRICIANS);
@@ -430,6 +436,17 @@ export default function ServicesView() {
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' }); // type: 'created' | 'saved'
     const [highlightedServiceId, setHighlightedServiceId] = useState(null);
     const [viewMode, setViewMode] = useState('grid');
+
+    // Switch data based on profile
+    useEffect(() => {
+        if (isBlankState) {
+            setElecServices(BLANK_ELEC);
+            setBuildServices(BLANK_BUILD);
+        } else {
+            setElecServices(MOCK_ELECTRICIANS);
+            setBuildServices(MOCK_BUILDERS);
+        }
+    }, [isBlankState]);
 
     const handleCreateService = (data, category) => {
         // Create new service object from wizard data
@@ -495,7 +512,6 @@ export default function ServicesView() {
 
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
-            {/* Success Modal Overlay - Updated Style */}
             {/* Success Modal Overlay - Updated Style */}
             {showSuccess.show && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
@@ -573,3 +589,4 @@ export default function ServicesView() {
         </div>
     );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { ViewToggle } from '@/components/shared/ViewToggle';
+import { useDemo } from '@/context/DemoContext';
 
 // Local Mock Data for Transfer Rules
 const MOCK_TRANSFER_RULES = [
@@ -48,8 +49,18 @@ const MOCK_TRANSFER_RULES = [
 export default function TransfersView() {
     const { openWizard, openSettings, startGlobalVoiceFlow } = useOutletContext();
     const navigate = useNavigate();
+    const { isBlankState } = useDemo();
 
     const [rules, setRules] = useState(MOCK_TRANSFER_RULES);
+
+    useEffect(() => {
+        if (isBlankState) {
+            setRules([]);
+        } else {
+            setRules(MOCK_TRANSFER_RULES);
+        }
+    }, [isBlankState]);
+
     const [showSuccess, setShowSuccess] = useState({ show: false, type: 'created' });
     const [highlightedRuleId, setHighlightedRuleId] = useState(null);
 

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { PageSectionNav } from '@/components/shared/PageSectionNav';
+import { useDemo } from '@/context/DemoContext';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SHORT_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -79,10 +80,17 @@ export default function BusinessInfoView() {
     const { startGlobalVoiceFlow } = useOutletContext();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
+    const { currentProfile } = useDemo();
 
     // --- State Management ---
-    const [formData, setFormData] = useState(INITIAL_DATA);
-    const [initialData] = useState(INITIAL_DATA);
+    const [formData, setFormData] = useState(currentProfile.businessInfo);
+    const [initialData, setInitialData] = useState(currentProfile.businessInfo); // For dirty checking
+
+    useEffect(() => {
+        setFormData(currentProfile.businessInfo);
+        setInitialData(currentProfile.businessInfo);
+    }, [currentProfile.id]);
+
     const [activeSection, setActiveSection] = useState(null);
     const [collapsed, setCollapsed] = useState({});
 
@@ -289,9 +297,9 @@ export default function BusinessInfoView() {
                                             "px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors",
                                             isBasicInfoComplete
                                                 ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                                         )}>
-                                            {isBasicInfoComplete ? "Done" : "To Do"}
+                                            {isBasicInfoComplete ? "Done" : "Required"}
                                         </div>
                                     </div>
                                 </div>
@@ -557,9 +565,9 @@ export default function BusinessInfoView() {
                                             "px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors",
                                             isLocationComplete
                                                 ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                                         )}>
-                                            {isLocationComplete ? "Done" : "To Do"}
+                                            {isLocationComplete ? "Done" : "Required"}
                                         </div>
                                     </div>
                                 </div>
@@ -833,9 +841,9 @@ export default function BusinessInfoView() {
                                             "px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors",
                                             isTradingHoursComplete
                                                 ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                : "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
                                         )}>
-                                            {isTradingHoursComplete ? "Done" : "To Do"}
+                                            {isTradingHoursComplete ? "Done" : "Required"}
                                         </div>
                                     </div>
                                 </div>
