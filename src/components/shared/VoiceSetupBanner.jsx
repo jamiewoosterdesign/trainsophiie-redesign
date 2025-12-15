@@ -6,10 +6,7 @@ import { cn } from '@/lib/utils';
 
 export default function VoiceSetupBanner({ onStartVoiceFlow }) {
     const location = useLocation();
-    const [isCollapsed, setIsCollapsed] = useState(() => {
-        // specific check for overview path - if we are on overview, start expanded (false), otherwise start collapsed (true)
-        return location.pathname !== '/overview';
-    });
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const bannerRef = useRef(null);
