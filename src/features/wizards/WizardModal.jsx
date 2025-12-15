@@ -29,11 +29,33 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
     const [mobileTab, setMobileTab] = useState('wizard'); // 'wizard' | 'preview'
     const formScrollRef = useRef(null);
     const scrollDirection = useScrollDirection(formScrollRef);
+    const [isNearBottom, setIsNearBottom] = useState(false);
+
+    // Detect if scrolled to bottom to prevent header bounce
+    React.useEffect(() => {
+        const el = formScrollRef.current;
+        if (!el) return;
+
+        const handleScroll = () => {
+            // Check if we are within 100px of bottom
+            const { scrollTop, scrollHeight, clientHeight } = el;
+            const isBottom = scrollHeight - scrollTop - clientHeight < 100;
+            if (isBottom !== isNearBottom) {
+                setIsNearBottom(isBottom);
+            }
+        };
+
+        el.addEventListener('scroll', handleScroll);
+        return () => el.removeEventListener('scroll', handleScroll);
+    }, [isNearBottom]);
 
     // Entry Modal State
     const [showEntryModal, setShowEntryModal] = useState(() => !skipEntryModalPreference && (!initialData || !initialData.id));
     const [showVoiceTooltip, setShowVoiceTooltip] = useState(false);
     const [showToast, setShowToast] = useState(null);
+
+    // Header collapse state
+    const isHeaderCollapsed = scrollDirection === 'down' || isNearBottom;
 
     // Trigger tooltip if modal is skipped on mount
     React.useEffect(() => {
@@ -515,9 +537,8 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 className={`bg-white dark:bg-slate-900 w-full h-full md:w-[95vw] ${isSinglePanelMode ? 'md:max-w-3xl' : 'md:max-w-6xl'} md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative transition-all duration-500 ${simulatorTab === 'voice' ? 'ring-4 ring-purple-400/50 shadow-[0_0_50px_rgba(168,85,247,0.25)]' : ''} ${USE_GLOBAL_VOICE_UI && simulatorTab === 'voice' ? 'md:h-[80vh] md:mb-24' : 'md:h-[90vh]'}`}
             >
 
-                {/* SHARED HEADER (Mobile Only) */}
                 <div className="md:hidden flex-none">
-                    <div className={`px-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 transition-all duration-300 ${scrollDirection === 'down' ? 'pt-2 pb-2 gap-2' : 'py-4 gap-4'}`}>
+                    <div className={`px-4 border-b border-slate-100 dark:border-slate-800 flex flex-col justify-between items-start bg-white dark:bg-slate-900 transition-all duration-300 ${isHeaderCollapsed ? 'pt-2 pb-2 gap-2' : 'py-4 gap-4'}`}>
                         <div className="w-full">
                             <div className="flex items-center gap-3 w-full justify-between">
                                 <div className="flex items-center gap-3">
@@ -549,7 +570,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                             </div>
 
                             {!['policy', 'faq', 'product', 'department', 'notification_assignment'].includes(mode) && (
-                                <div className={`flex flex-wrap items-center gap-3 px-1 transition-all duration-300 overflow-hidden ${scrollDirection === 'down' ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>
+                                <div className={`flex flex-wrap items-center gap-3 px-1 transition-all duration-300 overflow-hidden ${isHeaderCollapsed ? 'max-h-0 opacity-0 mt-0' : 'max-h-20 opacity-100 mt-1'}`}>
                                     {(
                                         {
                                             service: ['Service Details', 'Conversation Flow', 'Outcome'],
@@ -677,7 +698,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                     </div>
 
                     {/* Form Content */}
-                    <div ref={formScrollRef} className="flex-1 overflow-y-auto p-4 pb-20 md:p-8">
+                    <div ref={formScrollRef} className="flex-1 overflow-y-auto p-4 pb-28 md:p-8">
                         <WizardFormContent
                             mode={mode}
                             step={step}
