@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import WizardModal from '@/features/wizards/WizardModal';
 import SettingsModal from '@/features/wizards/SettingsModal';
 import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
+import { WelcomeModal } from '@/components/modals/WelcomeModal';
 import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
 
 export default function MainLayout() {
@@ -143,6 +144,20 @@ export default function MainLayout() {
         setIsSettingsOpen(true);
     };
 
+    // Welcome Modal Logic
+    const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+    useEffect(() => {
+        // Show welcome modal every time we visit overview (for now)
+        if (location.pathname === '/overview' || location.pathname === '/') {
+            setShowWelcomeModal(true);
+        }
+    }, [location.pathname]);
+
+    const handleWelcomeClose = () => {
+        setShowWelcomeModal(false);
+        // localStorage.setItem('hasSeenWelcome', 'true'); // Disabled for testing
+    };
+
     const handleWizardClose = (data) => {
         setIsWizardOpen(false);
         // Ensure data is not a DOM event (which happens if onClose is passed directly to onClick)
@@ -191,6 +206,11 @@ export default function MainLayout() {
             {isSettingsOpen && (
                 <SettingsModal onClose={() => setIsSettingsOpen(false)} />
             )}
+
+            <WelcomeModal
+                isOpen={showWelcomeModal}
+                onClose={handleWelcomeClose}
+            />
         </div>
     );
 }
