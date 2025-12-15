@@ -264,17 +264,24 @@ export default function KnowledgeBaseView() {
 
                         {/* Table View */}
                         {view === 'table' && (
-                            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    <div className="col-span-5">Name</div>
-                                    <div className="col-span-3">Date Added</div>
-                                    <div className="col-span-2">Type</div>
-                                    <div className="col-span-1">Status</div>
-                                    <div className="col-span-1 text-right">Actions</div>
+                            <>
+                                <div className="md:hidden mb-6">
+                                    <AddNewCard
+                                        title="Add New Source"
+                                        onClick={() => openWizard('document', {}, (data) => handleCreateSource(data))}
+                                        variant="compact"
+                                    />
                                 </div>
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {currentPage === 1 && (
-                                        <div onClick={() => openWizard('document', {}, (data) => handleCreateSource(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                <div className="md:bg-white md:dark:bg-slate-900 md:rounded-xl md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm overflow-hidden">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <div className="col-span-5">Name</div>
+                                        <div className="col-span-3">Date Added</div>
+                                        <div className="col-span-2">Type</div>
+                                        <div className="col-span-1">Status</div>
+                                        <div className="col-span-1 text-right">Actions</div>
+                                    </div>
+                                    <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                                        <div onClick={() => openWizard('document', {}, (data) => handleCreateSource(data))} className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
                                             <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
                                                 <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                                     <Plus className="w-4 h-4" />
@@ -282,42 +289,68 @@ export default function KnowledgeBaseView() {
                                                 Add New Source
                                             </div>
                                         </div>
-                                    )}
-                                    {paginatedData.map(item => (
-                                        <div key={item.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${item.id === highlightedKbId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`} onClick={() => openWizard('document', item)}>
-                                            <div className="col-span-5 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                                {item.source === 'web' ? <Globe className="w-4 h-4 text-slate-400" /> : <File className="w-4 h-4 text-slate-400" />}
-                                                {item.name}
-                                                {item.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                        {paginatedData.map(item => (
+                                            <div key={item.id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 px-0 md:px-6 py-4 items-start md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b md:border-b-0 border-slate-200 dark:border-slate-700 last:border-0 ${(item.isDraft || item.status === 'Inactive') ? 'opacity-70 grayscale-[0.5]' : ''} ${item.id === highlightedKbId ? 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5' : ''}`} onClick={() => openWizard('document', item)}>
+                                                <div className="col-span-5 font-medium text-slate-900 dark:text-white flex items-center justify-between gap-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="shrink-0 text-slate-400">
+                                                            {item.source === 'web' ? <Globe className="w-4 h-4" /> : <File className="w-4 h-4" />}
+                                                        </div>
+                                                        {item.name}
+                                                        {item.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
+                                                    </div>
+                                                    <div className="md:hidden">
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                                    <MoreHorizontal className="w-4 h-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                <DropdownMenuItem onClick={() => openWizard('document', item)}>
+                                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleDeleteKb(item.id)} className="text-red-600 dark:text-red-400">
+                                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                </div>
+                                                <div className="col-span-3 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                                    <span className="md:hidden text-xs">Added:</span> {item.date}
+                                                </div>
+                                                <div className="col-span-2 text-sm text-slate-500 dark:text-slate-400 uppercase flex items-center gap-2">
+                                                    <span className="md:hidden text-xs">Type:</span> {item.type}
+                                                </div>
+                                                <div className="col-span-1 flex items-center justify-between md:justify-start">
+                                                    <span className="md:hidden text-xs text-slate-500">Status:</span>
+                                                    {!item.isDraft && (
+                                                        item.status !== 'Active' ? <Badge variant="secondary">{item.status}</Badge> : <Badge variant="success">Active</Badge>
+                                                    )}
+                                                </div>
+                                                <div className="col-span-1 text-right hidden md:block">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                                <MoreHorizontal className="w-4 h-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                            <DropdownMenuItem onClick={() => openWizard('document', item)}>
+                                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleDeleteKb(item.id)} className="text-red-600 dark:text-red-400">
+                                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
                                             </div>
-                                            <div className="col-span-3 text-sm text-slate-500 dark:text-slate-400">{item.date}</div>
-                                            <div className="col-span-2 text-sm text-slate-500 dark:text-slate-400 uppercase">{item.type}</div>
-                                            <div className="col-span-1">
-                                                {!item.isDraft && (
-                                                    item.status !== 'Active' ? <Badge variant="secondary">{item.status}</Badge> : <Badge variant="success">Active</Badge>
-                                                )}
-                                            </div>
-                                            <div className="col-span-1 text-right flex justify-end">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                            <MoreHorizontal className="w-4 h-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                        <DropdownMenuItem onClick={() => openWizard('document', item)}>
-                                                            <Edit2 className="w-4 h-4 mr-2" /> Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleDeleteKb(item.id)} className="text-red-600 dark:text-red-400">
-                                                            <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
 
                         {/* Pagination Controls */}

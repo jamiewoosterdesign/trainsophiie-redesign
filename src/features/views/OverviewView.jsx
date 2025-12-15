@@ -262,27 +262,54 @@ export default function OverviewView() {
                                                 <div
                                                     key={itemIdx}
                                                     onClick={() => navigate(item.link)}
-                                                    className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
+                                                    className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                                                 >
-                                                    <div className="col-span-1">
-                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconColorClass}`}>
-                                                            <Icon className="w-4 h-4" />
+                                                    {/* Desktop Layout */}
+                                                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center">
+                                                        <div className="col-span-1">
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${iconColorClass}`}>
+                                                                <Icon className="w-4 h-4" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="col-span-3 font-bold text-slate-900 dark:text-white">
+                                                            {item.title}
+                                                        </div>
+                                                        <div className="col-span-6 text-sm text-slate-500 dark:text-slate-400">
+                                                            {item.description}
+                                                        </div>
+                                                        <div className="col-span-2 text-right flex items-center justify-end gap-3">
+                                                            <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${isComplete
+                                                                ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                                                                : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                                }`}>
+                                                                {item.status}
+                                                            </div>
+                                                            <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
                                                         </div>
                                                     </div>
-                                                    <div className="col-span-3 font-bold text-slate-900 dark:text-white">
-                                                        {item.title}
-                                                    </div>
-                                                    <div className="col-span-6 text-sm text-slate-500 dark:text-slate-400">
-                                                        {item.description}
-                                                    </div>
-                                                    <div className="col-span-2 text-right flex items-center justify-end gap-3">
-                                                        <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${isComplete
-                                                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                            : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                                                            }`}>
-                                                            {item.status}
+
+                                                    {/* Mobile Layout */}
+                                                    <div className="md:hidden flex flex-col p-4 gap-3">
+                                                        <div className="flex items-start justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${iconColorClass}`}>
+                                                                    <Icon className="w-5 h-5" />
+                                                                </div>
+                                                                <div>
+                                                                    <h3 className="font-bold text-slate-900 dark:text-white">{item.title}</h3>
+                                                                    <div className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium border ${isComplete
+                                                                        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
+                                                                        : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                                                        }`}>
+                                                                        {item.status}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <ChevronRight className="w-5 h-5 text-slate-300" />
                                                         </div>
-                                                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                                                        <p className="text-sm text-slate-500 dark:text-slate-400 pl-[52px]">
+                                                            {item.description}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             );

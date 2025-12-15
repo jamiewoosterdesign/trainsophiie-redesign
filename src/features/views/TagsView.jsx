@@ -278,118 +278,173 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                 </div>
             </div>
 
-            {/* Desktop View: Table Rows */}
             {view === 'table' && (
-                <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                    <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        <div className="col-span-1">Colour</div>
-                        <div className="col-span-4">Name</div>
-                        <div className="col-span-5">Description</div>
-                        <div className="col-span-2 text-right">Enabled</div>
-                    </div>
-
-                    <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {onAdd && currentPage === 1 && (
-                            <div
+                <>
+                    <div className="md:hidden mb-6">
+                        {onAdd && (
+                            <AddNewCard
+                                title={addLabel}
                                 onClick={() => onAdd(null)}
-                                className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group"
-                            >
-                                <div className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 group-hover:border-blue-500 group-hover:text-blue-500">
-                                    <Plus className="w-4 h-4" />
-                                </div>
-                                <div className="col-span-11 text-slate-500 dark:text-slate-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                    {addLabel}
-                                </div>
-                            </div>
-                        )}
-
-                        {paginatedTags.map((tag) => (
-                            <div key={tag.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors ${tag.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''}`}>
-                                <div className="col-span-1">
-                                    <div className={`w-6 h-6 rounded ${tag.color}`}></div>
-                                </div>
-                                <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                    {tag.name}
-                                    {tag.isPreset && (
-                                        <TooltipProvider>
-                                            <Tooltip delayDuration={300}>
-                                                <TooltipTrigger asChild>
-                                                    <div className="p-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-help flex items-center justify-center">
-                                                        <Sparkles className="w-3.5 h-3.5" />
-                                                    </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                                    <p>Built-in tag provided by Sophiie</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
-                                    {tag.isAuto && (
-                                        <TooltipProvider>
-                                            <Tooltip delayDuration={300}>
-                                                <TooltipTrigger asChild>
-                                                    <div className="p-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md border border-sky-100 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-help flex items-center justify-center">
-                                                        <Bot className="w-3.5 h-3.5" />
-                                                    </div>
-                                                </TooltipTrigger>
-                                                <TooltipContent className="bg-slate-900 text-white border-slate-900">
-                                                    <p>This tag has been automatically added and managed by Sophiie</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                    )}
-                                </div>
-                                <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 truncate">
-                                    {tag.description}
-                                </div>
-                                <div className="col-span-2 flex items-center justify-end gap-3">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <span className="sr-only">Open menu</span>
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                            <DropdownMenuItem onClick={() => onEdit && onEdit(tag)}>
-                                                <Edit2 className="mr-2 h-4 w-4" /> Edit
-                                            </DropdownMenuItem>
-                                            {onDuplicate && (
-                                                <DropdownMenuItem onClick={() => onDuplicate(tag)}>
-                                                    <Copy className="mr-2 h-4 w-4" /> Duplicate
-                                                </DropdownMenuItem>
-                                            )}
-                                            {onToggle && (
-                                                <DropdownMenuItem onClick={() => onToggle(tag.id)}>
-                                                    <Power className="mr-2 h-4 w-4" />
-                                                    {tag.enabled ? 'Disable' : 'Enable'}
-                                                </DropdownMenuItem>
-                                            )}
-                                            <DropdownMenuSeparator />
-                                            {onDelete && (
-                                                <DropdownMenuItem className="text-red-600" onClick={() => onDelete(tag.id)}>
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                                </DropdownMenuItem>
-                                            )}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </div>
-                        ))}
-
-                        {filteredTags.length === 0 && !onAdd && (
-                            <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
-                                No tags found matching your criteria.
-                            </div>
+                                variant="compact"
+                            />
                         )}
                     </div>
-                </div>
+                    <div className="md:bg-white md:dark:bg-slate-900 md:rounded-xl md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm overflow-hidden">
+                        <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            <div className="col-span-1">Colour</div>
+                            <div className="col-span-4">Name</div>
+                            <div className="col-span-5">Description</div>
+                            <div className="col-span-2 text-right">Enabled</div>
+                        </div>
+
+                        <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                            {onAdd && currentPage === 1 && (
+                                <div
+                                    onClick={() => onAdd(null)}
+                                    className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group"
+                                >
+                                    <div className="col-span-1 flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 group-hover:border-blue-500 group-hover:text-blue-500">
+                                        <Plus className="w-4 h-4" />
+                                    </div>
+                                    <div className="col-span-11 text-slate-500 dark:text-slate-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                        {addLabel}
+                                    </div>
+                                </div>
+                            )}
+
+                            {paginatedTags.map((tag) => (
+                                <div key={tag.id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 px-0 md:px-6 py-4 items-start md:items-center group hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors border-b md:border-b-0 border-slate-200 dark:border-slate-700 last:border-0 ${tag.enabled === false ? 'opacity-70 grayscale-[0.5]' : ''}`}>
+                                    <div className="col-span-1 hidden md:block">
+                                        <div className={`w-6 h-6 rounded ${tag.color}`}></div>
+                                    </div>
+                                    <div className="col-span-4 font-medium text-slate-900 dark:text-white flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <div className={`md:hidden w-3 h-3 rounded-full shrink-0 ring-4 ring-slate-50 dark:ring-slate-800 ${tag.color}`}></div>
+                                            {tag.name}
+                                            {tag.isPreset && (
+                                                <TooltipProvider>
+                                                    <Tooltip delayDuration={300}>
+                                                        <TooltipTrigger asChild>
+                                                            <div className="p-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-help flex items-center justify-center">
+                                                                <Sparkles className="w-3.5 h-3.5" />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                            <p>Built-in tag provided by Sophiie</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                            {tag.isAuto && (
+                                                <TooltipProvider>
+                                                    <Tooltip delayDuration={300}>
+                                                        <TooltipTrigger asChild>
+                                                            <div className="p-1 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-md border border-sky-100 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-help flex items-center justify-center">
+                                                                <Bot className="w-3.5 h-3.5" />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="bg-slate-900 text-white border-slate-900">
+                                                            <p>This tag has been automatically added and managed by Sophiie</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                        </div>
+                                        <div className="md:hidden">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <span className="sr-only">Open menu</span>
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                    <DropdownMenuItem onClick={() => onEdit && onEdit(tag)}>
+                                                        <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                    </DropdownMenuItem>
+                                                    {onDuplicate && (
+                                                        <DropdownMenuItem onClick={() => onDuplicate(tag)}>
+                                                            <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {onToggle && (
+                                                        <DropdownMenuItem onClick={() => onToggle(tag.id)}>
+                                                            <Power className="mr-2 h-4 w-4" />
+                                                            {tag.enabled ? 'Disable' : 'Enable'}
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    <DropdownMenuSeparator />
+                                                    {onDelete && (
+                                                        <DropdownMenuItem className="text-red-600" onClick={() => onDelete(tag.id)}>
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </div>
+                                    <div className="col-span-5 text-sm text-slate-500 dark:text-slate-400 line-clamp-2 md:line-clamp-1">
+                                        {tag.description}
+                                    </div>
+                                    <div className="col-span-2 hidden md:flex items-center justify-end gap-3">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                                    <span className="sr-only">Open menu</span>
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => onEdit && onEdit(tag)}>
+                                                    <Edit2 className="mr-2 h-4 w-4" /> Edit
+                                                </DropdownMenuItem>
+                                                {onDuplicate && (
+                                                    <DropdownMenuItem onClick={() => onDuplicate(tag)}>
+                                                        <Copy className="mr-2 h-4 w-4" /> Duplicate
+                                                    </DropdownMenuItem>
+                                                )}
+                                                {onToggle && (
+                                                    <DropdownMenuItem onClick={() => onToggle(tag.id)}>
+                                                        <Power className="mr-2 h-4 w-4" />
+                                                        {tag.enabled ? 'Disable' : 'Enable'}
+                                                    </DropdownMenuItem>
+                                                )}
+                                                <DropdownMenuSeparator />
+                                                {onDelete && (
+                                                    <DropdownMenuItem className="text-red-600" onClick={() => onDelete(tag.id)}>
+                                                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                                    </DropdownMenuItem>
+                                                )}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                    <div className="md:hidden col-span-12 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            {tag.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800 text-[10px] h-5 w-fit">Incomplete</Badge>}
+                                            {tag.enabled ? (
+                                                <Badge variant="success" className="w-fit text-[10px] h-5">Active</Badge>
+                                            ) : (
+                                                <Badge variant="secondary" className="w-fit text-[10px] h-5">Inactive</Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {filteredTags.length === 0 && !onAdd && (
+                                <div className="px-6 py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                                    No tags found matching your criteria.
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </>
             )}
 
-            {/* Desktop Grid View */}
             {view === 'grid' && (
-                <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {onAdd && (
                         <AddNewCard
                             title={addLabel}
@@ -408,27 +463,6 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
                     )}
                 </div>
             )}
-
-            {/* Mobile View: Cards */}
-            <div className="md:hidden space-y-3">
-                {onAdd && (
-                    <AddNewCard
-                        title={addLabel}
-                        onClick={() => onAdd(null)}
-                        variant="compact"
-                    />
-                )}
-
-                {paginatedTags.map((tag) => (
-                    <TagCard key={tag.id} tag={tag} onEdit={onEdit} onDuplicate={onDuplicate} onToggle={onToggle} onDelete={onDelete} />
-                ))}
-
-                {filteredTags.length === 0 && !onAdd && (
-                    <div className="p-8 text-center text-slate-500 dark:text-slate-400 text-sm bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                        No tags found matching your criteria.
-                    </div>
-                )}
-            </div>
 
             {/* Pagination Controls */}
             {totalPages > 1 && (

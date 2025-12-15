@@ -308,81 +308,105 @@ export default function StaffView() {
                         )}
 
                         {viewMode === 'table' && (
-                            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                                <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    <div className="col-span-3">Department</div>
-                                    <div className="col-span-2">Status</div>
-                                    <div className="col-span-2">Members</div>
-                                    <div className="col-span-2">Hours</div>
-                                    <div className="col-span-2">Routing</div>
-                                    <div className="col-span-1 text-right">Actions</div>
+                            <>
+                                <div className="md:hidden mb-6">
+                                    <AddNewCard
+                                        title="Add Department"
+                                        onClick={() => openWizard('department', {}, (data) => handleCreateDepartment(data))}
+                                        variant="compact"
+                                    />
                                 </div>
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    <div onClick={() => openWizard('department', {}, (data) => handleCreateDepartment(data))} className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
-                                        <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
-                                            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
-                                                <Plus className="w-4 h-4" />
-                                            </div>
-                                            Add Department
-                                        </div>
+                                <div className="md:bg-white md:dark:bg-slate-900 md:rounded-xl md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm overflow-hidden">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <div className="col-span-3">Department</div>
+                                        <div className="col-span-2">Status</div>
+                                        <div className="col-span-2">Members</div>
+                                        <div className="col-span-2">Hours</div>
+                                        <div className="col-span-2">Routing</div>
+                                        <div className="col-span-1 text-right">Actions</div>
                                     </div>
-                                    {/* Mobile Add Button for Table View */}
-                                    <div className="md:hidden p-4">
-                                        <AddNewCard
-                                            title="Add Department"
-                                            onClick={() => openWizard('department', {}, (data) => handleCreateDepartment(data))}
-                                            variant="compact"
-                                        />
-                                    </div>
-                                    {departments.map(dept => (
-                                        <div key={dept.id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 px-4 md:px-6 py-4 items-start md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b md:border-b-0 border-slate-100 dark:border-slate-800 last:border-0 ${(dept.isDraft || dept.status === 'Inactive' || dept.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${dept.id === highlightedDeptId ? (dept.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('department')}>
-                                            <div className="col-span-3 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${dept.color}`}>
-                                                    <LayoutGrid className="w-4 h-4" />
+                                    <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                                        <div onClick={() => openWizard('department', {}, (data) => handleCreateDepartment(data))} className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                            <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
+                                                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
+                                                    <Plus className="w-4 h-4" />
                                                 </div>
-                                                {dept.name}
-                                            </div>
-                                            <div className="col-span-2 flex items-center justify-between md:justify-start">
-                                                <span className="md:hidden text-xs text-slate-500">Status:</span>
-                                                <Badge variant="outline" className={dept.isDraft ? "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800" : "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"}>{dept.isDraft ? 'Incomplete' : dept.status}</Badge>
-                                            </div>
-                                            <div className="col-span-2 flex items-center gap-2">
-                                                <span className="md:hidden text-xs text-slate-500">Members:</span>
-                                                <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><Users className="w-3.5 h-3.5 text-slate-400" /> {dept.members}</span>
-                                            </div>
-                                            <div className="col-span-2 flex items-center gap-2">
-                                                <span className="md:hidden text-xs text-slate-500">Hours:</span>
-                                                <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-400" /> {dept.openStatus}</span>
-                                            </div>
-                                            <div className="col-span-2 flex items-center gap-2">
-                                                <span className="md:hidden text-xs text-slate-500">Routing:</span>
-                                                <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><PhoneForwarded className="w-3.5 h-3.5 text-slate-400" /> {dept.routing}</span>
-                                            </div>
-                                            <div className="col-span-1 text-right hidden md:block">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                            <MoreHorizontal className="w-4 h-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                                        <DropdownMenuItem onClick={() => openWizard('department')}>
-                                                            <Edit2 className="w-4 h-4 mr-2" /> Edit
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => handleToggleDeptStatus(dept.id)}>
-                                                            <Power className={`w-4 h-4 mr-2 ${dept.active ? "text-green-500" : "text-slate-400"}`} /> {dept.active ? 'Disable' : 'Enable'}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteDept(dept.id)}>
-                                                            <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                Add Department
                                             </div>
                                         </div>
-                                    ))}
+                                        {departments.map(dept => (
+                                            <div key={dept.id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 px-0 md:px-6 py-4 items-start md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b md:border-b-0 border-slate-200 dark:border-slate-700 last:border-0 ${(dept.isDraft || dept.status === 'Inactive' || dept.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${dept.id === highlightedDeptId ? (dept.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('department')}>
+                                                <div className="col-span-3 font-medium text-slate-900 dark:text-white flex items-center justify-between gap-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${dept.color}`}>
+                                                            <LayoutGrid className="w-4 h-4" />
+                                                        </div>
+                                                        {dept.name}
+                                                    </div>
+                                                    <div className="md:hidden">
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                                    <MoreHorizontal className="w-4 h-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                <DropdownMenuItem onClick={() => openWizard('department')}>
+                                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleToggleDeptStatus(dept.id)}>
+                                                                    <Power className={`w-4 h-4 mr-2 ${dept.active ? "text-green-500" : "text-slate-400"}`} /> {dept.active ? 'Disable' : 'Enable'}
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteDept(dept.id)}>
+                                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                </div>
+                                                <div className="col-span-2 flex items-center justify-between md:justify-start">
+                                                    <span className="md:hidden text-xs text-slate-500">Status:</span>
+                                                    <Badge variant="outline" className={dept.isDraft ? "bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800" : "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800"}>{dept.isDraft ? 'Incomplete' : dept.status}</Badge>
+                                                </div>
+                                                <div className="col-span-2 flex items-center gap-2">
+                                                    <span className="md:hidden text-xs text-slate-500">Members:</span>
+                                                    <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><Users className="w-3.5 h-3.5 text-slate-400" /> {dept.members}</span>
+                                                </div>
+                                                <div className="col-span-2 flex items-center gap-2">
+                                                    <span className="md:hidden text-xs text-slate-500">Hours:</span>
+                                                    <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-slate-400" /> {dept.openStatus}</span>
+                                                </div>
+                                                <div className="col-span-2 flex items-center gap-2">
+                                                    <span className="md:hidden text-xs text-slate-500">Routing:</span>
+                                                    <span className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-1"><PhoneForwarded className="w-3.5 h-3.5 text-slate-400" /> {dept.routing}</span>
+                                                </div>
+                                                <div className="col-span-1 text-right hidden md:block">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                                <MoreHorizontal className="w-4 h-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                            <DropdownMenuItem onClick={() => openWizard('department')}>
+                                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleToggleDeptStatus(dept.id)}>
+                                                                <Power className={`w-4 h-4 mr-2 ${dept.active ? "text-green-500" : "text-slate-400"}`} /> {dept.active ? 'Disable' : 'Enable'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteDept(dept.id)}>
+                                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
                     </div>
 
@@ -510,17 +534,24 @@ export default function StaffView() {
 
                         {/* Table View */}
                         {viewMode === 'table' && (
-                            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                                <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                    <div className="col-span-3">Team Member</div>
-                                    <div className="col-span-2">Role</div>
-                                    <div className="col-span-3">Status</div>
-                                    <div className="col-span-2">Extension</div>
-                                    <div className="col-span-2 text-right">Actions</div>
+                            <>
+                                <div className="md:hidden mb-6">
+                                    <AddNewCard
+                                        title="Add New Staff"
+                                        onClick={() => openWizard('staff', {}, (data) => handleCreateStaff(data))}
+                                        variant="compact"
+                                    />
                                 </div>
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {currentPage === 1 && (
-                                        <div onClick={() => openWizard('staff', {}, (data) => handleCreateStaff(data))} className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
+                                <div className="md:bg-white md:dark:bg-slate-900 md:rounded-xl md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-sm overflow-hidden">
+                                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-100 dark:border-slate-800 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <div className="col-span-3">Team Member</div>
+                                        <div className="col-span-2">Role</div>
+                                        <div className="col-span-3">Status</div>
+                                        <div className="col-span-2">Extension</div>
+                                        <div className="col-span-2 text-right">Actions</div>
+                                    </div>
+                                    <div className="divide-y divide-slate-200 dark:divide-slate-700">
+                                        <div onClick={() => openWizard('staff', {}, (data) => handleCreateStaff(data))} className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors group">
                                             <div className="col-span-12 flex items-center gap-3 text-slate-500 font-medium group-hover:text-blue-600">
                                                 <div className="flex items-center justify-center w-8 h-8 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500">
                                                     <Plus className="w-4 h-4" />
@@ -528,68 +559,76 @@ export default function StaffView() {
                                                 Add New Staff
                                             </div>
                                         </div>
-                                    )}
-                                    {paginatedStaff.map(staff => (
-                                        <div key={staff.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${(staff.isDraft || staff.status === 'Inactive') ? 'opacity-70 grayscale-[0.5]' : ''} ${staff.id === highlightedStaffId ? (staff.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('staff')}>
-                                            <div className="col-span-3 font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                                                <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400`}>
-                                                    {staff.initials}
+                                        {paginatedStaff.map(staff => (
+                                            <div key={staff.id} className={`grid grid-cols-1 md:grid-cols-12 gap-4 px-0 md:px-6 py-4 items-start md:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border-b md:border-b-0 border-slate-200 dark:border-slate-700 last:border-0 ${(staff.isDraft || staff.status === 'Inactive') ? 'opacity-70 grayscale-[0.5]' : ''} ${staff.id === highlightedStaffId ? (staff.isDraft ? 'bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 pl-5' : 'bg-blue-50 dark:bg-blue-900/10 border-l-4 border-blue-500 pl-5') : ''}`} onClick={() => openWizard('staff')}>
+                                                <div className="col-span-3 font-medium text-slate-900 dark:text-white flex items-center justify-between gap-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400`}>
+                                                            {staff.initials}
+                                                        </div>
+                                                        {staff.name}
+                                                    </div>
+                                                    <div className="md:hidden">
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                                                    <Settings className="w-4 h-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                                <DropdownMenuItem onClick={() => openWizard('staff')}>
+                                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem onClick={() => handleToggleStaffStatus(staff.id)}>
+                                                                    <Power className={`w-4 h-4 mr-2 ${staff.status !== 'Inactive' ? "text-green-500" : "text-slate-400"}`} /> {staff.status !== 'Inactive' ? 'Disable' : 'Enable'}
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteStaff(staff.id)}>
+                                                                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
                                                 </div>
-                                                {staff.name}
+                                                <div className="col-span-2">
+                                                    <Badge variant="outline" className="text-[10px] h-5">{staff.role}</Badge>
+                                                </div>
+                                                <div className="col-span-3">
+                                                    <span className={`flex items-center gap-1.5 text-sm font-medium ${staff.isDraft ? 'text-orange-600' : (staff.status === 'Available' ? 'text-green-600' : staff.status === 'Offline' ? 'text-slate-400' : 'text-orange-600')}`}>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${staff.isDraft ? 'bg-orange-500' : (staff.status === 'Available' ? 'bg-green-600' : staff.status === 'Offline' ? 'bg-slate-400' : 'bg-orange-600')}`} />
+                                                        {staff.isDraft ? 'Incomplete' : staff.status}
+                                                    </span>
+                                                </div>
+                                                <div className="col-span-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                                                    <Phone className="w-3 h-3" /> {staff.ext}
+                                                </div>
+                                                <div className="col-span-2 text-right hidden md:block">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                                                <Settings className="w-4 h-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                                            <DropdownMenuItem onClick={() => openWizard('staff')}>
+                                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => handleToggleStaffStatus(staff.id)}>
+                                                                <Power className={`w-4 h-4 mr-2 ${staff.status !== 'Inactive' ? "text-green-500" : "text-slate-400"}`} /> {staff.status !== 'Inactive' ? 'Disable' : 'Enable'}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="text-red-600 dark:text-red-400" onClick={() => handleDeleteStaff(staff.id)}>
+                                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
                                             </div>
-                                            <div className="col-span-2">
-                                                <Badge variant="outline" className="text-[10px] h-5">{staff.role}</Badge>
-                                            </div>
-                                            <div className="col-span-3">
-                                                <span className={`flex items-center gap-1.5 text-sm font-medium ${staff.isDraft ? 'text-orange-600' : (staff.status === 'Available' ? 'text-green-600' : staff.status === 'Offline' ? 'text-slate-400' : 'text-orange-600')}`}>
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${staff.isDraft ? 'bg-orange-500' : (staff.status === 'Available' ? 'bg-green-600' : staff.status === 'Offline' ? 'bg-slate-400' : 'bg-orange-600')}`} />
-                                                    {staff.isDraft ? 'Incomplete' : staff.status}
-                                                </span>
-                                            </div>
-                                            <div className="col-span-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                                <Phone className="w-3 h-3" /> {staff.ext}
-                                            </div>
-                                            <div className="col-span-2 text-right">
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                                                    <Settings className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
-
-                        {/* Mobile List View fallback */}
-                        <div className="md:hidden space-y-4">
-                            {viewMode === 'table' && (
-                                <>
-                                    {currentPage === 1 && (
-                                        <AddNewCard
-                                            title="Add New Staff"
-                                            onClick={() => openWizard('staff', {}, (data) => handleCreateStaff(data))}
-                                            variant="compact"
-                                        />
-                                    )}
-                                    {paginatedStaff.map(staff => (
-                                        <div key={staff.id} className={`p-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm ${(staff.isDraft || staff.status === 'Inactive') ? 'opacity-70 grayscale-[0.5]' : ''} ${staff.id === highlightedStaffId ? (staff.isDraft ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/10' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/10') : ''}`} onClick={() => openWizard('staff')}>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className="font-bold text-slate-900 dark:text-white line-clamp-1">{staff.name}</h3>
-                                                <Badge variant="outline" className="text-[10px] h-5">{staff.role}</Badge>
-                                            </div>
-                                            <div className="flex items-center justify-between mt-2">
-                                                <span className={`flex items-center gap-1.5 text-xs font-medium ${staff.isDraft ? 'text-orange-600' : (staff.status === 'Available' ? 'text-green-600' : staff.status === 'Offline' ? 'text-slate-400' : 'text-orange-600')}`}>
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${staff.isDraft ? 'bg-orange-500' : (staff.status === 'Available' ? 'bg-green-600' : staff.status === 'Offline' ? 'bg-slate-400' : 'bg-orange-600')}`} />
-                                                    {staff.isDraft ? 'Incomplete' : staff.status}
-                                                </span>
-                                                {!staff.isDraft && <span className="text-xs text-slate-500">Ext. {staff.ext}</span>}
-                                                {staff.isDraft && <Badge variant="outline" className="text-[10px] h-5 bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
-                        </div>
 
                         {/* Pagination Controls */}
                         {totalPages > 1 && (
