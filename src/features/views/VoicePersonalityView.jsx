@@ -51,19 +51,19 @@ const PERSONALITIES = [
         id: 'friendly',
         name: 'Friendly Mate',
         description: 'Warm, casual, and approachable. Uses local slang where appropriate.',
-        icon: <Bot className="w-6 h-6 text-blue-500" />
+        icon: <Bot className="w-6 h-6 text-slate-500" />
     },
     {
         id: 'professional',
         name: 'Professional Assistant',
         description: 'Polite, efficient, and formal. Best for business-focused interactions.',
-        icon: <BriefcaseIcon className="w-6 h-6 text-blue-500" />
+        icon: <BriefcaseIcon className="w-6 h-6 text-slate-500" />
     },
     {
         id: 'empathetic',
         name: 'Empathetic Listener',
         description: 'Patient, understanding, and calm. Ideal for support and sensitive inquiries.',
-        icon: <HeartIcon className="w-6 h-6 text-blue-500" />
+        icon: <HeartIcon className="w-6 h-6 text-slate-500" />
     }
 ];
 
@@ -123,19 +123,15 @@ export default function VoicePersonalityView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     {/* Voice Selection Section */}
-                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-6">
+                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                <Volume2 className="w-5 h-5" />
+                            </div>
                             <div>
-                                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Volume2 className="w-5 h-5 text-blue-500" />
-                                    Voice Selection
-                                </h2>
+                                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Voice Selection</h2>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Choose the voice that best fits your brand.</p>
                             </div>
-                            <Button variant="outline" className="gap-2 w-full md:w-auto dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
-                                <Settings className="w-4 h-4" />
-                                Voice Settings
-                            </Button>
                         </div>
 
                         {/* Filter Voices by Style */}
@@ -242,13 +238,15 @@ export default function VoicePersonalityView() {
                     </section>
 
                     {/* Personality Section (Restored) */}
-                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                        <div className="mb-6">
-                            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <Bot className="w-5 h-5 text-blue-500" />
-                                Agent Personality
-                            </h2>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Select the tone and style of conversation.</p>
+                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                <Bot className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Agent Personality</h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Select the tone and style of conversation.</p>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -312,20 +310,22 @@ export default function VoicePersonalityView() {
                     </section>
 
                     {/* Profanity Filter Section */}
-                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <div className="p-3 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 w-fit shrink-0">
                                 <Shield className="w-6 h-6" />
                             </div>
                             <div>
                                 <h2 className="text-base font-bold text-slate-900 dark:text-white">Profanity Filter</h2>
                                 <p className="text-sm text-slate-500 dark:text-slate-400">Automatically filter offensive language in transcripts and responses.</p>
                             </div>
+                            <div className="absolute top-6 right-6 md:static md:ml-auto">
+                                <Switch
+                                    checked={profanityFilter}
+                                    onCheckedChange={setProfanityFilter}
+                                />
+                            </div>
                         </div>
-                        <Switch
-                            checked={profanityFilter}
-                            onCheckedChange={setProfanityFilter}
-                        />
                     </section>
                 </div>
             </div>

@@ -37,7 +37,7 @@ export default function WizardFormContentNotificationAssignment({ step, formData
     const availableTags = TAG_OPTIONS.filter(t => !formData.assignTags.includes(t.value) && t.label.toLowerCase().includes(tagSearch.toLowerCase()));
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
             {/* Team Member */}
             <div className="space-y-3">
                 <Label className={`flex items-center gap-2 ${isError('assignMemberId') ? 'text-red-500' : 'text-slate-900 dark:text-slate-100'}`}>

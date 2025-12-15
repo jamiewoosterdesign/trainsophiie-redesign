@@ -91,16 +91,17 @@ export default function GreetingsView() {
                         <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
                             <div className="flex flex-col gap-6">
                                 {/* Greeting Section */}
-                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
-                                    <div className="flex justify-between items-start mb-4">
+                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                            <MessageSquare className="w-5 h-5" />
+                                        </div>
                                         <div>
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                                <MessageSquare className="w-5 h-5 text-slate-500" /> Greeting Message
-                                            </h2>
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Greeting Message</h2>
                                             <p className="text-sm text-slate-500 dark:text-slate-400">The first thing Sophiie says when answering a call.</p>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-500 dark:text-slate-400">Enable greeting</span>
+                                        <div className="absolute top-6 right-6 md:static md:ml-auto flex items-center gap-2">
+                                            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400">Enable greeting</span>
                                             <Switch checked={enableGreeting} onCheckedChange={setEnableGreeting} />
                                         </div>
                                     </div>
@@ -118,16 +119,17 @@ export default function GreetingsView() {
                                 </section>
 
                                 {/* After Hours Section */}
-                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
-                                    <div className="flex justify-between items-start mb-4">
+                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                            <Clock className="w-5 h-5" />
+                                        </div>
                                         <div>
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                                <Clock className="w-5 h-5 text-slate-500" /> After Hours Message
-                                            </h2>
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">After Hours Message</h2>
                                             <p className="text-sm text-slate-500 dark:text-slate-400">Played when a call is received outside of business hours.</p>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-500 dark:text-slate-400">Enable message</span>
+                                        <div className="absolute top-6 right-6 md:static md:ml-auto flex items-center gap-2">
+                                            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400">Enable message</span>
                                             <Switch checked={enableAfterHours} onCheckedChange={setEnableAfterHours} />
                                         </div>
                                     </div>
@@ -151,12 +153,15 @@ export default function GreetingsView() {
                                 </section>
 
                                 {/* Closing Section */}
-                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
-                                    <div className="mb-4">
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                            <PhoneOff className="w-5 h-5 text-slate-500" /> Closing Message
-                                        </h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">What Sophiie says before hanging up.</p>
+                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                            <PhoneOff className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Closing Message</h2>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">What Sophiie says before hanging up.</p>
+                                        </div>
                                     </div>
 
                                     <RichVariableEditor
@@ -239,12 +244,15 @@ export default function GreetingsView() {
                         <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                             <div className="flex flex-col md:flex-row gap-6">
                                 {/* Chatbot Greeting */}
-                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
-                                    <div className="mb-4">
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                            <MessageSquare className="w-5 h-5 text-slate-500" /> Chat Greeting
-                                        </h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">The initial message displayed in the chat widget.</p>
+                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                            <MessageSquare className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Chat Greeting</h2>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">The initial message displayed in the chat widget.</p>
+                                        </div>
                                     </div>
 
                                     <RichVariableEditor
@@ -258,12 +266,15 @@ export default function GreetingsView() {
                                 </section>
 
                                 {/* Chatbot Closing */}
-                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
-                                    <div className="mb-4">
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                            <MessageSquare className="w-5 h-5 text-slate-500" /> Chat Closing
-                                        </h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Fixed message shown when the conversation ends.</p>
+                                <section className="flex-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col relative">
+                                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                                        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                            <MessageSquare className="w-5 h-5" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Chat Closing</h2>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">Fixed message shown when the conversation ends.</p>
+                                        </div>
                                     </div>
 
                                     <RichVariableEditor

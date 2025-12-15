@@ -208,7 +208,7 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
     // --- STEP 2: CONVERSATION FLOW ---
     if (step === 2) {
         return (
-            <div className="space-y-8 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                 {/* AI Response Section */}
                 <div>
                     <Label className="mb-1.5 flex items-center gap-2">

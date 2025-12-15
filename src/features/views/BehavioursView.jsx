@@ -58,10 +58,15 @@ export default function BehavioursView() {
                         <div className="space-y-8">
 
                             {/* Interruption & Speed */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                                <div className="flex items-center gap-2 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <Sliders className="w-5 h-5 text-blue-500" />
-                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Interruption & Speed</h2>
+                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
+                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                        <Sliders className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Interruption & Speed</h2>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Manage how fast Sophiie responds and her patience levels.</p>
+                                    </div>
                                 </div>
                                 <div className="space-y-6">
                                     <div>
@@ -117,10 +122,15 @@ export default function BehavioursView() {
                             </section>
 
                             {/* Background Audio */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-                                <div className="flex items-center gap-2 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <Music className="w-5 h-5 text-blue-500" />
-                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Background Audio</h2>
+                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
+                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                        <Music className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Background Audio</h2>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Configure ambient noise and processing sounds.</p>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-6">
@@ -179,15 +189,20 @@ export default function BehavioursView() {
                         <div className="space-y-8">
 
                             {/* Pronunciations */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col">
-                                <div className="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="flex items-center gap-2">
-                                        <Mic2 className="w-5 h-5 text-blue-600" />
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pronunciations</h2>
+                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col relative">
+                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                        <Mic2 className="w-5 h-5" />
                                     </div>
-                                    <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
-                                        <Plus className="w-3 h-3" /> Add Rule
-                                    </Button>
+                                    <div>
+                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pronunciations</h2>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Teach Sophiie how to say specific words.</p>
+                                    </div>
+                                    <div className="absolute top-6 right-6 md:static md:ml-auto">
+                                        <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
+                                            <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <div className="flex-1 space-y-3">
@@ -211,16 +226,23 @@ export default function BehavioursView() {
                             </section>
 
                             {/* Avoiding Confusion */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col">
-                                <div className="flex items-center justify-between mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="flex items-center gap-2">
-                                        <Ear className="w-5 h-5 text-blue-500" />
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Avoiding Confusion</h2>
-                                        <Badge variant="secondary" className="text-[10px] ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Beta</Badge>
+                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col relative">
+                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                        <Ear className="w-5 h-5" />
                                     </div>
-                                    <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
-                                        <Plus className="w-3 h-3" /> Add Rule
-                                    </Button>
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Avoiding Confusion</h2>
+                                            <Badge variant="secondary" className="text-[10px] ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Beta</Badge>
+                                        </div>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Correct frequently misheard words.</p>
+                                    </div>
+                                    <div className="absolute top-6 right-6 md:static md:ml-auto">
+                                        <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
+                                            <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
+                                        </Button>
+                                    </div>
                                 </div>
 
                                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-3 mb-4 flex items-start gap-2">

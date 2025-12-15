@@ -90,7 +90,7 @@ export default function VoiceCommandBar({
 
                     <button
                         onClick={onClose}
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
+                        className="hidden md:flex w-8 h-8 rounded-full items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-colors"
                     >
                         <X className="w-4 h-4" />
                     </button>

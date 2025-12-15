@@ -18,12 +18,12 @@ export default function WizardEntryModal({ onSelectMode, onClose }) {
     return (
         <div className="absolute inset-0 z-[60] flex items-center justify-center pointer-events-none">
             {/* Modal Container */}
-            <div className="pointer-events-auto relative group">
+            <div className="pointer-events-auto relative group w-[calc(100%-16px)] md:w-full max-w-md mx-auto animate-in zoom-in-95 duration-300">
                 {/* Purple to White Shimmer Border/Glow Effect */}
                 <div className="absolute -inset-[1.5px] rounded-2xl bg-gradient-to-br from-purple-500 via-white/40 to-purple-500 opacity-70 blur-[2px] group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 {/* Main Card Content */}
-                <div className="relative bg-slate-900/70 backdrop-blur-2xl text-white rounded-2xl shadow-[0_0_60px_rgba(168,85,247,0.35)] border border-white/10 p-10 w-full max-w-md animate-in zoom-in-95 duration-300">
+                <div className="relative bg-slate-900/70 backdrop-blur-2xl text-white rounded-2xl shadow-[0_0_60px_rgba(168,85,247,0.35)] border border-white/10 p-4 md:p-10 w-full">
 
                     {/* Close Button */}
                     <button
@@ -34,7 +34,7 @@ export default function WizardEntryModal({ onSelectMode, onClose }) {
                     </button>
 
                     <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold mb-2 tracking-tight text-white">How would you like to start?</h2>
+                        <h2 className="text-2xl font-bold mb-2 tracking-tight text-white px-8 md:px-0">How would you like to start?</h2>
                         <p className="text-slate-400 text-sm">Choose your preferred way to configure this service.</p>
                     </div>
 

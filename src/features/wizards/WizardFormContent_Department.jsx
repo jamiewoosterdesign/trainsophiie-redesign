@@ -26,7 +26,7 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
     const isError = (field) => formData.errors?.[field];
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative pb-32 md:pb-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
             {/* Header / Intro (Optional) */}
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-6 border border-slate-100 dark:border-slate-800">
                 <div className="flex items-start gap-3">

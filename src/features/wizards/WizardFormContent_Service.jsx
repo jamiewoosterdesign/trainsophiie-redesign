@@ -114,7 +114,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
         const showAutoFillBanner = (isHeater || isHotWater) && !formData.isContextActive && !formData.autoFillDismissed;
 
         return (
-            <div className="space-y-6 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300 relative">
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300 relative">
 
 
                 <div>
@@ -640,7 +640,7 @@ export default function WizardFormContentService({ mode, step, formData, onChang
     // --- STEP 2: CONVERSATION FLOW ---
     if (step === 2) {
         return (
-            <div className="space-y-8 pb-32 md:pb-0 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
 
                 {/* AI Response Section (Moved from Step 1) */}
                 <div>

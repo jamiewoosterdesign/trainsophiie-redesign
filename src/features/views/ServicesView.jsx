@@ -385,8 +385,8 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-4">
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex flex-col sm:flex-row items-center justify-between pt-4 gap-4 sm:gap-0">
+                    <div className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">
                         Showing <span className="font-medium">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="font-medium">{Math.min(currentPage * ITEMS_PER_PAGE, filteredServices.length)}</span> of <span className="font-medium">{filteredServices.length}</span> results
                     </div>
                     <div className="flex items-center gap-2">

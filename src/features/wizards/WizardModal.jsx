@@ -169,6 +169,13 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
         ...initialData
     });
 
+    // Reset scroll on step change
+    React.useEffect(() => {
+        if (formScrollRef.current) {
+            formScrollRef.current.scrollTop = 0;
+        }
+    }, [step, mode]);
+
     const updateFormData = (field, value) => {
         if (simulatorTab === 'invitation') {
             setSimulatorTab('preview');
@@ -412,89 +419,96 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
             className="fixed inset-0 bg-slate-900/60 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center animate-in fade-in duration-200"
             onClick={(e) => {
                 if (e.target === e.currentTarget) handleClose();
-            }}
+            }
+            }
         >
             {/* Toast Notification */}
-            {showToast && (
-                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-4 py-2 rounded-full shadow-lg text-sm font-medium animate-in slide-in-from-top-2 fade-in duration-300 flex items-center gap-2">
-                    <Check className="w-4 h-4 text-green-400" />
-                    {showToast.message}
-                </div>
-            )}
+            {
+                showToast && (
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-3 py-3 md:py-2 rounded-xl md:rounded-full shadow-lg text-xs sm:text-sm font-medium animate-in slide-in-from-top-2 fade-in duration-300 flex items-center justify-center gap-2 w-[calc(100%-16px)] md:w-auto text-center whitespace-nowrap">
+                        <Check className="w-4 h-4 text-green-400" />
+                        {showToast.message}
+                    </div>
+                )
+            }
 
             {/* Entry Modal Overlay */}
-            {showEntryModal && (
-                <WizardEntryModal
-                    onSelectMode={handleEntryModeSelect}
-                    onClose={(dontShowAgain) => {
-                        setShowEntryModal(false);
-                        if (dontShowAgain) {
-                            skipEntryModalPreference = true;
-                            setShowToast({ message: "Preference saved. You can change this in Settings." });
-                            setTimeout(() => setShowToast(null), 3000);
-                        }
-                        setShowVoiceTooltip(true);
-                        setTimeout(() => setShowVoiceTooltip(false), 5000);
-                    }}
-                />
-            )}
+            {
+                showEntryModal && (
+                    <WizardEntryModal
+                        onSelectMode={handleEntryModeSelect}
+                        onClose={(dontShowAgain) => {
+                            setShowEntryModal(false);
+                            if (dontShowAgain) {
+                                skipEntryModalPreference = true;
+                                setShowToast({ message: "Preference saved. You can change this in Settings." });
+                                setTimeout(() => setShowToast(null), 3000);
+                            }
+                            setShowVoiceTooltip(true);
+                            setTimeout(() => setShowVoiceTooltip(false), 5000);
+                        }}
+                    />
+                )
+            }
 
             {/* Save Confirmation Dialog */}
-            {showSaveConfirm && (
-                <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200 relative border border-slate-200 dark:border-slate-800">
-                        {/* Close X */}
-                        <button
-                            onClick={() => setShowSaveConfirm(false)}
-                            className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+            {
+                showSaveConfirm && (
+                    <div className="absolute inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-8 animate-in zoom-in-95 duration-200 relative border border-slate-200 dark:border-slate-800">
+                            {/* Close X */}
+                            <button
+                                onClick={() => setShowSaveConfirm(false)}
+                                className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
 
-                        <div className="flex gap-5">
-                            <div className="hidden sm:flex w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center flex-shrink-0 text-slate-600 dark:text-slate-300">
-                                <PenLine className="w-6 h-6" />
-                            </div>
+                            <div className="flex gap-5">
+                                <div className="hidden sm:flex w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center flex-shrink-0 text-slate-600 dark:text-slate-300">
+                                    <PenLine className="w-6 h-6" />
+                                </div>
 
-                            <div className="flex-1 pt-1">
-                                <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Unsaved Changes</h3>
-                                <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
-                                    Do you want to discard your changes, save them or keep editing?
-                                </p>
+                                <div className="flex-1 pt-1">
+                                    <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Unsaved Changes</h3>
+                                    <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
+                                        Do you want to discard your changes, save them or keep editing?
+                                    </p>
 
-                                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 mt-8">
-                                    <button
-                                        className="text-sm font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2 px-1"
-                                        onClick={() => setShowSaveConfirm(false)}
-                                    >
-                                        Keep Editing
-                                    </button>
-
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                                        <Button
-                                            variant="outline"
-                                            className="sm:w-auto w-full h-10 px-6 border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
-                                            onClick={() => {
-                                                setShowSaveConfirm(false);
-                                                if (returnToMode) handleBack();
-                                                else onClose();
-                                            }}
+                                    <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 mt-8">
+                                        <button
+                                            className="text-sm font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors py-2 px-1"
+                                            onClick={() => setShowSaveConfirm(false)}
                                         >
-                                            Discard
-                                        </Button>
-                                        <Button
-                                            className="sm:w-auto w-full h-10 px-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-sm border-0 rounded-md"
-                                            onClick={handleSaveAndExit}
-                                        >
-                                            Save
-                                        </Button>
+                                            Keep Editing
+                                        </button>
+
+                                        <div className="flex flex-col sm:flex-row gap-3">
+                                            <Button
+                                                variant="outline"
+                                                className="sm:w-auto w-full h-10 px-6 border-slate-200 dark:border-slate-700 bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold"
+                                                onClick={() => {
+                                                    setShowSaveConfirm(false);
+                                                    if (returnToMode) handleBack();
+                                                    else onClose();
+                                                }}
+                                            >
+                                                Discard
+                                            </Button>
+                                            <Button
+                                                className="sm:w-auto w-full h-10 px-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold shadow-sm border-0 rounded-md"
+                                                onClick={handleSaveAndExit}
+                                            >
+                                                Save
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             <div
                 ref={containerRef}
@@ -663,7 +677,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                     </div>
 
                     {/* Form Content */}
-                    <div ref={formScrollRef} className="flex-1 overflow-y-auto p-4 pb-32 md:p-8">
+                    <div ref={formScrollRef} className="flex-1 overflow-y-auto p-4 pb-20 md:p-8">
                         <WizardFormContent
                             mode={mode}
                             step={step}
@@ -751,6 +765,6 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 }
