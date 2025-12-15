@@ -1,285 +1,223 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, ChevronDown, CheckCircle } from 'lucide-react';
+import { Check, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import sophiieAvatar from '@/avatars/sophiie-avatar.png';
 
 export function SetupProgressTracker() {
     const navigate = useNavigate();
-    const [expandedSection, setExpandedSection] = useState(null);
-    const dropdownRefs = useRef({});
+    const [activeStep, setActiveStep] = useState(1);
+    const [isExpanded, setIsExpanded] = useState(false);
 
-    // Setup progress data organized by sections
-    const setupSections = [
+    const steps = [
         {
-            id: 'knowledge',
-            title: 'Knowledge Base',
-            pages: [
-                { id: 'business-info', title: 'Business Information', isComplete: true, route: '/business-info' },
-                { id: 'services', title: 'Services', isComplete: true, route: '/services' },
-                { id: 'products', title: 'Products', isComplete: true, route: '/products' },
-                { id: 'documents', title: 'Documents', isComplete: true, route: '/knowledge' },
-                { id: 'policies', title: 'Policies & Procedures', isComplete: true, route: '/policies' },
-                { id: 'faqs', title: 'FAQs', isComplete: true, route: '/faqs' },
-                { id: 'scenarios', title: 'Scenarios', isComplete: false, route: '/scenarios' },
+            id: 1,
+            title: "Knowledge Base",
+            description: "Build the foundation of your AI's knowledge.",
+            tip: "Ensure your Knowledge Base is comprehensive so Sophiie can answer questions accurately.",
+            items: [
+                { id: 'business-info', title: 'Business Info', subtitle: 'Basic info, Location, Trading Hours', route: '/business-info', isComplete: true, tags: ['Required'] },
+                { id: 'services', title: 'Services', subtitle: 'Service Name, Duration, Price', route: '/services', isComplete: true, tags: ['Required'] },
+                { id: 'faqs', title: 'FAQs', subtitle: 'Common customer questions', route: '/faqs', isComplete: true, tags: ['Recommended'] },
+                { id: 'products', title: 'Products', subtitle: 'Product catalog', route: '/products', isComplete: true, tags: ['Optional'] },
+                { id: 'documents', title: 'Documents', subtitle: 'Upload PDFs & Files', route: '/knowledge', isComplete: true, tags: ['Optional'] },
+                { id: 'policies', title: 'Policies', subtitle: 'Rules & Procedures', route: '/policies', isComplete: true, tags: ['Optional'] },
+                { id: 'scenarios', title: 'Scenarios', subtitle: 'Edge cases', route: '/scenarios', isComplete: false, tags: ['Advanced'] }
             ]
         },
         {
-            id: 'routing',
-            title: 'Team & Routing',
-            pages: [
-                { id: 'staff', title: 'Staff & Departments', isComplete: true, route: '/staff' },
-                { id: 'transfers', title: 'Transfers', isComplete: true, route: '/transfers' },
-                { id: 'notifications', title: 'Notifications', isComplete: true, route: '/notifications' },
-                { id: 'tags', title: 'Tags', isComplete: true, route: '/tags' },
+            id: 2,
+            title: "Team & Routing",
+            description: "Define how calls and messages are distributed.",
+            tip: "Make sure you complete all red required fields before diverting your calls to Sophiie.",
+            items: [
+                { id: 'staff', title: 'Staff & Departments', subtitle: 'Team members & groups', route: '/staff', isComplete: true, tags: ['Recommended'] },
+                { id: 'transfers', title: 'Transfers', subtitle: 'Call handoff logic', route: '/transfers', isComplete: true, tags: ['Recommended'] },
+                { id: 'notifications', title: 'Notifications', subtitle: 'Alert settings', route: '/notifications', isComplete: true, tags: ['Advanced'] },
+                { id: 'tags', title: 'Tags', subtitle: 'Conversation labeling', route: '/tags', isComplete: true, tags: ['Advanced'] }
             ]
         },
         {
-            id: 'personality',
-            title: 'Personality',
-            pages: [
-                { id: 'voice', title: 'Voice & Personality', isComplete: false, route: '/voice' },
-                { id: 'greetings', title: 'Greetings & Closings', isComplete: true, route: '/greetings' },
-                { id: 'behaviors', title: 'Behaviors', isComplete: false, route: '/behaviors' },
+            id: 3,
+            title: "Personality & Behavior",
+            description: "Fine-tune how Sophiie speaks and interacts.",
+            tip: "Review these settings to ensure Sophiie matches your brand's voice and handles conversations seamlessly.",
+            items: [
+                { id: 'greetings', title: 'Greetings & Closings', subtitle: 'Custom conversation scripts', route: '/greetings', isComplete: true, tags: ['Recommended'] },
+                { id: 'voice', title: 'Voice & Personality', subtitle: 'Tone, Attitude, Voice selection', route: '/voice', isComplete: false, tags: ['Advanced'] },
+                { id: 'behaviors', title: 'Behaviors', subtitle: 'Interruption & Speed', route: '/behaviors', isComplete: false, tags: ['Advanced'] }
             ]
         }
     ];
 
-    // Calculate overall progress
-    const totalPages = setupSections.reduce((sum, section) => sum + section.pages.length, 0);
-    const completedPages = setupSections.reduce((sum, section) =>
-        sum + section.pages.filter(p => p.isComplete).length, 0
-    );
-    const overallProgress = Math.round((completedPages / totalPages) * 100);
-    const remainingSteps = totalPages - completedPages;
+    const currentStepData = steps.find(s => s.id === activeStep);
 
-    const handlePageClick = (route) => {
-        navigate(route);
-        setExpandedSection(null); // Close dropdown after navigation
-    };
+    // Filter logic: show top 4 initially
+    const visibleItems = isExpanded ? currentStepData.items : currentStepData.items.slice(0, 4);
+    const hasMoreItems = currentStepData.items.length > 4;
 
-    const toggleSection = (sectionId) => {
-        setExpandedSection(prev => prev === sectionId ? null : sectionId);
-    };
-
-    // Close dropdown when clicking outside
+    // Reset expansion when step changes
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (expandedSection && dropdownRefs.current[expandedSection]) {
-                if (!dropdownRefs.current[expandedSection].contains(event.target)) {
-                    setExpandedSection(null);
-                }
-            }
-        };
+        setIsExpanded(false);
+    }, [activeStep]);
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [expandedSection]);
+    const handleNext = () => {
+        if (activeStep < steps.length) setActiveStep(activeStep + 1);
+    };
+
+    const handlePrev = () => {
+        if (activeStep > 1) setActiveStep(activeStep - 1);
+    };
+
+    const getTagStyle = (tag) => {
+        switch (tag) {
+            case 'Required': return "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/50";
+            case 'Recommended': return "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/50";
+            case 'Optional': return "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700";
+            case 'Advanced': return "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50";
+            default: return "bg-slate-100 text-slate-600";
+        }
+    };
 
     return (
-        <Card className="mb-8 shadow-sm">
-            <div className="p-5 md:p-6">
-                {/* Desktop Layout - Two Columns */}
-                <div className="hidden md:flex gap-8">
-                    {/* Left Column - Title and Subtitle */}
-                    <div className="w-48 flex-shrink-0">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                            Setup Progress
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-snug">
-                            Only {remainingSteps} steps left until Sophiie is ready
-                        </p>
-                    </div>
+        <Card className="mb-8 shadow-lg shadow-slate-200/50 dark:shadow-none overflow-hidden border-0 relative bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 p-6">
+            {/* Background Decorations */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
-                    {/* Right Column - Progress Bar + Dropdowns */}
-                    <div className="flex-1">
-                        {/* Progress Bar */}
-                        <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
-                            <div
-                                className="h-full bg-blue-500 transition-all duration-700 rounded-full"
-                                style={{ width: `${overallProgress}%` }}
-                            />
-                        </div>
+            {/* Top Navigation Badge - Pinned to absolute top left, closer to edges */}
+            <div className="absolute top-4 left-4 z-20">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
+                    Setup Progress
+                </span>
+            </div>
 
-                        {/* Section Dropdowns Row */}
-                        <div className="grid grid-cols-3 gap-3">
-                            {setupSections.map((section) => {
-                                const completed = section.pages.filter(p => p.isComplete).length;
-                                const total = section.pages.length;
-                                const isComplete = completed === total;
-                                const isExpanded = expandedSection === section.id;
+            <div className="flex flex-col md:flex-row relative z-10 gap-8 min-h-[300px]">
 
-                                return (
-                                    <div key={section.id} className="relative" ref={el => dropdownRefs.current[section.id] = el}>
-                                        <button
-                                            onClick={() => toggleSection(section.id)}
-                                            onMouseDown={(e) => e.stopPropagation()}
-                                            className={cn(
-                                                "w-full px-4 py-3 rounded-lg border transition-all text-sm font-medium flex items-center justify-between",
-                                                isComplete
-                                                    ? "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400"
-                                                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                                            )}
-                                        >
-                                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                                                <span className={cn(
-                                                    "font-semibold truncate",
-                                                    isComplete && "text-green-700 dark:text-green-400"
-                                                )}>
-                                                    {section.title}
-                                                </span>
-                                                <span className={cn(
-                                                    "text-xs font-normal whitespace-nowrap",
-                                                    isComplete
-                                                        ? "text-green-600 dark:text-green-500"
-                                                        : "text-slate-500 dark:text-slate-400"
-                                                )}>
-                                                    {completed}/{total}
-                                                </span>
-                                            </div>
-                                            <ChevronDown className={cn(
-                                                "w-4 h-4 ml-2 flex-shrink-0 transition-transform",
-                                                isExpanded && "rotate-180",
-                                                isComplete ? "text-green-600 dark:text-green-500" : "text-slate-400"
-                                            )} />
-                                        </button>
-
-                                        {/* Dropdown Menu */}
-                                        {isExpanded && (
-                                            <div className="absolute left-0 right-0 top-full mt-1 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-                                                <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800 py-1 max-h-64 overflow-y-auto">
-                                                    {section.pages.map((page) => (
-                                                        <button
-                                                            key={page.id}
-                                                            onClick={() => handlePageClick(page.route)}
-                                                            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group text-left"
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                {/* CheckCircle style matching overview cards */}
-                                                                {page.isComplete ? (
-                                                                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                                                                ) : (
-                                                                    <CheckCircle className="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0" />
-                                                                )}
-                                                                <span className={cn(
-                                                                    "text-sm font-medium",
-                                                                    page.isComplete
-                                                                        ? "text-slate-700 dark:text-slate-300"
-                                                                        : "text-slate-600 dark:text-slate-400"
-                                                                )}>
-                                                                    {page.title}
-                                                                </span>
-                                                            </div>
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
+                {/* Left Side: Avatar, Static Title - Top Aligned */}
+                <div className="md:w-1/3 flex flex-col items-center text-center justify-start md:max-w-xs mx-auto pt-8 pb-6 md:pb-0">
+                    <div className="relative mb-5">
+                        <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-20 rounded-full animate-pulse" />
+                        <img
+                            src={sophiieAvatar}
+                            alt="Sophiie"
+                            className="relative w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-xl"
+                        />
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" strokeWidth={4} />
                         </div>
                     </div>
+
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 leading-tight w-full">
+                        Setup Progress
+                    </h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 w-full leading-relaxed px-6">
+                        {currentStepData.tip}
+                    </p>
                 </div>
 
-                {/* Mobile Layout */}
-                <div className="md:hidden space-y-4">
-                    {/* Title */}
-                    <div>
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-                            Setup Progress
-                        </h3>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
-                            Only {remainingSteps} steps left until Sophiie is ready
-                        </p>
+                {/* Right Side: Header & Step Content - Top Aligned */}
+                <div className="flex-1 flex flex-col">
+
+                    {/* Right Panel Header: Title/Desc Left | Counter Right */}
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 pt-2">
+                        <div className="text-left">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
+                                {currentStepData.title}
+                            </h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                {currentStepData.description}
+                            </p>
+                        </div>
+
+                        {/* Step Counter Controls - Solid Background */}
+                        <div className="flex items-center bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 p-1 shadow-sm flex-shrink-0 self-start sm:self-end">
+                            <button
+                                onClick={handlePrev}
+                                disabled={activeStep === 1}
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600 dark:text-slate-300"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="mx-3 text-xs font-semibold text-slate-600 dark:text-slate-300 w-12 text-center select-none">
+                                {activeStep} of {steps.length}
+                            </span>
+                            <button
+                                onClick={handleNext}
+                                disabled={activeStep === steps.length}
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600 dark:text-slate-300"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                            className="h-full bg-blue-500 transition-all duration-700 rounded-full"
-                            style={{ width: `${overallProgress}%` }}
-                        />
-                    </div>
-
-                    {/* Section Dropdowns */}
-                    <div className="space-y-2">
-                        {setupSections.map((section) => {
-                            const completed = section.pages.filter(p => p.isComplete).length;
-                            const total = section.pages.length;
-                            const isComplete = completed === total;
-                            const isExpanded = expandedSection === section.id;
-
-                            return (
-                                <div key={section.id} className="relative" ref={el => dropdownRefs.current[section.id] = el}>
-                                    <button
-                                        onClick={() => toggleSection(section.id)}
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        className={cn(
-                                            "w-full px-3 py-2.5 rounded-lg border transition-all text-sm font-medium flex items-center justify-between",
-                                            isComplete
-                                                ? "bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-400"
-                                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <span className={cn(
-                                                "font-semibold text-xs",
-                                                isComplete && "text-green-700 dark:text-green-400"
-                                            )}>
-                                                {section.title}
-                                            </span>
-                                            <span className={cn(
-                                                "text-xs",
-                                                isComplete
-                                                    ? "text-green-600 dark:text-green-500"
-                                                    : "text-slate-500 dark:text-slate-400"
-                                            )}>
-                                                {completed}/{total}
-                                            </span>
-                                        </div>
-                                        <ChevronDown className={cn(
-                                            "w-3.5 h-3.5 transition-transform",
-                                            isExpanded && "rotate-180",
-                                            isComplete ? "text-green-600 dark:text-green-500" : "text-slate-400"
-                                        )} />
-                                    </button>
-
-                                    {/* Dropdown Menu */}
-                                    {isExpanded && (
-                                        <div className="absolute left-0 right-0 top-full mt-1 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
-                                            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800 py-1">
-                                                {section.pages.map((page) => (
-                                                    <button
-                                                        key={page.id}
-                                                        onClick={() => handlePageClick(page.route)}
-                                                        className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            {/* CheckCircle style matching overview cards */}
-                                                            {page.isComplete ? (
-                                                                <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                                            ) : (
-                                                                <CheckCircle className="w-4 h-4 text-slate-300 dark:text-slate-600 flex-shrink-0" />
-                                                            )}
-                                                            <span className={cn(
-                                                                "text-xs font-medium",
-                                                                page.isComplete
-                                                                    ? "text-slate-700 dark:text-slate-300"
-                                                                    : "text-slate-600 dark:text-slate-400"
-                                                            )}>
-                                                                {page.title}
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                    {/* Items Grid */}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-2 transition-all duration-300 ease-in-out">
+                        {visibleItems.map((item) => (
+                            <div
+                                key={item.id}
+                                onClick={() => navigate(item.route)}
+                                className={cn(
+                                    "group flex items-start gap-3 p-2.5 rounded-xl border transition-all cursor-pointer h-full animate-in fade-in slide-in-from-right-2 duration-300 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900",
+                                    item.isComplete
+                                        ? "border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md"
+                                        : "border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md ring-1 ring-transparent hover:ring-blue-100 dark:hover:ring-blue-900/20"
+                                )}
+                            >
+                                <div className={cn(
+                                    "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors mt-0.5",
+                                    item.isComplete
+                                        ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                                        : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600 dark:group-hover:bg-blue-900/30 dark:group-hover:text-blue-400"
+                                )}>
+                                    {item.isComplete ? <Check className="w-3 h-3" strokeWidth={3} /> : <div className="w-1.5 h-1.5 bg-current rounded-full" />}
                                 </div>
-                            );
-                        })}
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                        <h4 className={cn(
+                                            "font-semibold text-sm truncate",
+                                            item.isComplete ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-white"
+                                        )}>
+                                            {item.title}
+                                        </h4>
+                                        <div className="flex gap-1 flex-shrink-0">
+                                            {item.tags.map(tag => (
+                                                <span key={tag} className={cn(
+                                                    "text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider",
+                                                    getTagStyle(tag)
+                                                )}>
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                                        {item.subtitle}
+                                    </p>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-400 self-center flex-shrink-0" />
+                            </div>
+                        ))}
                     </div>
+
+                    {/* Show More / Show Less Toggle */}
+                    {hasMoreItems && (
+                        <div className="flex justify-center mt-3">
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                title={isExpanded ? "Show Less" : "Show All"}
+                            >
+                                {isExpanded ? (
+                                    <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                    <ChevronDown className="w-4 h-4" />
+                                )}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </Card>
