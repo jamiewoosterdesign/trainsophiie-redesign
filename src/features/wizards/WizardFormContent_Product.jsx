@@ -6,10 +6,8 @@ import { WizardInput, WizardTextarea } from './components/WizardSmartInputs';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 import { Sparkles, HelpCircle, Plus, ChevronDown, X, Trash2, FileText, Upload, Info } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import {
@@ -168,6 +166,19 @@ export default function WizardFormContentProduct({ formData, onChange, activeFie
                         ))}
                     </div>
                 </WizardField>
+
+                {formData.priceMode !== 'na' && (
+                    <div className="flex items-center gap-3 mb-2 px-1">
+                        <Switch
+                            id="product-can-disclose-price"
+                            checked={formData.canDisclosePrice !== false}
+                            onCheckedChange={(checked) => onChange('canDisclosePrice', checked)}
+                        />
+                        <Label htmlFor="product-can-disclose-price" className="cursor-pointer font-medium text-slate-900 dark:text-slate-200">
+                            Sophiie can disclose price
+                        </Label>
+                    </div>
+                )}
 
                 {formData.priceMode === 'fixed' && (
                     <WizardField

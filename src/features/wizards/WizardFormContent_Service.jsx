@@ -393,6 +393,17 @@ export default function WizardFormContentService({ mode, step, formData, onChang
 
                     {formData.priceMode !== 'na' ? (
                         <div className="animate-in fade-in">
+                            <div className="flex items-center gap-3 mb-4 mt-2">
+                                <Switch
+                                    id="can-disclose-price"
+                                    checked={formData.canDisclosePrice !== false}
+                                    onCheckedChange={(checked) => onChange('canDisclosePrice', checked)}
+                                />
+                                <Label htmlFor="can-disclose-price" className="cursor-pointer font-medium text-slate-900 dark:text-slate-200">
+                                    Sophiie can disclose price
+                                </Label>
+                            </div>
+
                             {formData.priceMode === 'range' ? (
                                 <div className="flex gap-4">
                                     <div className="relative flex-1">
