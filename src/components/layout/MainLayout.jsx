@@ -6,6 +6,7 @@ import SettingsModal from '@/features/wizards/SettingsModal';
 import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
 import { WelcomeModal } from '@/components/modals/WelcomeModal';
 import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
+import { useDemo } from '@/context/DemoContext';
 
 export default function MainLayout() {
     const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function MainLayout() {
     const [initialWizardData, setInitialWizardData] = useState(null);
     const [wizardCallback, setWizardCallback] = useState(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const { isBlankState } = useDemo();
 
     // Global Voice Flow State
     const [voiceFlowStep, setVoiceFlowStep] = useState('IDLE'); // IDLE, OVERVIEW, SERVICES
@@ -147,11 +149,14 @@ export default function MainLayout() {
     // Welcome Modal Logic
     const [showWelcomeModal, setShowWelcomeModal] = useState(false);
     useEffect(() => {
-        // Show welcome modal every time we visit overview (for now)
-        if (location.pathname === '/overview' || location.pathname === '/') {
+        // Show welcome modal every time we visit overview IF we are in blank state
+        const isOverview = location.pathname === '/overview' || location.pathname === '/';
+        if (isOverview && isBlankState) {
             setShowWelcomeModal(true);
+        } else {
+            setShowWelcomeModal(false);
         }
-    }, [location.pathname]);
+    }, [location.pathname, isBlankState]);
 
     const handleWelcomeClose = () => {
         setShowWelcomeModal(false);

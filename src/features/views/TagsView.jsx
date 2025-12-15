@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
@@ -35,6 +35,7 @@ import CreateCustomerTagModal from '@/components/modals/CreateCustomerTagModal';
 import CreateInquiriesTagModal from '@/components/modals/CreateInquiriesTagModal';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import ViewToggle from '@/components/shared/ViewToggle';
+import { useDemo } from '@/context/DemoContext';
 
 const MOCK_CUSTOMER_TAGS = [
     { id: 1, name: 'VIP', color: 'bg-purple-500', colorHex: '#a855f7', description: 'Very Important Person', enabled: true, createdAt: 1700000000000 },
@@ -467,6 +468,7 @@ function TagSection({ title, tags, onAdd, addLabel, addSubtitle, searchQuery, on
 export default function TagsView() {
     const navigate = useNavigate();
     const { startGlobalVoiceFlow } = useOutletContext();
+    const { isBlankState } = useDemo();
     const [view, setView] = useState('grid'); // 'table' | 'grid'
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
@@ -474,6 +476,14 @@ export default function TagsView() {
     // State for tags
     const [customerTags, setCustomerTags] = useState(MOCK_CUSTOMER_TAGS);
     const [inquiryTags, setInquiryTags] = useState(MOCK_INQUIRY_TAGS);
+
+    useEffect(() => {
+        if (isBlankState) {
+            setCustomerTags([]);
+        } else {
+            setCustomerTags(MOCK_CUSTOMER_TAGS);
+        }
+    }, [isBlankState]);
 
     // Modal Stats
     const [customerState, setCustomerState] = useState({ open: false, editData: null });
