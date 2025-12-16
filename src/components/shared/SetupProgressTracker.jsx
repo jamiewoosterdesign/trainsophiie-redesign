@@ -108,7 +108,7 @@ export function SetupProgressTracker({ onShowAll }) {
     );
 
     return (
-        <Card className="mb-8 overflow-hidden border-0 relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none ring-1 ring-white/50 dark:ring-slate-800">
+        <Card className="mb-8 overflow-hidden border border-slate-200 dark:border-slate-800 relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-sm dark:shadow-none">
             {/* Vibrant Background Blurs */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 translate-y-1/2" />
