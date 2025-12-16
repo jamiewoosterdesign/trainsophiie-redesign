@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Wand2, Bot, ArrowRight, ArrowLeft, Check, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import sophiieAvatar from '@/avatars/sophiie-avatar.png'; // Verify path
+import sophiieAvatar from '@/images/sophiie-profile2-white-bg.png';
 import { cn } from '@/lib/utils';
 
 export function WelcomeModal({ isOpen, onClose }) {

@@ -1,270 +1,223 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, ChevronRight, ChevronLeft, ChevronDown, ChevronUp, ArrowRightLeft } from 'lucide-react';
+import {
+    Check, ArrowRightLeft, Sparkles, AlertCircle, Layers, ChevronRight,
+    Briefcase, Wrench, ShoppingBag, Book, ListChecks, HelpCircle, ShieldAlert,
+    Users, Bell, Tag, Mic, MessageSquare, Activity, CheckCircle2, AlertTriangle
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
-import sophiieAvatar from '@/avatars/sophiie-avatar.png';
-
+import { Button } from '@/components/ui/button';
+import sophiieProfile from '@/images/sophiie-profile2-white-bg.png';
 import { useDemo } from '@/context/DemoContext';
 
-export function SetupProgressTracker() {
+const ICON_MAP = {
+    'business-info': Briefcase,
+    'services': Wrench,
+    'products': ShoppingBag,
+    'documents': Book,
+    'policies': ListChecks,
+    'faqs': HelpCircle,
+    'scenarios': ShieldAlert,
+    'staff': Users,
+    'transfers': ArrowRightLeft,
+    'notifications': Bell,
+    'tags': Tag,
+    'voice': Mic,
+    'greetings': MessageSquare,
+    'behaviors': Activity
+};
+
+export function SetupProgressTracker({ onShowAll }) {
     const navigate = useNavigate();
-    const [activeStep, setActiveStep] = useState(1);
-    const [isExpanded, setIsExpanded] = useState(false);
     const { setupProgress } = useDemo();
 
     // Helper to find item from context
     const getItem = (id) => setupProgress.find(i => i.id === id) || { id, title: id, subtitle: '', route: '#', isComplete: false, tags: [] };
 
-    const steps = [
-        {
-            id: 1,
-            title: "Knowledge Base",
-            description: "Build the foundation of your AI's knowledge.",
-            tip: "Make sure you complete all red required fields before diverting your calls to Sophiie.",
-            items: [
-                getItem('business-info'),
-                getItem('services'),
-                getItem('faqs'),
-                getItem('products'),
-                getItem('documents'),
-                getItem('policies'),
-                getItem('scenarios')
-            ]
-        },
-        {
-            id: 2,
-            title: "Team & Routing",
-            description: "Define how calls and messages are distributed.",
-            tip: "Setting up your team ensures calls reach the right person every time.",
-            items: [
-                getItem('staff'),
-                getItem('transfers'),
-                getItem('notifications'),
-                getItem('tags')
-            ]
-        },
-        {
-            id: 3,
-            title: "Personality & Behavior",
-            description: "Fine-tune how Sophiie speaks and interacts.",
-            tip: "Review these settings to ensure Sophiie matches your brand's voice and handles conversations seamlessly.",
-            items: [
-                getItem('greetings'),
-                getItem('voice'),
-                getItem('behaviors')
-            ]
-        }
+    const requiredItems = [
+        getItem('business-info'),
+        getItem('services')
     ];
 
-    const currentStepData = steps.find(s => s.id === activeStep);
+    const recommendedItems = [
+        getItem('faqs'),
+        getItem('staff'),
+        getItem('transfers'),
+        getItem('greetings')
+    ];
 
-    // Flatten all items to check completion status
-    const allItems = steps.flatMap(s => s.items);
-    const areRequiredComplete = allItems.filter(s => s.tags?.includes('Required')).every(s => s.isComplete);
+    // Rest are hidden behind modal
+    const optionalItems = [getItem('products'), getItem('documents'), getItem('policies'), getItem('scenarios')];
+    const advancedItems = [getItem('voice'), getItem('behaviors'), getItem('tags'), getItem('notifications')];
 
-    // Filter logic: show top 4 initially
-    const visibleItems = isExpanded ? currentStepData.items : currentStepData.items.slice(0, 4);
-    const hasMoreItems = currentStepData.items.length > 4;
+    // Progress Calculation
+    const countableItems = [...requiredItems, ...recommendedItems, ...optionalItems];
+    const completedCount = countableItems.filter(i => i.isComplete).length;
+    const totalCount = countableItems.length;
+    const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+    const areRequiredComplete = requiredItems.every(item => item.isComplete);
 
-    // Reset expansion when step changes
-    useEffect(() => {
-        setIsExpanded(false);
-    }, [activeStep]);
+    const ProgressItem = ({ item }) => {
+        const Icon = ICON_MAP[item.id] || Layers;
+        const isComplete = item.isComplete;
 
-    const handleNext = () => {
-        if (activeStep < steps.length) setActiveStep(activeStep + 1);
+        return (
+            <div
+                onClick={() => navigate(item.route)}
+                className="group flex items-center justify-between p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-pointer h-full"
+            >
+                <div className="flex items-center gap-4 min-w-0">
+                    {/* Item Icon - Always Grey */}
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 bg-slate-50 text-slate-500 dark:bg-slate-800 dark:text-slate-400 transition-colors">
+                        <Icon className="w-6 h-6" />
+                    </div>
+
+                    <div className="flex flex-col min-w-0">
+                        <span className={cn(
+                            "text-sm font-bold truncate transition-colors mb-0.5",
+                            isComplete ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-white"
+                        )}>
+                            {item.title}
+                        </span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 truncate">
+                            {item.subtitle}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Status Indicator */}
+                <div className="pl-4">
+                    {isComplete ? (
+                        <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1 animate-in zoom-in">
+                            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        </div>
+                    ) : (
+                        <div className="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors" />
+                    )}
+                </div>
+            </div>
+        );
     };
 
-    const handlePrev = () => {
-        if (activeStep > 1) setActiveStep(activeStep - 1);
-    };
-
-    const getTagStyle = (tag) => {
-        switch (tag) {
-            case 'Required': return "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/50";
-            case 'Recommended': return "bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/50";
-            case 'Optional': return "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700";
-            case 'Advanced': return "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50";
-            default: return "bg-slate-100 text-slate-600";
-        }
-    };
+    const SectionHeader = ({ title, icon: Icon }) => (
+        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 px-1 mt-2">
+            {Icon && <Icon className="w-4 h-4 text-slate-800 dark:text-slate-200" />}
+            {title}
+        </h3>
+    );
 
     return (
-        <Card className="mb-8 shadow-lg shadow-slate-200/50 dark:shadow-none overflow-hidden border-0 relative bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 p-6">
-            {/* Background Decorations */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+        <Card className="mb-8 overflow-hidden border-0 relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none ring-1 ring-white/50 dark:ring-slate-800">
+            {/* Vibrant Background Blurs */}
+            <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 translate-y-1/2" />
+            <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-pink-500/5 rounded-full blur-[80px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
-            {/* Removed absolute top-left badge */}
+            {/* Title Badge (Top Left) - Tag Style (Sales) - Exact Match */}
+            <div className="absolute top-6 left-8 z-20">
+                <span className="px-2 h-6 flex items-center rounded text-xs font-medium border bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800">
+                    Setup Progress
+                </span>
+            </div>
 
-            <div className="flex flex-col md:flex-row relative z-10 gap-8 min-h-[300px]">
+            <div className="flex flex-col md:flex-row relative z-10 p-6 md:p-8 gap-8">
 
-                {/* Left Side: Avatar, Static Title - Top Aligned */}
-                <div className="md:w-1/3 flex flex-col items-center text-center justify-start md:max-w-xs mx-auto pt-8 pb-6 md:pb-0">
-                    <div className="relative mb-5">
-                        <div className="absolute inset-0 bg-blue-500 blur-2xl opacity-20 rounded-full animate-pulse" />
-                        <img
-                            src={sophiieAvatar}
-                            alt="Sophiie"
-                            className="relative w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-800 shadow-xl"
-                        />
-                        <div className={cn(
-                            "absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-4 border-white dark:border-slate-800 flex items-center justify-center",
-                            areRequiredComplete ? "bg-green-500" : "bg-slate-300 dark:bg-slate-600"
-                        )}>
-                            <Check className="w-3 h-3 text-white" strokeWidth={4} />
+                {/* Left Side: Identity & Actions - Widened + No Divider */}
+                <div className="md:w-80 flex flex-col items-center flex-shrink-0 pb-6 md:pb-0 md:pr-8">
+                    <div className="flex-1 flex flex-col items-center justify-center w-full mt-12">
+                        <div className="relative mb-6 group cursor-pointer" onClick={() => navigate('/voice')}>
+                            <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full group-hover:bg-blue-500/30 transition-all duration-500" />
+                            <img
+                                src={sophiieProfile}
+                                alt="Sophiie"
+                                className="relative w-32 h-32 rounded-full object-cover ring-2 ring-white dark:ring-slate-900 shadow-xl group-hover:scale-105 transition-transform duration-300"
+                            />
+                            {/* Avatar Checkmark - Matches Grid Items */}
+                            {progressPercentage === 100 && (
+                                <div className="absolute bottom-2 right-2 bg-green-100 dark:bg-green-900/90 rounded-full p-1.5 shadow-lg z-20 ring-2 ring-white dark:ring-slate-950 animate-in zoom-in">
+                                    <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-3 mb-2">
+                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{progressPercentage}% Complete</span>
+                        </div>
+                        <div className="h-1.5 w-full max-w-[140px] bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-6">
+                            {/* Always Gradient Progress Bar */}
+                            <div
+                                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
+                                style={{ width: `${progressPercentage}%` }}
+                            />
                         </div>
                     </div>
 
-                    {/* New Pill Styled Badge for Title */}
-                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 backdrop-blur-sm mb-3">
-                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                            Setup Progress
-                        </span>
-                    </div>
-
-                    <p className="text-sm text-slate-500 dark:text-slate-400 w-full leading-relaxed px-6 mt-2">
-                        {currentStepData.tip}
-                    </p>
-                </div>
-
-                {/* Right Side: Header & Step Content - Top Aligned */}
-                <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                        {/* Right Panel Header: Title/Desc Left | Counter Right - Reduced top spacing */}
-                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4 pt-0">
-                            <div className="text-left mt-1">
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-                                    {currentStepData.title}
+                    {/* Action Panel - CTA - Left Aligned Text */}
+                    <div className="w-full mt-auto">
+                        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800">
+                            <div className="mb-4 text-left">
+                                <h3 className="font-bold text-slate-900 dark:text-white text-sm">
+                                    {areRequiredComplete ? "Activate Sophiie" : "Setup Incomplete"}
                                 </h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">
-                                    {currentStepData.description}
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                                    {areRequiredComplete
+                                        ? "Mandatory steps complete. You can now divert calls."
+                                        : "Complete all Required sections to activate call diversion."}
                                 </p>
                             </div>
 
-                            {/* Step Counter Controls - Solid Background */}
-                            <div className="flex items-center bg-white dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 p-1 shadow-sm flex-shrink-0 self-start sm:self-start">
-                                <button
-                                    onClick={handlePrev}
-                                    disabled={activeStep === 1}
-                                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600 dark:text-slate-300"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </button>
-                                <span className="mx-3 text-xs font-semibold text-slate-600 dark:text-slate-300 w-12 text-center select-none">
-                                    {activeStep} of {steps.length}
-                                </span>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={activeStep === steps.length}
-                                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-slate-600 dark:text-slate-300"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
+                            <Button
+                                onClick={() => areRequiredComplete && navigate('/activation')}
+                                disabled={!areRequiredComplete}
+                                className={cn(
+                                    "w-full h-10 text-xs font-bold uppercase tracking-wider rounded-lg transition-all",
+                                    areRequiredComplete
+                                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg"
+                                        : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
+                                )}
+                            >
+                                Divert Calls Now {areRequiredComplete && <ArrowRightLeft className="w-3.5 h-3.5 ml-2" />}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Side: Task Grid */}
+                <div className="flex-1 min-w-0">
+                    <div className="space-y-8 mt-4">
+                        {/* Required Section */}
+                        <div>
+                            <SectionHeader title="Required Steps" icon={AlertCircle} />
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                                {requiredItems.map(item => (
+                                    <ProgressItem key={item.id} item={item} />
+                                ))}
                             </div>
                         </div>
 
-                        {/* Items Grid */}
-                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-2 transition-all duration-300 ease-in-out mb-2">
-                            {visibleItems.map((item) => (
-                                <div
-                                    key={item.id}
-                                    onClick={() => navigate(item.route)}
-                                    className={cn(
-                                        "group flex items-start gap-3 p-2.5 rounded-xl border transition-all cursor-pointer h-full animate-in fade-in slide-in-from-right-2 duration-300 bg-white/50 dark:bg-slate-900/50 hover:bg-white dark:hover:bg-slate-900",
-                                        item.isComplete
-                                            ? "border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md"
-                                            : "border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md ring-1 ring-transparent hover:ring-blue-100 dark:hover:ring-blue-900/20"
-                                    )}
-                                >
-                                    <div className={cn(
-                                        "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors mt-0.5",
-                                        item.isComplete
-                                            ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-                                            : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600 dark:group-hover:bg-blue-900/30 dark:group-hover:text-blue-400"
-                                    )}>
-                                        {item.isComplete ? <Check className="w-3 h-3" strokeWidth={3} /> : <div className="w-1.5 h-1.5 bg-current rounded-full" />}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex flex-wrap items-center justify-between gap-1.5">
-                                            <h4 className={cn(
-                                                "font-semibold text-sm truncate",
-                                                item.isComplete ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-white"
-                                            )}>
-                                                {item.title}
-                                            </h4>
-                                            <div className="flex gap-1 flex-shrink-0">
-                                                {item.tags.map(tag => (
-                                                    <span key={tag} className={cn(
-                                                        "text-[9px] font-bold px-1.5 py-0.5 rounded border uppercase tracking-wider",
-                                                        getTagStyle(tag)
-                                                    )}>
-                                                        {tag}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                                            {item.subtitle}
-                                        </p>
-                                    </div>
-                                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-400 self-center flex-shrink-0" />
+                        {/* Recommended Section */}
+                        {recommendedItems.length > 0 && (
+                            <div>
+                                <SectionHeader title="Recommended Improvements" icon={Sparkles} />
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                                    {recommendedItems.map(item => (
+                                        <ProgressItem key={item.id} item={item} />
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Show More / Show Less Toggle - Text Link Style */}
-                        {hasMoreItems && (
-                            <div className="flex justify-center mb-4">
-                                <button
-                                    onClick={() => setIsExpanded(!isExpanded)}
-                                    className="text-xs font-medium text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-blue-400 transition-colors flex items-center gap-1"
-                                    title={isExpanded ? "Show Less" : "Show All"}
-                                >
-                                    {isExpanded ? (
-                                        <>Show Less <ChevronUp className="w-3 h-3" /></>
-                                    ) : (
-                                        <>Show More <ChevronDown className="w-3 h-3" /></>
-                                    )}
-                                </button>
                             </div>
                         )}
-                    </div>
 
-                    {/* Footer CTA */}
-                    <div className="mt-auto pt-2">
-                        <div className={cn(
-                            "rounded-xl p-4 border flex flex-col md:flex-row items-center justify-between gap-4 transition-colors",
-                            areRequiredComplete
-                                ? "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700"
-                                : "bg-slate-50/50 dark:bg-slate-900/50 border-slate-100 dark:border-slate-800"
-                        )}>
-                            <>
-                                <div className="flex flex-col text-left">
-                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Activate Sophiie</h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        {areRequiredComplete ? (
-                                            "Mandatory steps complete. You can now divert calls."
-                                        ) : (
-                                            <>Complete all <span className="font-bold text-red-500">Required</span> sections to activate call diversion.</>
-                                        )}
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => areRequiredComplete && navigate('/activation')}
-                                    disabled={!areRequiredComplete}
-                                    className={cn(
-                                        "w-full md:w-auto px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2",
-                                        areRequiredComplete
-                                            ? "bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow"
-                                            : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed border border-slate-200 dark:border-slate-700"
-                                    )}
-                                >
-                                    Divert Calls Now
-                                    <ArrowRightLeft className="w-4 h-4" />
-                                </button>
-                            </>
+                        {/* Show All Button - "Edit >" Style */}
+                        <div className="flex justify-end pt-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={onShowAll}
+                                className="h-8 px-2 text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-300"
+                            >
+                                Show All Sections <ChevronRight className="w-3 h-3 ml-1" />
+                            </Button>
                         </div>
                     </div>
                 </div>

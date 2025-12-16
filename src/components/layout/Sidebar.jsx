@@ -12,6 +12,7 @@ import { SophiieLogo } from '@/components/icons/SophiieLogo';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { SetupProgressModal } from '@/components/modals/SetupProgressModal';
+import { useDemo } from '@/context/DemoContext';
 
 const NavIcon = ({ icon, active, onClick }) => (
     <button onClick={onClick} className={cn(
@@ -64,8 +65,6 @@ const SidebarItem = ({ icon, label, active, onClick }) => (
     </li>
 );
 
-import { useDemo } from '@/context/DemoContext';
-
 export default function Sidebar() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -80,9 +79,23 @@ export default function Sidebar() {
     const settingsRef = React.useRef(null);
     const { isBlankState, switchProfile, setupProgress } = useDemo();
 
-    const completedCount = setupProgress.filter(s => s.isComplete).length;
-    const totalCount = setupProgress.length;
-    const progressPercentage = Math.round((completedCount / totalCount) * 100);
+    // Correct Progress Calculation matching SetupProgressTracker
+    const getCountableItems = () => {
+        // Exclude 'Advanced' items if they are tagged as such, or by ID if consistent
+        // Based on SetupProgressTracker logic:
+        const advancedIds = ['voice', 'behaviors', 'tags', 'notifications'];
+        return setupProgress.filter(item => !advancedIds.includes(item.id));
+    };
+
+    const countableItems = getCountableItems();
+    // Fallback if filtering fails or logic differs
+    const itemsToCount = countableItems.length > 0 ? countableItems : setupProgress;
+
+    const completedCount = itemsToCount.filter(s => s.isComplete).length;
+    const totalCount = itemsToCount.length;
+
+    // Safety check for 0
+    const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
     // Click outside handler for desktop popover
     React.useEffect(() => {
@@ -359,7 +372,7 @@ export default function Sidebar() {
                         <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{progressPercentage}%</span>
                     </div>
                     <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                        <div className="bg-blue-500 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
+                        <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
                     </div>
                 </button>
             </aside>

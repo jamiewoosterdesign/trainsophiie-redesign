@@ -6,25 +6,36 @@ import {
     Briefcase, Wrench, Book, ListChecks, HelpCircle, ShieldAlert,
     Users, ArrowRightLeft, Bell, Tag,
     Mic, MessageSquare, Activity,
-    ChevronRight, Mic2, ShoppingBag, Bot
+    ChevronRight, Mic2, ShoppingBag, Bot, CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { SetupProgressTracker } from '@/components/shared/SetupProgressTracker';
 import { ViewToggle } from '@/components/shared/ViewToggle';
+import { SetupProgressModal } from '@/components/modals/SetupProgressModal';
+import { useDemo } from '@/context/DemoContext';
 
-const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, statusColor }) => {
+const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass }) => {
     const navigate = useNavigate();
     const isComplete = status === 'Complete' || status === 'Services added' || status === 'Documents added' || status === 'Policy added' || status === 'Faqs added' || status === 'Team added';
 
-    const iconColorClass = isComplete
-        ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
-        : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
+    // Always Grey Icon Style
+    const iconColorClass = "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
 
     return (
-        <Card className={`p-6 flex flex-col h-full hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group ${colorClass.includes('ring-') ? colorClass.split(' ').filter(c => c.startsWith('ring') || c.startsWith('shadow') || c.startsWith('scale') || c.startsWith('transition') || c.startsWith('duration')).join(' ') : ''}`} onClick={() => navigate(link)}>
-            <div className="flex-1">
+        <Card className={`p-6 flex flex-col h-full hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group relative ${colorClass.includes('ring-') ? colorClass.split(' ').filter(c => c.startsWith('ring') || c.startsWith('shadow') || c.startsWith('scale') || c.startsWith('transition') || c.startsWith('duration')).join(' ') : ''}`} onClick={() => navigate(link)}>
+
+            {/* Status Checkmark - Top Right Badge */}
+            {isComplete && (
+                <div className="absolute top-4 right-4 animate-in zoom-in spin-in-90 duration-300">
+                    <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1">
+                        <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                </div>
+            )}
+
+            <div className="flex-1 mt-2">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${iconColorClass}`}>
                     <Icon className="w-5 h-5" />
                 </div>
@@ -32,15 +43,7 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">{description}</p>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                <div className="flex items-center gap-2">
-                    <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors ${isComplete
-                        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                        : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                        }`}>
-                        {status}
-                    </div>
-                </div>
+            <div className="flex items-center justify-end pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
                 <Button variant="ghost" size="sm" className="h-8 px-2 text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-300">
                     Edit <ChevronRight className="w-3 h-3 ml-1" />
                 </Button>
@@ -49,15 +52,12 @@ const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass
     );
 };
 
-import { useDemo } from '@/context/DemoContext';
-
-// ... (OverviewCard component remains the same)
-
 export default function OverviewView() {
     const { startGlobalVoiceFlow, voiceFlowStep } = useOutletContext();
     const scrollRef = useRef(null);
     const scrollDirection = useScrollDirection(scrollRef);
     const [viewMode, setViewMode] = React.useState('grid');
+    const [isProgressModalOpen, setIsProgressModalOpen] = React.useState(false);
     const navigate = useNavigate();
     const { setupProgress } = useDemo();
 
@@ -77,7 +77,6 @@ export default function OverviewView() {
                     status: getStatus('business-info'),
                     link: "/business-info",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Services",
@@ -86,7 +85,6 @@ export default function OverviewView() {
                     status: getStatus('services', 'Services added'),
                     link: "/services",
                     colorClass: `bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 ${voiceFlowStep === 'OVERVIEW' ? 'ring-4 ring-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.4)] scale-105 transition-all duration-500' : ''}`,
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Products",
@@ -95,7 +93,6 @@ export default function OverviewView() {
                     status: getStatus('products', 'Optional', 'Optional'),
                     link: "/products",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-500 dark:text-slate-400"
                 },
                 {
                     title: "Documents",
@@ -104,7 +101,6 @@ export default function OverviewView() {
                     status: getStatus('documents', 'Documents added', 'Optional'),
                     link: "/knowledge",
                     colorClass: "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Policies & Procedures",
@@ -113,7 +109,6 @@ export default function OverviewView() {
                     status: getStatus('policies', 'Policy added', 'Optional'),
                     link: "/policies",
                     colorClass: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "FAQs",
@@ -122,7 +117,6 @@ export default function OverviewView() {
                     status: getStatus('faqs', 'Faqs added', 'Optional'),
                     link: "/faqs",
                     colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Scenarios",
@@ -131,7 +125,6 @@ export default function OverviewView() {
                     status: getStatus('scenarios', 'Complete', 'Pending'),
                     link: "/scenarios",
                     colorClass: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 }
             ]
         },
@@ -145,7 +138,6 @@ export default function OverviewView() {
                     status: getStatus('staff', 'Team added', 'Pending'),
                     link: "/staff",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Transfers",
@@ -154,7 +146,6 @@ export default function OverviewView() {
                     status: getStatus('transfers', 'Transfers set', 'Pending'),
                     link: "/transfers",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-500 dark:text-slate-400"
                 },
                 {
                     title: "Notifications",
@@ -163,7 +154,6 @@ export default function OverviewView() {
                     status: getStatus('notifications', 'Complete', 'Pending'),
                     link: "/notifications",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Tags",
@@ -172,7 +162,6 @@ export default function OverviewView() {
                     status: getStatus('tags', 'Complete', 'Pending'),
                     link: "/tags",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-500 dark:text-slate-400"
                 }
             ]
         },
@@ -186,7 +175,6 @@ export default function OverviewView() {
                     status: getStatus('voice', 'Voice Selected', 'Optional'),
                     link: "/voice",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-500 dark:text-slate-400"
                 },
                 {
                     title: "Greetings & Closings",
@@ -195,7 +183,6 @@ export default function OverviewView() {
                     status: getStatus('greetings', 'Complete', 'Pending'),
                     link: "/greetings",
                     colorClass: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
-                    statusColor: "text-slate-900 dark:text-slate-200"
                 },
                 {
                     title: "Interruption & Speed",
@@ -204,7 +191,6 @@ export default function OverviewView() {
                     status: getStatus('behaviors', 'Complete', 'Optional'),
                     link: "/behaviors",
                     colorClass: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-                    statusColor: "text-slate-500 dark:text-slate-400"
                 }
             ]
         }
@@ -230,7 +216,7 @@ export default function OverviewView() {
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                     {/* Setup Progress Tracker */}
-                    <SetupProgressTracker />
+                    <SetupProgressTracker onShowAll={() => setIsProgressModalOpen(true)} />
 
                     {/* Sections */}
                     {sections.map((section, idx) => (
@@ -254,9 +240,9 @@ export default function OverviewView() {
                                         {section.items.map((item, itemIdx) => {
                                             const Icon = item.icon;
                                             const isComplete = item.status === 'Complete' || item.status === 'Services added' || item.status === 'Documents added' || item.status === 'Policy added' || item.status === 'Faqs added' || item.status === 'Team added';
-                                            const iconColorClass = isComplete
-                                                ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
-                                                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
+
+                                            // Always Grey Icon
+                                            const iconColorClass = "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
 
                                             return (
                                                 <div
@@ -278,12 +264,11 @@ export default function OverviewView() {
                                                             {item.description}
                                                         </div>
                                                         <div className="col-span-2 text-right flex items-center justify-end gap-3">
-                                                            <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${isComplete
-                                                                ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                                : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                                                                }`}>
-                                                                {item.status}
-                                                            </div>
+                                                            {isComplete && (
+                                                                <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1">
+                                                                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                                                </div>
+                                                            )}
                                                             <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
                                                         </div>
                                                     </div>
@@ -297,15 +282,11 @@ export default function OverviewView() {
                                                                 </div>
                                                                 <div>
                                                                     <h3 className="font-bold text-slate-900 dark:text-white">{item.title}</h3>
-                                                                    <div className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium border ${isComplete
-                                                                        ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                                                                        : "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
-                                                                        }`}>
-                                                                        {item.status}
-                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <ChevronRight className="w-5 h-5 text-slate-300" />
+                                                            {isComplete && (
+                                                                <CheckCircle2 className="w-5 h-5 text-green-600" />
+                                                            )}
                                                         </div>
                                                         <p className="text-sm text-slate-500 dark:text-slate-400 pl-[52px]">
                                                             {item.description}
@@ -321,6 +302,8 @@ export default function OverviewView() {
                     ))}
                 </div>
             </div>
+
+            <SetupProgressModal isOpen={isProgressModalOpen} onClose={() => setIsProgressModalOpen(false)} />
         </div>
     );
 }
