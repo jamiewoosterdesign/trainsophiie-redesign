@@ -114,9 +114,9 @@ export function SetupProgressTracker({ onShowAll }) {
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 translate-y-1/2" />
             <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-pink-500/5 rounded-full blur-[80px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
-            {/* Title Badge (Top Left) - Tag Style (Sales) - Exact Match */}
+            {/* Title Badge (Top Left) - Tag Style (White/Grey) */}
             <div className="absolute top-6 left-8 z-20">
-                <span className="px-2 h-6 flex items-center rounded text-xs font-medium border bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800">
+                <span className="px-2 h-6 flex items-center rounded text-xs font-medium border bg-white text-slate-600 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-700">
                     Setup Progress
                 </span>
             </div>
