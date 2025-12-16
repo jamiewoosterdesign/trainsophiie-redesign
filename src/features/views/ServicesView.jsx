@@ -243,7 +243,7 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
 
                     {paginatedServices.map(service => (
                         <Card key={service.id}
-                            className={`p-6 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between ${(service.isDraft || service.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${service.id === highlightedId ? (service.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}
+                            className={`p-5 hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer group dark:bg-slate-900 dark:border-slate-800 flex flex-col h-full justify-between ${(service.isDraft || service.active === false) ? 'opacity-70 grayscale-[0.5]' : ''} ${service.id === highlightedId ? (service.isDraft ? 'animate-in zoom-in-0 duration-500 border-orange-500 shadow-orange-500/20 shadow-md ring-1 ring-orange-500/50' : 'animate-in zoom-in-0 duration-500 border-blue-500 shadow-blue-500/20 shadow-md ring-1 ring-blue-500/50') : ''}`}
                             onClick={onCreate}
                         >
                             <div>
@@ -275,18 +275,18 @@ function ServiceSection({ title, services, openWizard, icon: Icon, onCreate, onD
                                 <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-1">{service.name}</h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 line-clamp-2">{service.desc}</p>
                             </div>
-                            <div className="flex items-center justify-between text-sm text-slate-400 dark:text-slate-500 pt-4 border-t border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between text-sm text-slate-400 dark:text-slate-500 pt-4 border-t border-slate-100 dark:border-slate-800 flex-wrap gap-y-2">
                                 <div>
                                     <div>
                                         {service.isDraft && <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800">Incomplete</Badge>}
                                         {!service.isDraft && (service.active ? <Badge variant="success">Active</Badge> : <Badge variant="secondary">Inactive</Badge>)}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="flex items-center gap-1">
+                                <div className="flex items-center gap-2">
+                                    <span className="flex items-center gap-1 whitespace-nowrap">
                                         <Clock className="w-3 h-3" /> {service.time}
                                     </span>
-                                    <span className="flex items-center gap-1">
+                                    <span className="flex items-center gap-1 whitespace-nowrap">
                                         <Share2 className="w-3 h-3" /> {service.action}
                                     </span>
                                 </div>
