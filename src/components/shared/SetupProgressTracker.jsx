@@ -101,14 +101,14 @@ export function SetupProgressTracker({ onShowAll }) {
     };
 
     const SectionHeader = ({ title, icon: Icon }) => (
-        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2 px-1 mt-2">
-            {Icon && <Icon className="w-4 h-4 text-slate-800 dark:text-slate-200" />}
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 px-1 mt-2">
+            {Icon && <Icon className="w-5 h-5 text-slate-800 dark:text-slate-200" />}
             {title}
         </h3>
     );
 
     return (
-        <Card className="mb-8 overflow-hidden border border-slate-200 dark:border-slate-800 relative bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-sm dark:shadow-none">
+        <Card className="mb-8 overflow-hidden border border-slate-200 dark:border-slate-800 relative bg-[#F4FBFF] dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-sm dark:shadow-none">
             {/* Vibrant Background Blurs */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 translate-y-1/2" />
@@ -123,49 +123,43 @@ export function SetupProgressTracker({ onShowAll }) {
 
             <div className="flex flex-col md:flex-row relative z-10 p-6 md:p-8 gap-8">
 
-                {/* Left Side: Identity & Actions - Widened + No Divider */}
+                {/* Left Side: Identity & Actions - Tighter Stacking */}
                 <div className="md:w-80 flex flex-col items-center flex-shrink-0 pb-6 md:pb-0 md:pr-8">
-                    <div className="flex-1 flex flex-col items-center justify-center w-full mt-12">
-                        <div className="relative mb-6 group cursor-pointer" onClick={() => navigate('/voice')}>
+                    <div className="flex-1 flex flex-col items-center justify-center w-full mt-10">
+                        <div className="relative mb-4 group cursor-pointer" onClick={() => navigate('/voice')}>
                             <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full group-hover:bg-blue-500/30 transition-all duration-500" />
                             <img
                                 src={sophiieProfile}
                                 alt="Sophiie"
                                 className="relative w-32 h-32 rounded-full object-cover ring-2 ring-white dark:ring-slate-900 shadow-xl group-hover:scale-105 transition-transform duration-300"
                             />
-                            {/* Avatar Checkmark - Matches Grid Items */}
-                            {progressPercentage === 100 && (
-                                <div className="absolute bottom-2 right-2 bg-green-100 dark:bg-green-900/90 rounded-full p-1.5 shadow-lg z-20 ring-2 ring-white dark:ring-slate-950 animate-in zoom-in">
-                                    <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
-                                </div>
-                            )}
                         </div>
 
                         <div className="flex items-center gap-3 mb-2">
                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{progressPercentage}% Complete</span>
                         </div>
-                        <div className="h-1.5 w-full max-w-[140px] bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-6">
+                        <div className="h-1.5 w-full max-w-[140px] bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
                             {/* Always Gradient Progress Bar */}
                             <div
                                 className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-1000 ease-out"
                                 style={{ width: `${progressPercentage}%` }}
                             />
                         </div>
+
+                        {/* Description Text - Matching width of button below (p-5 equivalent padding) */}
+                        <p className="text-xs text-center text-slate-500 dark:text-slate-400 leading-relaxed px-5 w-full">
+                            {areRequiredComplete
+                                ? "Required steps are all complete. You can now divert calls to start using Sophiie."
+                                : "Complete all Required sections to activate call diversion."}
+                        </p>
                     </div>
 
-                    {/* Action Panel - CTA - Left Aligned Text */}
-                    <div className="w-full mt-auto">
-                        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800">
-                            <div className="mb-4 text-left">
-                                <h3 className="font-bold text-slate-900 dark:text-white text-sm">
-                                    {areRequiredComplete ? "Activate Sophiie" : "Setup Incomplete"}
-                                </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                                    {areRequiredComplete
-                                        ? "Mandatory steps complete. You can now divert calls."
-                                        : "Complete all Required sections to activate call diversion."}
-                                </p>
-                            </div>
+                    {/* Activation Card - Simplified */}
+                    <div className="w-full mt-8">
+                        <div className="bg-white dark:bg-slate-800/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+                            <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-4">
+                                Activate Sophiie Now
+                            </h3>
 
                             <Button
                                 onClick={() => areRequiredComplete && navigate('/activation')}
@@ -177,7 +171,7 @@ export function SetupProgressTracker({ onShowAll }) {
                                         : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
                                 )}
                             >
-                                Divert Calls Now {areRequiredComplete && <ArrowRightLeft className="w-3.5 h-3.5 ml-2" />}
+                                Divert Calls {areRequiredComplete && <ArrowRightLeft className="w-3.5 h-3.5 ml-2" />}
                             </Button>
                         </div>
                     </div>
@@ -214,9 +208,9 @@ export function SetupProgressTracker({ onShowAll }) {
                                 variant="ghost"
                                 size="sm"
                                 onClick={onShowAll}
-                                className="h-8 px-2 text-slate-400 hover:text-slate-900 dark:text-slate-500 dark:hover:text-slate-300"
+                                className="h-8 px-2 text-slate-600 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200"
                             >
-                                Show All Sections <ChevronRight className="w-3 h-3 ml-1" />
+                                Show All Sections <ChevronRight className="w-4 h-4 ml-1" />
                             </Button>
                         </div>
                     </div>
