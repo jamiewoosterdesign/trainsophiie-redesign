@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import sophiieProfile from '@/images/sophiie-profile2-white-bg.png';
 import { useDemo } from '@/context/DemoContext';
+import { DivertCallsModal } from '@/components/modals/DivertCallsModal';
 
 const ICON_MAP = {
     'business-info': Briefcase,
@@ -31,6 +32,7 @@ const ICON_MAP = {
 export function SetupProgressTracker({ onShowAll }) {
     const navigate = useNavigate();
     const { setupProgress } = useDemo();
+    const [isDivertModalOpen, setIsDivertModalOpen] = React.useState(false);
 
     // Helper to find item from context
     const getItem = (id) => setupProgress.find(i => i.id === id) || { id, title: id, subtitle: '', route: '#', isComplete: false, tags: [] };
@@ -162,7 +164,7 @@ export function SetupProgressTracker({ onShowAll }) {
                             </h3>
 
                             <Button
-                                onClick={() => areRequiredComplete && navigate('/activation')}
+                                onClick={() => areRequiredComplete && setIsDivertModalOpen(true)}
                                 disabled={!areRequiredComplete}
                                 className={cn(
                                     "w-full h-10 text-xs font-bold uppercase tracking-wider rounded-lg transition-all",
@@ -177,7 +179,6 @@ export function SetupProgressTracker({ onShowAll }) {
                     </div>
                 </div>
 
-                {/* Right Side: Task Grid */}
                 <div className="flex-1 min-w-0">
                     <div className="space-y-8 mt-4">
                         {/* Required Section */}
@@ -216,6 +217,8 @@ export function SetupProgressTracker({ onShowAll }) {
                     </div>
                 </div>
             </div>
+
+            <DivertCallsModal isOpen={isDivertModalOpen} onClose={() => setIsDivertModalOpen(false)} />
         </Card>
     );
 }
