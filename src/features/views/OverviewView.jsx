@@ -15,6 +15,8 @@ import { SetupProgressTracker } from '@/components/shared/SetupProgressTracker';
 import { ViewToggle } from '@/components/shared/ViewToggle';
 import { SetupProgressModal } from '@/components/modals/SetupProgressModal';
 import { useDemo } from '@/context/DemoContext';
+import { CallSophiieModal } from '@/components/modals/CallSophiieModal';
+import { Phone } from 'lucide-react';
 
 const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, isComplete }) => {
     const navigate = useNavigate();
@@ -67,6 +69,7 @@ export default function OverviewView() {
     const scrollDirection = useScrollDirection(scrollRef);
     const [viewMode, setViewMode] = React.useState('grid');
     const [isProgressModalOpen, setIsProgressModalOpen] = React.useState(false);
+    const [isCallModalOpen, setIsCallModalOpen] = React.useState(false);
     const navigate = useNavigate();
     const { setupProgress } = useDemo();
 
@@ -236,7 +239,11 @@ export default function OverviewView() {
                         <Bot className="w-6 h-6" />
                     </div>
                 }
-            />
+            >
+                <Button onClick={() => setIsCallModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 font-semibold gap-2">
+                    <Phone className="w-4 h-4" /> Sophiie Call
+                </Button>
+            </PageHeader>
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950">
                 <div className="max-w-7xl mx-auto w-full space-y-10">
 
@@ -338,6 +345,7 @@ export default function OverviewView() {
             </div>
 
             <SetupProgressModal isOpen={isProgressModalOpen} onClose={() => setIsProgressModalOpen(false)} />
-        </div>
+            <CallSophiieModal isOpen={isCallModalOpen} onClose={() => setIsCallModalOpen(false)} />
+        </div >
     );
 }
