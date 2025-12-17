@@ -5,6 +5,7 @@ import WizardModal from '@/features/wizards/WizardModal';
 import SettingsModal from '@/features/wizards/SettingsModal';
 import VoiceCommandBar from '@/components/shared/VoiceCommandBar';
 import { WelcomeModal } from '@/components/modals/WelcomeModal';
+import { TestSophiieButton } from '@/components/shared/TestSophiieButton';
 import { getPreferredVoice, speakText } from '@/lib/voiceUtils';
 import { useDemo } from '@/context/DemoContext';
 
@@ -216,6 +217,8 @@ export default function MainLayout() {
                 isOpen={showWelcomeModal}
                 onClose={handleWelcomeClose}
             />
+
+            <TestSophiieButton />
         </div>
     );
 }
