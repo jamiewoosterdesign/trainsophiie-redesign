@@ -137,7 +137,7 @@ export default function Sidebar() {
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white">
-                                        <Bot className="w-5 h-5" />
+                                        <SophiieLogo className="w-5 h-5" />
                                     </div>
                                     <div className="text-left">
                                         <div className="font-bold text-slate-900 dark:text-white text-sm">Train Sophiie</div>
@@ -228,7 +228,7 @@ export default function Sidebar() {
 
                     <div className="mt-auto flex flex-col gap-6 items-center">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 relative">
-                            <Bot className="w-6 h-6" />
+                            <SophiieLogo className="w-6 h-6" />
                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-md -ml-3" />
                         </div>
                         <div className="relative" ref={settingsRef}>

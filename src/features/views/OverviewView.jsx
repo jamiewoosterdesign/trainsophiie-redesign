@@ -17,6 +17,7 @@ import { SetupProgressModal } from '@/components/modals/SetupProgressModal';
 import { useDemo } from '@/context/DemoContext';
 import { CallSophiieModal } from '@/components/modals/CallSophiieModal';
 import { Phone } from 'lucide-react';
+import { SophiieLogo } from '@/components/icons/SophiieLogo';
 
 const OverviewCard = ({ icon: Icon, title, description, status, link, colorClass, isComplete }) => {
     const navigate = useNavigate();
@@ -236,7 +237,7 @@ export default function OverviewView() {
                 showBackButton={false}
                 icon={
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
-                        <Bot className="w-6 h-6" />
+                        <SophiieLogo className="w-6 h-6" />
                     </div>
                 }
             >

@@ -3,6 +3,7 @@ import { Wand2, Bot, ArrowRight, ArrowLeft, Check, Sparkles, Phone, MessageSquar
 import { Button } from '@/components/ui/button';
 import sophiieAvatar from '@/images/sophiie-profile2-white-bg.png';
 import { cn } from '@/lib/utils';
+import { SophiieLogo } from '@/components/icons/SophiieLogo';
 
 export function WelcomeModal({ isOpen, onClose }) {
     const [step, setStep] = useState(1);
@@ -168,7 +169,7 @@ export function WelcomeModal({ isOpen, onClose }) {
                             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-4 transform rotate-3 transition-transform hover:rotate-0 duration-500">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
-                                        <Bot className="w-6 h-6" />
+                                        <SophiieLogo className="w-6 h-6" />
                                     </div>
                                     <div>
                                         <div className="h-2.5 w-24 bg-slate-200 dark:bg-slate-700 rounded-full mb-2" />
