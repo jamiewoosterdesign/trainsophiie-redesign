@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sliders, Mic2, Ear, Music, HelpCircle, Plus, Trash2, Volume2, Info } from 'lucide-react';
+import { ArrowLeft, Sliders, Mic2, Ear, Music, HelpCircle, Plus, Trash2, Volume2, Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -72,7 +72,7 @@ export default function BehavioursView() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                         {/* 1. Interruption & Speed (Top Left) */}
-                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col h-full">
                             <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
                                 <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
                                     <Sliders className="w-5 h-5" />
@@ -125,7 +125,8 @@ export default function BehavioursView() {
                         </section>
 
                         {/* 2. Pronunciations (Top Right) */}
-                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                        {/* 2. Pronunciations (Top Right) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col h-full">
                             <div className="flex flex-col md:flex-row gap-4 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
                                 <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
                                     <Mic2 className="w-5 h-5" />
@@ -147,8 +148,8 @@ export default function BehavioursView() {
                                 </div>
                             </div>
 
-                            {/* Input Area (Clean, Stacked) */}
-                            <div className="space-y-3 mb-6 shrink-0">
+                            {/* Input Area (Grid Side-by-Side) */}
+                            <div className="grid grid-cols-2 gap-4 mb-6 shrink-0">
                                 <div>
                                     <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 block">Word</label>
                                     <Input
@@ -169,33 +170,35 @@ export default function BehavioursView() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 space-y-2">
+                            {/* Rules as Tags/Badges */}
+                            <div className="flex flex-wrap gap-2">
                                 {pronunciations.map(item => (
-                                    <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
-                                        <div>
-                                            <div className="font-bold text-slate-900 dark:text-white text-sm">{item.text}</div>
-                                            <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                                                /{item.phonetic}/
-                                            </div>
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-6 w-6 text-slate-400 hover:text-red-500"
-                                            onClick={() => setPronunciations(pronunciations.filter(p => p.id !== item.id))}
+                                    <div
+                                        key={item.id}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg group hover:border-blue-300 dark:hover:border-blue-600 transition-colors cursor-pointer"
+                                        onClick={() => setNewPronunciation({ text: item.text, phonetic: item.phonetic })}
+                                    >
+                                        <span className="text-sm font-medium text-slate-900 dark:text-white">{item.text}</span>
+                                        <span className="text-xs font-mono text-slate-500 dark:text-slate-400">/{item.phonetic}/</span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setPronunciations(pronunciations.filter(p => p.id !== item.id));
+                                            }}
+                                            className="ml-1 text-slate-400 hover:text-red-500 outline-none"
                                         >
-                                            <Trash2 className="w-3 h-3" />
-                                        </Button>
+                                            <X className="w-3 h-3" />
+                                        </button>
                                     </div>
                                 ))}
                                 {pronunciations.length === 0 && (
-                                    <div className="text-center py-4 text-slate-400 text-xs italic">No saved rules.</div>
+                                    <div className="text-slate-400 text-xs italic">No saved rules.</div>
                                 )}
                             </div>
                         </section>
 
                         {/* 3. Background Audio (Bottom Left) */}
-                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col h-full">
                             <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
                                 <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
                                     <Music className="w-5 h-5" />
@@ -206,7 +209,7 @@ export default function BehavioursView() {
                                 </div>
                             </div>
 
-                            <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+                            <div className="space-y-6 flex-1">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h3 className="font-medium text-slate-900 dark:text-white">Office Ambience</h3>
@@ -258,7 +261,8 @@ export default function BehavioursView() {
                         </section>
 
                         {/* 4. Avoiding Confusion (Bottom Right) */}
-                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                        {/* 4. Avoiding Confusion (Bottom Right) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col h-full">
                             <div className="flex flex-col md:flex-row gap-4 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
                                 <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
                                     <Ear className="w-5 h-5" />
@@ -308,26 +312,30 @@ export default function BehavioursView() {
                                 </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 space-y-2">
+                            {/* Rules as Tags/Badges */}
+                            <div className="flex flex-wrap gap-2">
                                 {confusions.map(item => (
-                                    <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-medium text-sm text-slate-400 line-through decoration-slate-400 decoration-1">{item.original}</span>
-                                            <ArrowLeft className="w-3 h-3 text-slate-300 dark:text-slate-600 rotate-180" />
-                                            <span className="font-bold text-sm text-slate-900 dark:text-white">{item.replacement}</span>
-                                        </div>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-6 w-6 text-slate-400 hover:text-red-500"
-                                            onClick={() => setConfusions(confusions.filter(c => c.id !== item.id))}
+                                    <div
+                                        key={item.id}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg group hover:border-blue-300 dark:hover:border-blue-600 transition-colors cursor-pointer"
+                                        onClick={() => setNewConfusion({ original: item.original, replacement: item.replacement })}
+                                    >
+                                        <span className="text-sm font-medium text-slate-400 line-through decoration-slate-400 decoration-1">{item.original}</span>
+                                        <ArrowLeft className="w-3 h-3 text-slate-300 dark:text-slate-500 rotate-180" />
+                                        <span className="text-sm font-bold text-slate-900 dark:text-white">{item.replacement}</span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setConfusions(confusions.filter(c => c.id !== item.id));
+                                            }}
+                                            className="ml-1 text-slate-400 hover:text-red-500 outline-none"
                                         >
-                                            <Trash2 className="w-3 h-3" />
-                                        </Button>
+                                            <X className="w-3 h-3" />
+                                        </button>
                                     </div>
                                 ))}
                                 {confusions.length === 0 && (
-                                    <div className="text-center py-4 text-slate-400 text-xs italic">No saved rules.</div>
+                                    <div className="text-slate-400 text-xs italic">No saved rules.</div>
                                 )}
                             </div>
                         </section>
