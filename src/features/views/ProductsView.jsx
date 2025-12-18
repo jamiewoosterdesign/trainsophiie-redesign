@@ -237,11 +237,7 @@ function ProductSection({ title, products, openWizard, icon: Icon, onCreate, onD
                             </div>
                         </Card>
                     ))}
-                    {paginatedProducts.length === 0 && (
-                        <div className="col-span-full py-12 text-center text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-                            No products created under this category
-                        </div>
-                    )}
+
                 </div>
             )}
 
