@@ -240,7 +240,7 @@ export default function OverviewView() {
                     </div>
                 }
             >
-                <Button onClick={() => setIsCallModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 font-semibold gap-2">
+                <Button onClick={() => setIsCallModalOpen(true)} className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-md shadow-slate-900/10 font-semibold gap-2">
                     <Phone className="w-4 h-4" /> Sophiie Call
                 </Button>
             </PageHeader>

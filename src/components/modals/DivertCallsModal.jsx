@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, Copy, Check } from 'lucide-react';
+import { ChevronRight, Copy, Check, Smartphone, Phone, CheckCircle2, AlertCircle, ChevronDown } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
 
-export function DivertCallsModal({ isOpen, onClose }) {
+export function DivertCallsModal({
+    isOpen,
+    onClose,
+    deviceType = 'iphone',
+    onChangeDeviceType,
+    divertStatus = {},
+    onMarkDone
+}) {
     const [copied, setCopied] = useState(false);
     const forwardingNumber = "+12183074652";
-    const dialCode = `**61*${forwardingNumber}**10#`;
+    const dialCode = `**61*${forwardingNumber}*11*15#`; // Standard AU conditional divert code
 
     const handleCopy = () => {
         navigator.clipboard.writeText(dialCode);
@@ -16,155 +28,283 @@ export function DivertCallsModal({ isOpen, onClose }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-                <div className="p-6 pb-0">
-                    <DialogHeader className="mb-4 text-left">
-                        <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">Divert Calls to Sophiie</DialogTitle>
-                        <DialogDescription className="text-slate-500 dark:text-slate-400">
-                            Follow these instructions to divert your calls to Sophiie
-                        </DialogDescription>
-                    </DialogHeader>
+    const handleBackdropClick = (e) => {
+        if (e.target === e.currentTarget) {
+            onClose();
+        }
+    };
 
-                    <div className="space-y-2 mb-6">
-                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Where is your mobile phone registered?
-                        </label>
-                        <button className="w-full max-w-[240px] flex items-center justify-between px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-900 dark:text-white">
-                            <span className="flex items-center gap-2">
-                                <span className="text-lg">🇦🇺</span>
-                                <span className="text-sm font-medium">AU Australia</span>
-                            </span>
-                            <ChevronDown className="w-4 h-4 text-slate-500" />
-                        </button>
-                    </div>
-                </div>
+    // Don't render dialog if not open
+    if (!isOpen) return null;
 
-                <div className="px-6 pb-6">
-                    <Tabs defaultValue="iphone" className="w-full">
-                        <TabsList className="w-full grid grid-cols-3 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6">
-                            <TabsTrigger
-                                value="iphone"
-                                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
-                            >
-                                iPhone
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="android"
-                                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
-                            >
-                                Android
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="landline"
-                                className="rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
-                            >
-                                Landline
-                            </TabsTrigger>
-                        </TabsList>
+    const isCurrentDone = divertStatus[deviceType];
 
-                        {/* iPhone Content */}
-                        <TabsContent value="iphone" className="mt-0 space-y-6 focus-visible:outline-none">
-                            <div className="space-y-4">
-                                <h3 className="font-semibold text-slate-900 dark:text-white">How to divert calls for iPhone</h3>
+    const DeviceSelector = ({ currentType, colorClass, icon: Icon }) => (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6 hover:opacity-80 transition-opacity outline-none", colorClass)}>
+                    <Icon className="w-3.5 h-3.5" />
+                    {currentType} Setup
+                    <ChevronDown className="w-3 h-3 opacity-50" />
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                <DropdownMenuItem onClick={() => onChangeDeviceType('iphone')} className="gap-2">
+                    <Smartphone className="w-4 h-4 text-slate-400" /> iPhone
+                    {divertStatus.iphone && <CheckCircle2 className="w-3 h-3 text-green-500 ml-auto" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onChangeDeviceType('android')} className="gap-2">
+                    <Smartphone className="w-4 h-4 text-slate-400" /> Android
+                    {divertStatus.android && <CheckCircle2 className="w-3 h-3 text-green-500 ml-auto" />}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onChangeDeviceType('landline')} className="gap-2">
+                    <Phone className="w-4 h-4 text-slate-400" /> Landline
+                    {divertStatus.landline && <CheckCircle2 className="w-3 h-3 text-green-500 ml-auto" />}
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
 
-                                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4 group">
-                                    <code className="text-lg font-mono text-slate-700 dark:text-slate-200 break-all">
-                                        Dial {dialCode}
-                                    </code>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handleCopy}
-                                        className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-                                    >
-                                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                                    </Button>
+    const ModalFooter = () => (
+        <div className="flex items-center gap-4 mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 w-full">
+            <Button variant="ghost" onClick={onClose} className="text-slate-500">Close</Button>
+            <Button
+                onClick={() => onMarkDone(!isCurrentDone)}
+                variant={isCurrentDone ? "outline" : "default"}
+                className={cn(
+                    "ml-auto rounded-xl px-6 transition-all",
+                    isCurrentDone
+                        ? "border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 bg-white dark:bg-slate-900 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/10"
+                        : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800"
+                )}
+            >
+                {isCurrentDone ? "Mark as Inactive" : "Mark as Done"}
+            </Button>
+        </div>
+    );
+
+    const renderContent = () => {
+        switch (deviceType) {
+            case 'iphone':
+                return (
+                    <>
+                        {/* Left Column: Instructions */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
+                            <div>
+                                <DeviceSelector
+                                    currentType="iPhone"
+                                    colorClass="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+                                    icon={Smartphone}
+                                />
+                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                    Divert Calls on iPhone
+                                </h2>
+                                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                                    The quickest way to set up call diversion is by dialling a unique code.
+                                </p>
+
+                                <div className="space-y-6">
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">1</div>
+                                        <div>
+                                            <h4 className="font-semibold text-slate-900 dark:text-white mb-1">Open Phone App</h4>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">Go to the keypad where you normally dial numbers.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">2</div>
+                                        <div>
+                                            <h4 className="font-semibold text-slate-900 dark:text-white mb-1">Dial the Activation Code</h4>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Enter the code exactly as shown:</p>
+                                            <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center gap-3 w-fit group cursor-pointer hover:border-blue-300 transition-colors" onClick={handleCopy}>
+                                                <code className="text-lg font-mono text-slate-900 dark:text-white font-bold tracking-wider">
+                                                    {dialCode}
+                                                </code>
+                                                <div className="h-8 w-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-700 text-slate-400 group-hover:text-blue-500">
+                                                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">3</div>
+                                        <div>
+                                            <h4 className="font-semibold text-slate-900 dark:text-white mb-1">Press Call</h4>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400">You should see a success message on your screen.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <h3 className="font-semibold text-slate-900 dark:text-white">iPhone Troubleshooting:</h3>
-                                <p className="text-sm text-slate-500 dark:text-slate-400">
-                                    If call diversion is setup, but calls aren't diverting to Sophiie
+                            <ModalFooter />
+                        </div>
+
+                        {/* Right Column: Visual/Troubleshooting */}
+                        <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+                            {/* Troubleshooting Card */}
+                            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 max-w-sm mx-auto relative z-10">
+                                <div className="flex items-center gap-3 mb-4 text-amber-600 dark:text-amber-500">
+                                    <AlertCircle className="w-5 h-5" />
+                                    <span className="font-bold text-sm uppercase tracking-wide">Troubleshooting</span>
+                                </div>
+                                <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Calls not diverting?</h4>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                                    Some newer iPhones have a "Live Voicemail" feature that intercepts calls before they divert.
                                 </p>
-                                <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300 list-none">
-                                    <li className="flex gap-2">
-                                        <span className="font-medium text-slate-400">Step 1.</span>
-                                        Go to your iPhone settings.
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="font-medium text-slate-400">Step 2.</span>
-                                        Search for 'Live Voicemail' in the search bar.
-                                    </li>
-                                    <li className="flex gap-2">
-                                        <span className="font-medium text-slate-400">Step 3.</span>
-                                        Turn the 'Live Voicemail' toggle off.
-                                    </li>
+                                <div className="bg-amber-50 dark:bg-amber-900/10 rounded-lg p-3 text-sm text-amber-900 dark:text-amber-200 border border-amber-100 dark:border-amber-800/30">
+                                    <strong>Fix:</strong> Settings &gt; Phone &gt; Live Voicemail &gt; <span className="font-bold">Turn OFF</span>
+                                </div>
+                            </div>
+
+                            {/* Decoration */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
+                        </div>
+                    </>
+                );
+            case 'android':
+                return (
+                    <>
+                        {/* Left Column: Instructions */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col bg-white dark:bg-slate-950 relative z-10">
+                            {/* Flex grow container for content */}
+                            <div className="flex-1 flex flex-col min-h-0">
+                                <div>
+                                    <DeviceSelector
+                                        currentType="Android"
+                                        colorClass="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                                        icon={Smartphone}
+                                    />
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                        Divert Calls on Android
+                                    </h2>
+                                    <p className="text-base text-slate-600 dark:text-slate-400 mb-6">
+                                        On Android, this is usually done via the Phone app settings.
+                                    </p>
+
+                                    {/* Scrollable Steps Container */}
+                                    <div className="space-y-0 relative border-l-2 border-slate-100 dark:border-slate-800 ml-3.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                        {[
+                                            { title: "Open Phone App", desc: "Open your standard dialer app." },
+                                            { title: "Go to Settings", desc: "Tap the 3-dots menu (top right) > Settings." },
+                                            { title: "Find Calling Accounts", desc: "Look for 'Calling Accounts', 'Calls', or 'Supplementary Services'." },
+                                            { title: "Select Call Forwarding", desc: "Tap 'Call Forwarding' or 'Voice Call forwarding'." },
+                                            { title: "Configure Options", desc: "You'll see busy, unanswered, and unreachable options." },
+                                            { title: "Enter Number", desc: "For each option, enter the number below and 'Enable'." }
+                                        ].map((step, idx) => (
+                                            <div key={idx} className="relative pl-8 pb-8 last:pb-0">
+                                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-600" />
+                                                <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{step.title}</h4>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{step.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-8 pt-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Number to Enter</p>
+                                        <div className="flex items-center justify-between gap-3 group cursor-pointer" onClick={handleCopy}>
+                                            <code className="text-lg font-mono text-slate-900 dark:text-white font-bold">
+                                                {forwardingNumber}
+                                            </code>
+                                            <div className="h-8 w-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-700 text-slate-400 group-hover:text-blue-500 transition-colors">
+                                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column (Footer stuck to bottom on desktop) */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-slate-50 dark:bg-slate-900/50 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
+                            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Which options to set?</h3>
+                                <ul className="space-y-3">
+                                    {[
+                                        { label: "Forward when busy", sub: "Calls divert when you decline or are on another call." },
+                                        { label: "Forward when unanswered", sub: "Calls divert if you don't pick up." },
+                                        { label: "Forward when unreachable", sub: "Calls divert when your phone is off or out of range." }
+                                    ].map((opt, i) => (
+                                        <li key={i} className="flex gap-3 items-start">
+                                            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                                            <div>
+                                                <div className="font-medium text-slate-900 dark:text-white text-sm">{opt.label}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{opt.sub}</div>
+                                            </div>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
-                        </TabsContent>
 
-                        {/* Android Content */}
-                        <TabsContent value="android" className="mt-0 space-y-6 focus-visible:outline-none">
-                            <div className="space-y-4">
-                                <h3 className="font-semibold text-slate-900 dark:text-white">How to divert calls for Android</h3>
-
-                                <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                                    <p><span className="font-medium text-slate-400 mr-2">Step 1.</span> Open the Phone app.</p>
-                                    <p><span className="font-medium text-slate-400 mr-2">Step 2.</span> Tap the three-dot menu (top right) and select Settings.</p>
-                                    <p><span className="font-medium text-slate-400 mr-2">Step 3.</span> Go to Calls, then Call forwarding or Supplementary services.</p>
-                                    <p><span className="font-medium text-slate-400 mr-2">Step 4.</span> Tap Voice call.</p>
-                                </div>
-
-                                <div className="space-y-2 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                                    <p className="text-sm font-medium text-slate-900 dark:text-white">You'll see several diversion options:</p>
-                                    <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4 list-disc">
-                                        <li>Always forward - not recommended for Sophiie</li>
-                                        <li>Forward when busy</li>
-                                        <li>Forward when unanswered</li>
-                                        <li>Forward when unreachable</li>
-                                    </ul>
-                                </div>
-
-                                <div className="bg-blue-50 dark:bg-blue-900/10 p-4 rounded-xl text-sm text-slate-700 dark:text-slate-300 border border-blue-100 dark:border-blue-900/30">
-                                    <p className="font-medium mb-1">For each relevant option, enter:</p>
-                                    <p className="font-mono bg-white dark:bg-slate-900/50 px-2 py-1 rounded inline-block text-blue-600 dark:text-blue-400 mb-1">
-                                        International format: {forwardingNumber}
-                                    </p>
-                                    <p>Then tap Turn On or Enable.</p>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <h4 className="font-semibold text-slate-900 dark:text-white text-sm">Android Troubleshooting:</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">If Sophiie isn't receiving your diverted calls:</p>
-                                    <ul className="text-sm text-slate-600 dark:text-slate-300 space-y-2 list-disc ml-4">
-                                        <li>Make sure the correct number is saved in all three conditional options: busy, unanswered, and unreachable.</li>
-                                        <li>Restart your phone after setting call forwarding.</li>
-                                        <li>Test by calling your number from a second phone while it's busy, off, or unanswered.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </TabsContent>
-
-                        {/* Landline Content */}
-                        <TabsContent value="landline" className="mt-0 space-y-6 focus-visible:outline-none">
-                            <div className="space-y-4">
-                                <h3 className="font-semibold text-slate-900 dark:text-white">How to divert calls for Landline</h3>
-                                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                                    Speak to your landline provider (Telstra, Optus, TPG, etc.), and ask them to divert your calls after 5 rings to:
+                            <ModalFooter />
+                        </div>
+                    </>
+                );
+            case 'landline':
+                return (
+                    <>
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
+                            <div>
+                                <DeviceSelector
+                                    currentType="Landline"
+                                    colorClass="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
+                                    icon={Phone}
+                                />
+                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                    Divert Calls on Landline
+                                </h2>
+                                <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+                                    Landline diversion is usually handled by your network provider or VoIP settings.
                                 </p>
-                                <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg flex items-center justify-center">
-                                    <code className="text-lg font-mono text-slate-900 dark:text-white">
-                                        International format: {forwardingNumber}
-                                    </code>
+
+                                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-800 space-y-4">
+                                    <div>
+                                        <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Instructions</h4>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                            Contact your provider (Telstra, Optus, TPG, etc.) and ask them to set up <span className="font-semibold text-slate-900 dark:text-white">"Call Forward Busy / No Answer"</span> to the number below.
+                                        </p>
+                                    </div>
+                                    <div className="pt-2">
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Divert Number</p>
+                                        <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between shadow-sm group cursor-pointer" onClick={handleCopy}>
+                                            <code className="text-lg font-mono text-slate-900 dark:text-white font-bold">{forwardingNumber}</code>
+                                            <div className="h-8 w-8 rounded-lg bg-slate-50 dark:bg-slate-800 flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-700 text-slate-400 group-hover:text-blue-500 transition-colors">
+                                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </TabsContent>
-                    </Tabs>
-                </div>
-            </DialogContent>
-        </Dialog>
+
+                            <ModalFooter />
+                        </div>
+
+                        <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden flex items-center justify-center p-12">
+                            <div className="text-center relative z-10">
+                                <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-xl mx-auto mb-6">
+                                    <Phone className="w-10 h-10 text-purple-500" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Need Help?</h3>
+                                <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">
+                                    VoIP systems can often be configured online via your provider's portal.
+                                </p>
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-blue-500/5 pointer-events-none" />
+                        </div>
+                    </>
+                );
+            default: return null;
+        }
+    };
+
+    return createPortal(
+        <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
+            onClick={handleBackdropClick}
+        >
+            <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row min-h-[500px] h-auto md:h-auto overflow-hidden">
+                {renderContent()}
+            </div>
+        </div>,
+        document.body
     );
 }

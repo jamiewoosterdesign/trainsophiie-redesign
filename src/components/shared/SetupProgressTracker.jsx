@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Check, ArrowRightLeft, Sparkles, AlertCircle, Layers, ChevronRight,
     Briefcase, Wrench, ShoppingBag, Book, ListChecks, HelpCircle, ShieldAlert,
-    Users, Bell, Tag, Mic, MessageSquare, Activity, CheckCircle2, AlertTriangle
+    Users, Bell, Tag, Mic, MessageSquare, Activity, CheckCircle2, AlertTriangle,
+    Smartphone, Phone, ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
@@ -14,6 +15,14 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import sophiieProfile from '@/images/sophiie-profile2-white-bg.png';
 import { useDemo } from '@/context/DemoContext';
 import { DivertCallsModal } from '@/components/modals/DivertCallsModal';
@@ -38,7 +47,38 @@ const ICON_MAP = {
 export function SetupProgressTracker({ onShowAll }) {
     const navigate = useNavigate();
     const { setupProgress } = useDemo();
-    const [isDivertModalOpen, setIsDivertModalOpen] = React.useState(false);
+    const [isDivertModalOpen, setIsDivertModalOpen] = useState(false);
+    const [selectedDivertType, setSelectedDivertType] = useState('iphone');
+
+    // Divert Status State (Persisted)
+    const [divertStatus, setDivertStatus] = useState(() => {
+        const saved = localStorage.getItem('sophiie_divert_status');
+        return saved ? JSON.parse(saved) : { iphone: false, android: false, landline: false };
+    });
+
+    useEffect(() => {
+        localStorage.setItem('sophiie_divert_status', JSON.stringify(divertStatus));
+    }, [divertStatus]);
+
+    const handleDivertClick = (type) => {
+        setSelectedDivertType(type);
+        setIsDivertModalOpen(true);
+    };
+
+    const handleMarkDivertDone = () => {
+        setDivertStatus(prev => ({ ...prev, [selectedDivertType]: true }));
+        setIsDivertModalOpen(false);
+    };
+
+    const handleToggleDivertStatus = (e, type) => {
+        e.stopPropagation(); // Prevent opening modal if clicking the checkmark area directly (optional UX choice, usually clicking item opens modal)
+        // Actually, let's keep it simple: clicking item opens modal. Toggling is done inside modal or maybe we add a visual indicator here.
+        // User asked: "manually mark as complete when they press on an item" - usually implies a toggle or action. 
+        // But also "modals... need an option within them to mark as done". 
+        // Let's rely on the modal "Mark as Done" button for the primary action to mark true. 
+        // But if user wants to toggle OFF, they might need a way? Let's just follow instructions: "mark as complete when they press on an item" could mean the interaction flow.
+        // I'll stick to: Click item -> Open Modal -> Click "Mark Done" -> Modal Closes & Item gets Checkmark.
+    };
 
     // Helper to find item from context
     const getItem = (id) => setupProgress.find(i => i.id === id) || { id, title: id, subtitle: '', route: '#', isComplete: false, tags: [] };
@@ -173,32 +213,81 @@ export function SetupProgressTracker({ onShowAll }) {
                                 : "Complete all Required sections to activate call diversion."}
                         </p>
 
-                        {/* Activate Button - Always present with Tooltip state */}
-                        <div className="mt-6"> {/* Container to hold position */}
-                            <TooltipProvider>
-                                <Tooltip delayDuration={0}>
-                                    <TooltipTrigger asChild>
-                                        <span tabIndex={0} className="inline-block cursor-default">
-                                            <Button
-                                                onClick={() => areRequiredComplete && setIsDivertModalOpen(true)}
-                                                className={cn(
-                                                    "h-11 text-xs font-bold uppercase tracking-wider rounded-xl px-8 transition-all",
-                                                    areRequiredComplete
-                                                        ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
-                                                        : "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-transparent dark:border-slate-700"
-                                                )}
-                                            >
-                                                Divert Calls <ArrowRightLeft className="w-4 h-4 ml-2" />
-                                            </Button>
-                                        </span>
-                                    </TooltipTrigger>
-                                    {!areRequiredComplete && (
+                        {/* Activate Button / Dropdown */}
+                        <div className="mt-6">
+                            {!areRequiredComplete ? (
+                                <TooltipProvider>
+                                    <Tooltip delayDuration={0}>
+                                        <TooltipTrigger asChild>
+                                            <span tabIndex={0} className="inline-block cursor-default">
+                                                <Button
+                                                    disabled
+                                                    className="justify-between gap-2 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-transparent dark:border-slate-700"
+                                                >
+                                                    <span className="flex items-center"><ArrowRightLeft className="w-4 h-4 mr-2" /> Divert Calls</span>
+                                                </Button>
+                                            </span>
+                                        </TooltipTrigger>
                                         <TooltipContent side="bottom" className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-none">
                                             <p>Please complete all Required steps to activate call diversion.</p>
                                         </TooltipContent>
-                                    )}
-                                </Tooltip>
-                            </TooltipProvider>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            ) : (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            className="justify-between gap-2 shadow-lg shadow-blue-500/10"
+                                        >
+                                            <span className="flex items-center"><ArrowRightLeft className="w-4 h-4 mr-2" /> Divert Calls</span>
+                                            <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-64 p-2 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl shadow-xl" align="center">
+                                        <DropdownMenuLabel className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-1.5">Select Device Type</DropdownMenuLabel>
+
+                                        <DropdownMenuItem onClick={() => handleDivertClick('iphone')} className="flex items-center justify-between p-3 rounded-lg cursor-pointer focus:bg-slate-50 dark:focus:bg-slate-800 group">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm border border-slate-200 dark:border-slate-700">
+                                                    <Smartphone className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-sm text-slate-900 dark:text-white">iPhone</span>
+                                                    {divertStatus.iphone && <span className="text-[10px] text-green-600 font-medium">Active</span>}
+                                                </div>
+                                            </div>
+                                            {divertStatus.iphone && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem onClick={() => handleDivertClick('android')} className="flex items-center justify-between p-3 rounded-lg cursor-pointer focus:bg-slate-50 dark:focus:bg-slate-800 group mt-1">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm border border-slate-200 dark:border-slate-700">
+                                                    <Smartphone className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-sm text-slate-900 dark:text-white">Android</span>
+                                                    {divertStatus.android && <span className="text-[10px] text-green-600 font-medium">Active</span>}
+                                                </div>
+                                            </div>
+                                            {divertStatus.android && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem onClick={() => handleDivertClick('landline')} className="flex items-center justify-between p-3 rounded-lg cursor-pointer focus:bg-slate-50 dark:focus:bg-slate-800 group mt-1">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-700 shadow-sm border border-slate-200 dark:border-slate-700">
+                                                    <Phone className="w-4 h-4" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-semibold text-sm text-slate-900 dark:text-white">Landline</span>
+                                                    {divertStatus.landline && <span className="text-[10px] text-green-600 font-medium">Active</span>}
+                                                </div>
+                                            </div>
+                                            {divertStatus.landline && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                                        </DropdownMenuItem>
+
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -231,7 +320,17 @@ export function SetupProgressTracker({ onShowAll }) {
                 </div>
             </div>
 
-            <DivertCallsModal isOpen={isDivertModalOpen} onClose={() => setIsDivertModalOpen(false)} />
+            <DivertCallsModal
+                isOpen={isDivertModalOpen}
+                onClose={() => setIsDivertModalOpen(false)}
+                deviceType={selectedDivertType}
+                onChangeDeviceType={handleDivertClick}
+                divertStatus={divertStatus}
+                onMarkDone={(isDone) => {
+                    setDivertStatus(prev => ({ ...prev, [selectedDivertType]: isDone }));
+                    if (isDone) setIsDivertModalOpen(false);
+                }}
+            />
         </Card>
     );
 }
