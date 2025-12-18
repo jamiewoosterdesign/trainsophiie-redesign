@@ -43,7 +43,7 @@ export function CategorySelector({ onSelect, usedCategories = [] }) {
             <Button
                 variant="secondary"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full md:w-auto justify-between gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
+                className="w-full md:w-auto justify-between gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
             >
                 <span>Add Category</span>
                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -72,8 +72,8 @@ export function CategorySelector({ onSelect, usedCategories = [] }) {
                                     <div
                                         key={cat}
                                         className={`px-3 py-2.5 text-sm rounded-md flex items-center justify-between gap-2 transition-colors ${isUsed
-                                                ? 'text-slate-400 cursor-not-allowed bg-slate-50 dark:bg-slate-800/50'
-                                                : 'text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer'
+                                            ? 'text-slate-400 cursor-not-allowed bg-slate-50 dark:bg-slate-800/50'
+                                            : 'text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer'
                                             }`}
                                         onClick={() => {
                                             if (!isUsed) {

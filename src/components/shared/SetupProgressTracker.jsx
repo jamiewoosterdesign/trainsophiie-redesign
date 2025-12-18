@@ -163,19 +163,19 @@ export function SetupProgressTracker({ onShowAll }) {
             <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-pink-500/5 rounded-full blur-[80px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
 
             {/* Title Badge (Top Left) - Tag Style (White/Grey) */}
-            <div className="absolute top-6 left-8 z-20">
+            <div className="absolute top-6 left-3 md:left-8 z-20">
                 <span className="px-2 h-6 flex items-center rounded text-xs font-medium border bg-white text-slate-600 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-700">
                     Setup Progress
                 </span>
             </div>
 
             {/* Show All Link (Top Right) */}
-            <div className="absolute top-6 right-8 z-20">
+            <div className="absolute top-6 right-3 md:right-8 z-20">
                 <Button
                     variant="ghost"
                     size="sm"
                     onClick={onShowAll}
-                    className="h-6 px-2 text-slate-500 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200 hover:bg-transparent"
+                    className="h-6 pl-2 pr-0 md:px-2 justify-end text-slate-500 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200 hover:bg-transparent"
                 >
                     Show All<span className="hidden sm:inline">&nbsp;Sections</span> <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
