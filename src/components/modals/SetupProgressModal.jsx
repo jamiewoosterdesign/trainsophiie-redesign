@@ -43,7 +43,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
     const advancedItems = [getItem('voice'), getItem('behaviors'), getItem('tags'), getItem('notifications')];
 
     // Progress Calculation
-    const countableItems = [...requiredItems, ...recommendedItems, ...optionalItems];
+    const countableItems = [...requiredItems, ...recommendedItems];
     const completedCount = countableItems.filter(i => i.isComplete).length;
     const totalCount = countableItems.length;
     // Safety check for 0 to avoid NaN
@@ -56,7 +56,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
         onClose();
     };
 
-    const ProgressItem = ({ item }) => {
+    const ProgressItem = ({ item, trackProgress = true }) => {
         const Icon = ICON_MAP[item.id] || Layers;
         const isComplete = item.isComplete;
 
@@ -72,7 +72,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
                     <div className="flex flex-col min-w-0">
                         <span className={cn(
                             "text-sm font-bold truncate transition-colors",
-                            isComplete ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-white"
+                            isComplete && trackProgress ? "text-slate-700 dark:text-slate-300" : "text-slate-900 dark:text-white"
                         )}>
                             {item.title}
                         </span>
@@ -83,12 +83,16 @@ export function SetupProgressModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="pl-3">
-                    {isComplete ? (
-                        <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1 animate-in zoom-in">
-                            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
-                        </div>
+                    {trackProgress ? (
+                        isComplete ? (
+                            <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1 animate-in zoom-in">
+                                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                            </div>
+                        ) : (
+                            <div className="w-5 h-5 rounded-full border-2 border-slate-200 dark:border-slate-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors" />
+                        )
                     ) : (
-                        <div className="w-5 h-5 rounded-full border-2 border-slate-200 dark:border-slate-700 group-hover:border-blue-300 dark:group-hover:border-blue-600 transition-colors" />
+                        <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors" />
                     )}
                 </div>
             </div>
@@ -97,7 +101,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
 
     // New Header Style (Title Case, Darker)
     const SectionHeader = ({ title, icon: Icon, className }) => (
-        <h3 className={cn("text-xs font-bold mb-2 flex items-center gap-2 px-1 mt-5 first:mt-1", className || "text-slate-700 dark:text-slate-300")}>
+        <h3 className={cn("text-xs font-bold mb-3 flex items-center gap-2", className || "text-slate-700 dark:text-slate-300")}>
             {Icon && <Icon className="w-3.5 h-3.5 text-slate-400" />}
             {title}
         </h3>
@@ -144,25 +148,55 @@ export function SetupProgressModal({ isOpen, onClose }) {
                 </div>
 
                 {/* Content - Single Column Layout */}
-                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
-                    <SectionHeader title="Required Steps" icon={AlertCircle} />
-                    <div className="grid grid-cols-1 gap-3">
-                        {requiredItems.map(item => <ProgressItem key={item.id} item={item} />)}
+                <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 space-y-8">
+
+                    {/* Core Setup Panel */}
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 px-1">
+                            Core Setup
+                            <span className="ml-2 text-xs font-normal text-slate-500">
+                                (Impacts completion score)
+                            </span>
+                        </h3>
+
+                        <div className="space-y-6 p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div>
+                                <SectionHeader title="Required Steps" icon={AlertCircle} />
+                                <div className="grid grid-cols-1 gap-3">
+                                    {requiredItems.map(item => <ProgressItem key={item.id} item={item} />)}
+                                </div>
+                            </div>
+
+                            <div>
+                                <SectionHeader title="Recommended Improvements" icon={Sparkles} />
+                                <div className="grid grid-cols-1 gap-3">
+                                    {recommendedItems.map(item => <ProgressItem key={item.id} item={item} />)}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <SectionHeader title="Recommended Improvements" icon={Sparkles} />
-                    <div className="grid grid-cols-1 gap-3">
-                        {recommendedItems.map(item => <ProgressItem key={item.id} item={item} />)}
-                    </div>
+                    {/* Additional Configuration Panel */}
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 px-1">
+                            Additional Configuration
+                        </h3>
 
-                    <SectionHeader title="Optional" icon={Layers} />
-                    <div className="grid grid-cols-1 gap-3">
-                        {optionalItems.map(item => <ProgressItem key={item.id} item={item} />)}
-                    </div>
+                        <div className="space-y-4 p-4 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                            <div>
+                                <SectionHeader title="Optional Features" icon={Layers} />
+                                <div className="grid grid-cols-1 gap-3">
+                                    {optionalItems.map(item => <ProgressItem key={item.id} item={item} trackProgress={false} />)}
+                                </div>
+                            </div>
 
-                    <SectionHeader title="Advanced" icon={AlertTriangle} className="text-amber-600 dark:text-amber-500" />
-                    <div className="grid grid-cols-1 gap-3">
-                        {advancedItems.map(item => <ProgressItem key={item.id} item={item} />)}
+                            <div>
+                                <SectionHeader title="Advanced Settings" icon={AlertTriangle} className="text-amber-600 dark:text-amber-500" />
+                                <div className="grid grid-cols-1 gap-3">
+                                    {advancedItems.map(item => <ProgressItem key={item.id} item={item} trackProgress={false} />)}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -183,10 +217,10 @@ export function SetupProgressModal({ isOpen, onClose }) {
                         onClick={() => { if (areRequiredComplete) { navigate('/activation'); onClose(); } }}
                         disabled={!areRequiredComplete}
                         className={cn(
-                            "shadow-md text-xs font-bold uppercase tracking-wider h-10 px-6 rounded-xl transition-all",
+                            "text-xs font-bold uppercase tracking-wider h-10 px-6 rounded-xl transition-all",
                             areRequiredComplete
-                                ? "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg"
-                                : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
+                                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed"
                         )}
                     >
                         Divert Calls Now {areRequiredComplete && <ArrowRightLeft className="w-3.5 h-3.5 ml-2" />}

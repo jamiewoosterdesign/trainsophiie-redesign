@@ -8,6 +8,12 @@ import {
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import sophiieProfile from '@/images/sophiie-profile2-white-bg.png';
 import { useDemo } from '@/context/DemoContext';
 import { DivertCallsModal } from '@/components/modals/DivertCallsModal';
@@ -54,7 +60,7 @@ export function SetupProgressTracker({ onShowAll }) {
     const advancedItems = [getItem('voice'), getItem('behaviors'), getItem('tags'), getItem('notifications')];
 
     // Progress Calculation
-    const countableItems = [...requiredItems, ...recommendedItems, ...optionalItems];
+    const countableItems = [...requiredItems, ...recommendedItems];
     const completedCount = countableItems.filter(i => i.isComplete).length;
     const totalCount = countableItems.length;
     const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -110,7 +116,7 @@ export function SetupProgressTracker({ onShowAll }) {
     );
 
     return (
-        <Card className="mb-8 overflow-hidden border border-slate-200 dark:border-slate-800 relative bg-[#F4FBFF] dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-sm dark:shadow-none">
+        <Card className="mb-8 border border-slate-200 dark:border-slate-800 relative bg-[#F4FBFF] dark:bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-sm dark:shadow-none">
             {/* Vibrant Background Blurs */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 translate-y-1/2" />
@@ -123,12 +129,24 @@ export function SetupProgressTracker({ onShowAll }) {
                 </span>
             </div>
 
-            <div className="flex flex-col md:flex-row relative z-10 p-6 md:p-8 gap-8">
+            {/* Show All Link (Top Right) */}
+            <div className="absolute top-6 right-8 z-20">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onShowAll}
+                    className="h-6 px-2 text-slate-500 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200 hover:bg-transparent"
+                >
+                    Show All Sections <ChevronRight className="w-4 h-4 ml-1" />
+                </Button>
+            </div>
+
+            <div className="flex flex-col xl:flex-row relative z-10 p-6 md:p-8 gap-8">
 
                 {/* Left Side: Identity & Actions - Tighter Stacking */}
-                <div className="md:w-80 flex flex-col items-center flex-shrink-0 pb-6 md:pb-0 md:pr-8">
-                    <div className="flex-1 flex flex-col items-center justify-center w-full mt-10">
-                        <div className="relative mb-4 group cursor-pointer" onClick={() => navigate('/voice')}>
+                <div className="w-full xl:w-80 flex flex-col items-center flex-shrink-0 pb-8 xl:pb-0 xl:pr-8 border-b xl:border-b-0 xl:border-r border-slate-100 dark:border-slate-800 xl:border-none my-auto">
+                    <div className="flex-1 flex flex-col items-center justify-center w-full">
+                        <div className="relative mb-6 group cursor-pointer" onClick={() => navigate('/voice')}>
                             <div className="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full group-hover:bg-blue-500/30 transition-all duration-500" />
                             <img
                                 src={sophiieProfile}
@@ -148,33 +166,39 @@ export function SetupProgressTracker({ onShowAll }) {
                             />
                         </div>
 
-                        {/* Description Text - Matching width of button below (p-5 equivalent padding) */}
-                        <p className="text-xs text-center text-slate-500 dark:text-slate-400 leading-relaxed px-5 w-full">
+                        {/* Description Text */}
+                        <p className="text-xs text-center text-slate-500 dark:text-slate-400 leading-relaxed px-5 w-full mt-1">
                             {areRequiredComplete
                                 ? "Required steps are all complete. You can now divert calls to start using Sophiie."
                                 : "Complete all Required sections to activate call diversion."}
                         </p>
-                    </div>
 
-                    {/* Activation Card - Simplified */}
-                    <div className="w-full mt-8">
-                        <div className="bg-white dark:bg-slate-800/50 rounded-xl p-5 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
-                            <h3 className="font-bold text-slate-900 dark:text-white text-sm mb-4">
-                                Activate Sophiie Now
-                            </h3>
-
-                            <Button
-                                onClick={() => areRequiredComplete && setIsDivertModalOpen(true)}
-                                disabled={!areRequiredComplete}
-                                className={cn(
-                                    "w-full h-10 text-xs font-bold uppercase tracking-wider rounded-lg transition-all",
-                                    areRequiredComplete
-                                        ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg"
-                                        : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
-                                )}
-                            >
-                                Divert Calls {areRequiredComplete && <ArrowRightLeft className="w-3.5 h-3.5 ml-2" />}
-                            </Button>
+                        {/* Activate Button - Always present with Tooltip state */}
+                        <div className="mt-6"> {/* Container to hold position */}
+                            <TooltipProvider>
+                                <Tooltip delayDuration={0}>
+                                    <TooltipTrigger asChild>
+                                        <span tabIndex={0} className="inline-block cursor-default">
+                                            <Button
+                                                onClick={() => areRequiredComplete && setIsDivertModalOpen(true)}
+                                                className={cn(
+                                                    "h-11 text-xs font-bold uppercase tracking-wider rounded-xl px-8 transition-all",
+                                                    areRequiredComplete
+                                                        ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                                                        : "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-transparent dark:border-slate-700"
+                                                )}
+                                            >
+                                                Divert Calls <ArrowRightLeft className="w-4 h-4 ml-2" />
+                                            </Button>
+                                        </span>
+                                    </TooltipTrigger>
+                                    {!areRequiredComplete && (
+                                        <TooltipContent side="bottom" className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-none">
+                                            <p>Please complete all Required steps to activate call diversion.</p>
+                                        </TooltipContent>
+                                    )}
+                                </Tooltip>
+                            </TooltipProvider>
                         </div>
                     </div>
                 </div>
@@ -184,7 +208,7 @@ export function SetupProgressTracker({ onShowAll }) {
                         {/* Required Section */}
                         <div>
                             <SectionHeader title="Required Steps" icon={AlertCircle} />
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 {requiredItems.map(item => (
                                     <ProgressItem key={item.id} item={item} />
                                 ))}
@@ -195,7 +219,7 @@ export function SetupProgressTracker({ onShowAll }) {
                         {recommendedItems.length > 0 && (
                             <div>
                                 <SectionHeader title="Recommended Improvements" icon={Sparkles} />
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                     {recommendedItems.map(item => (
                                         <ProgressItem key={item.id} item={item} />
                                     ))}
@@ -203,17 +227,6 @@ export function SetupProgressTracker({ onShowAll }) {
                             </div>
                         )}
 
-                        {/* Show All Button - "Edit >" Style */}
-                        <div className="flex justify-end pt-2">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={onShowAll}
-                                className="h-8 px-2 text-slate-600 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200"
-                            >
-                                Show All Sections <ChevronRight className="w-4 h-4 ml-1" />
-                            </Button>
-                        </div>
                     </div>
                 </div>
             </div>

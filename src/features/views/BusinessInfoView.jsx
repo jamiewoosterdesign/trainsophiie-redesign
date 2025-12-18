@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils';
 import VoiceSetupBanner from '@/components/shared/VoiceSetupBanner';
 import { PageSectionNav } from '@/components/shared/PageSectionNav';
+import { WizardTextarea } from '@/features/wizards/components/WizardSmartInputs';
 import { useDemo } from '@/context/DemoContext';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -525,20 +526,13 @@ export default function BusinessInfoView() {
                             {!collapsed['description'] && (
                                 <div className="p-6 pt-0 animate-in slide-in-from-top-2">
                                     <div className="relative">
-                                        <Textarea
-                                            className="min-h-[120px] pb-10 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                                        <WizardTextarea
                                             placeholder="Describe your business..."
                                             value={formData.description}
-                                            onChange={(e) => handleChange('description', e.target.value)}
+                                            onChange={(val) => handleChange('description', val)}
+                                            className="bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 placeholder:text-slate-400 text-slate-900"
+                                            highlight={!formData.description ? "true" : "false"}
                                         />
-                                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                <Mic className="w-4 h-4" />
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                                <Wand2 className="w-4 h-4" />
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -664,15 +658,12 @@ export default function BusinessInfoView() {
                                             <div className="space-y-2">
                                                 <Label className="dark:text-slate-300">Service Areas</Label>
                                                 <div className="relative">
-                                                    <Textarea
-                                                        className="min-h-[100px] pb-10 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
-                                                        defaultValue={"Gold Coast\nTweed Heads\nBrisbane City\nSurfers Paradise\nBroadbeach\nBroadbeach Waters\nMermaid Beach"}
+                                                    <WizardTextarea
+                                                        value={typeof formData.serviceAreas === 'string' ? formData.serviceAreas : "Gold Coast\nTweed Heads\nBrisbane City\nSurfers Paradise\nBroadbeach\nBroadbeach Waters\nMermaid Beach"}
+                                                        onChange={(val) => handleChange('serviceAreas', val)}
+                                                        className="bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 placeholder:text-slate-400 text-slate-900"
+                                                        enableAI={false}
                                                     />
-                                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                            <Mic className="w-4 h-4" />
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">List the specific areas you service (one per line)</p>
                                             </div>
@@ -680,15 +671,13 @@ export default function BusinessInfoView() {
                                             <div className="space-y-2">
                                                 <Label className="dark:text-slate-300">Exceptions</Label>
                                                 <div className="relative">
-                                                    <Textarea
-                                                        className="min-h-[100px] pb-10 bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                                                    <WizardTextarea
                                                         placeholder="Enter regions, towns, or suburbs that are not serviced (one per line)"
+                                                        value={formData.exceptions || ''}
+                                                        onChange={(val) => handleChange('exceptions', val)}
+                                                        className="bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 placeholder:text-slate-400 text-slate-900"
+                                                        enableAI={false}
                                                     />
-                                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                            <Mic className="w-4 h-4" />
-                                                        </div>
-                                                    </div>
                                                 </div>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">List any areas within your radius that you don't service (one per line)</p>
                                             </div>

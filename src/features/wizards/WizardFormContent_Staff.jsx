@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mic, Wand2, Sparkles, X, Info, Search, Plus, Calendar, Clock, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,10 @@ import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
+
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WizardTextarea } from './components/WizardSmartInputs';
 
 export default function WizardFormContentStaff({ step, formData, onChange }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
@@ -252,20 +254,12 @@ export default function WizardFormContentStaff({ step, formData, onChange }) {
                     </Label>
                     <p className="text-xs text-slate-500 mb-2">Tell Sophiie what this person handles.</p>
                     <div className="relative">
-                        <Textarea
-                            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[120px] pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                        <WizardTextarea
+                            className="bg-white dark:bg-slate-800"
                             placeholder="e.g. Handles billing disputes..."
                             value={formData.staffResp || ''}
-                            onChange={(e) => onChange('staffResp', e.target.value)}
+                            onChange={(val) => onChange('staffResp', val)}
                         />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                <Wand2 className="w-4 h-4" />
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -403,20 +397,12 @@ export default function WizardFormContentStaff({ step, formData, onChange }) {
 
                     {formData.escalationEnabled && (
                         <div className="relative">
-                            <Textarea
-                                className="w-full rounded-lg border border-slate-300 dark:border-slate-700 p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none min-h-[100px] pb-10 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100"
+                            <WizardTextarea
+                                className="bg-white dark:bg-slate-800 min-h-[100px]"
                                 placeholder="Enter notes about the escalation..."
                                 value={formData.escalationNotes || ''}
-                                onChange={(e) => onChange('escalationNotes', e.target.value)}
+                                onChange={(val) => onChange('escalationNotes', val)}
                             />
-                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                    <Mic className="w-4 h-4" />
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                    <Wand2 className="w-4 h-4" />
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>

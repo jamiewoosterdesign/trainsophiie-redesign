@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Sparkles, FileCheck, X, Mic, Wand2, Info, ClipboardList, PhoneForwarded, Calendar, Mail, ShieldAlert, HelpCircle, Loader2, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { WizardAutoFillBanner } from './components/WizardAutoFillBanner';
 import { WizardField } from './components/WizardField';
+import { WizardTextarea } from './components/WizardSmartInputs';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
 import { callGemini } from '@/lib/gemini';
@@ -261,31 +262,21 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                         )}
                     </div>
                     <div className="relative">
-                        <Textarea
+                        <WizardTextarea
                             placeholder="Describe what this service entails..."
-                            className={`min-h-[120px] pb-10 resize-y transition-all duration-500 ${formData.autoFilledFields?.description && activeField !== 'description' ? 'border-emerald-400 ring-1 ring-emerald-100 bg-emerald-50/10' : ''} ${isError('description') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                            className={`min-h-[120px] resize-y transition-all duration-500`}
+                            highlight={formData.autoFilledFields?.description && activeField !== 'description' ? 'true' : 'false'}
                             value={formData.description || ''}
-                            onChange={(e) => {
-                                onChange('description', e.target.value);
+                            onChange={(val) => {
+                                onChange('description', val);
                                 if (formData.autoFilledFields?.description) {
                                     onChange('autoFilledFields', { ...formData.autoFilledFields, description: false });
                                 }
                                 if (isError('description')) onChange('errors', { ...formData.errors, description: false });
                             }}
-                            highlight={(activeField === 'description').toString()}
+                            onVoiceClick={() => { /* Implement voice */ }}
+                            onAIClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
                         />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div
-                                className={`w-8 h-8 rounded-full ${isGenerating['description'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                title="Generate with AI"
-                                onClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
-                            >
-                                {isGenerating['description'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                            </div>
-                        </div>
                     </div>
                     {isError('description') && <p className="text-xs text-red-500 mt-1">Description is required for the AI to understand the service.</p>}
                 </div>
@@ -568,24 +559,13 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                             </TooltipProvider>
                                         </Label>
                                         <div className="relative">
-                                            <Textarea
+                                            <WizardTextarea
                                                 value={formData.customPriceMessage || ""}
-                                                onChange={(e) => onChange('customPriceMessage', e.target.value)}
-                                                className="pr-10 min-h-[100px] resize-y"
+                                                onChange={(val) => onChange('customPriceMessage', val)}
+                                                className="min-h-[100px] resize-y"
                                                 placeholder="Enter pricing explanation or terms (e.g., 'Quote on request', 'Contact for pricing', etc.)"
+                                                onAIClick={() => !isGenerating['customPriceMessage'] && handleAutoGenerate('customPriceMessage')}
                                             />
-                                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                    <Mic className="w-4 h-4" />
-                                                </div>
-                                                <div
-                                                    className={`w-8 h-8 rounded-full ${isGenerating['customPriceMessage'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                                    title="Generate with AI"
-                                                    onClick={() => !isGenerating['customPriceMessage'] && handleAutoGenerate('customPriceMessage')}
-                                                >
-                                                    {isGenerating['customPriceMessage'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -606,21 +586,14 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                         </div>
 
                                         <div className="relative mb-6">
-                                            <Textarea
+                                            <WizardTextarea
                                                 value={formData.globalDefaultPriceMessage || ""}
-                                                onChange={(e) => onChange('globalDefaultPriceMessage', e.target.value)}
+                                                onChange={(val) => onChange('globalDefaultPriceMessage', val)}
                                                 className="min-h-[120px] resize-y text-base"
                                                 placeholder="Enter pricing explanation or terms (e.g., 'Quote on request', 'Contact for pricing', etc.)"
+                                                // autoFocus might not be supported directly by WizardTextarea, check props if needed but Textarea spreads rest props
                                                 autoFocus
                                             />
-                                            <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                    <Mic className="w-4 h-4" />
-                                                </div>
-                                                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                                                    <Wand2 className="w-4 h-4" />
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <div className="flex justify-end gap-3">
@@ -658,24 +631,13 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                         </TooltipProvider>
                     </Label>
                     <div className="relative">
-                        <Textarea
+                        <WizardTextarea
                             placeholder="Sure, I can help with that."
-                            className="min-h-[80px] pb-8 resize-y"
+                            className="min-h-[80px] resize-y"
                             value={formData.aiResponse || ''}
-                            onChange={(e) => onChange('aiResponse', e.target.value)}
+                            onChange={(val) => onChange('aiResponse', val)}
+                            onAIClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
                         />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div
-                                className={`w-8 h-8 rounded-full ${isGenerating['aiResponse'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                title="Generate with AI"
-                                onClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
-                            >
-                                {isGenerating['aiResponse'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -736,24 +698,13 @@ export default function WizardFormContentService({ mode, step, formData, onChang
                                         </TooltipProvider>
                                     </Label>
                                     <div className="relative">
-                                        <Textarea
+                                        <WizardTextarea
                                             placeholder="e.g. I'll take your details and have someone from the team call you back shortly."
-                                            className="min-h-[80px] pb-10 text-sm bg-white dark:bg-slate-800"
+                                            className="min-h-[80px] text-sm bg-white dark:bg-slate-800"
                                             value={formData.serviceClosingScript || ''}
-                                            onChange={(e) => onChange('serviceClosingScript', e.target.value)}
+                                            onChange={(val) => onChange('serviceClosingScript', val)}
+                                            onAIClick={() => !isGenerating['serviceClosingScript'] && handleAutoGenerate('serviceClosingScript')}
                                         />
-                                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                <Mic className="w-4 h-4" />
-                                            </div>
-                                            <div
-                                                className={`w-8 h-8 rounded-full ${isGenerating['serviceClosingScript'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                                title="Generate with AI"
-                                                onClick={() => !isGenerating['serviceClosingScript'] && handleAutoGenerate('serviceClosingScript')}
-                                            >
-                                                {isGenerating['serviceClosingScript'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                                            </div>
-                                        </div>
                                     </div>
                                     <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
                                         <HelpCircle className="w-3 h-3" /> Sophiie will automatically ask for name & contact details.

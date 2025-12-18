@@ -10,7 +10,7 @@ export function TestSophiieButton() {
         <>
             {/* The Modal Triggered State */}
             {isOpen && (
-                <div className="fixed bottom-24 right-8 z-[100] animate-in slide-in-from-bottom-10 fade-in duration-300">
+                <div className="fixed bottom-24 right-8 z-40 animate-in slide-in-from-bottom-10 fade-in duration-300">
                     <div className="w-[380px] h-[550px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
 
                         {/* Header */}
@@ -70,7 +70,7 @@ export function TestSophiieButton() {
             )}
 
             {/* The Floating Button */}
-            <div className="fixed bottom-6 right-6 z-[100] animate-in slide-in-from-bottom-5 fade-in duration-500 delay-300">
+            <div className="fixed bottom-6 right-6 z-40 animate-in slide-in-from-bottom-5 fade-in duration-500 delay-300">
                 {isOpen ? (
                     <Button
                         onClick={() => setIsOpen(false)}

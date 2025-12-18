@@ -18,7 +18,6 @@ export default function BehavioursView() {
 
     // Interruption & Speed State
     const [patience, setPatience] = useState(50);
-    const [creativity, setCreativity] = useState(70);
     const [minPause, setMinPause] = useState(0.5);
     const [interruptTime, setInterruptTime] = useState(1.2);
 
@@ -38,6 +37,22 @@ export default function BehavioursView() {
     const [processSounds, setProcessSounds] = useState(true);
     const [processVolume, setProcessVolume] = useState(50);
 
+    // New Rule States
+    const [newPronunciation, setNewPronunciation] = useState({ text: '', phonetic: '' });
+    const [newConfusion, setNewConfusion] = useState({ original: '', replacement: '' });
+
+    const addPronunciation = () => {
+        if (!newPronunciation.text || !newPronunciation.phonetic) return;
+        setPronunciations([...pronunciations, { id: Date.now(), ...newPronunciation }]);
+        setNewPronunciation({ text: '', phonetic: '' });
+    };
+
+    const addConfusion = () => {
+        if (!newConfusion.original || !newConfusion.replacement) return;
+        setConfusions([...confusions, { id: Date.now(), ...newConfusion }]);
+        setNewConfusion({ original: '', replacement: '' });
+    };
+
     return (
         <div className="flex flex-col h-full animate-in fade-in duration-300">
             {/* Header */}
@@ -49,224 +64,274 @@ export default function BehavioursView() {
             />
 
             {/* Main Content */}
+            {/* Main Content */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 dark:bg-slate-950 relative">
                 <div className="max-w-7xl mx-auto w-full space-y-8">
                     <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Column 1: Speed/Interruption & Audio */}
-                        <div className="space-y-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                            {/* Interruption & Speed */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
-                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
-                                        <Sliders className="w-5 h-5" />
+                        {/* 1. Interruption & Speed (Top Left) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                            <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                    <Sliders className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Interruption & Speed</h2>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Response timing and patience.</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+                                <div>
+                                    <div className="flex justify-between mb-2">
+                                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Waiting Patience</label>
+                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{patience}%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0" max="100"
+                                        value={patience}
+                                        onChange={(e) => setPatience(e.target.value)}
+                                        className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                    />
+                                    <p className="text-xs text-slate-400 mt-1">Higher values mean longer waits before checking if user is done.</p>
+                                </div>
+
+                                <div className="flex flex-col gap-4">
+                                    <div>
+                                        <label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Min Pause Time (s)</label>
+                                        <Input
+                                            type="number" step="0.1"
+                                            value={minPause}
+                                            onChange={(e) => setMinPause(e.target.value)}
+                                            className="dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                                        />
+                                        <p className="text-[10px] text-slate-400 mt-1">Minimum silence before Sophiie responds.</p>
                                     </div>
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Interruption & Speed</h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Manage how fast Sophiie responds and her patience levels.</p>
+                                        <label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Caller Interrupt (s)</label>
+                                        <Input
+                                            type="number" step="0.1"
+                                            value={interruptTime}
+                                            onChange={(e) => setInterruptTime(e.target.value)}
+                                            className="dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                                        />
+                                        <p className="text-[10px] text-slate-400 mt-1">Time required to trigger an interruption.</p>
                                     </div>
                                 </div>
-                                <div className="space-y-6">
+                            </div>
+                        </section>
+
+                        {/* 2. Pronunciations (Top Right) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                            <div className="flex flex-col md:flex-row gap-4 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                    <Mic2 className="w-5 h-5" />
+                                </div>
+                                <div className="flex-1">
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pronunciations</h2>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Teach Sophiie specific words.</p>
+                                </div>
+                                <div className="md:ml-auto">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={addPronunciation}
+                                        disabled={!newPronunciation.text || !newPronunciation.phonetic}
+                                        className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                    >
+                                        <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Input Area (Clean, Stacked) */}
+                            <div className="space-y-3 mb-6 shrink-0">
+                                <div>
+                                    <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 block">Word</label>
+                                    <Input
+                                        placeholder="e.g. Sophiie"
+                                        value={newPronunciation.text}
+                                        onChange={(e) => setNewPronunciation({ ...newPronunciation, text: e.target.value })}
+                                        className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 block">Phonetic Spelling</label>
+                                    <Input
+                                        placeholder="e.g. So-fee"
+                                        value={newPronunciation.phonetic}
+                                        onChange={(e) => setNewPronunciation({ ...newPronunciation, phonetic: e.target.value })}
+                                        className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 font-mono text-blue-600 dark:text-blue-400"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 space-y-2">
+                                {pronunciations.map(item => (
+                                    <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
+                                        <div>
+                                            <div className="font-bold text-slate-900 dark:text-white text-sm">{item.text}</div>
+                                            <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                                                /{item.phonetic}/
+                                            </div>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-slate-400 hover:text-red-500"
+                                            onClick={() => setPronunciations(pronunciations.filter(p => p.id !== item.id))}
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                {pronunciations.length === 0 && (
+                                    <div className="text-center py-4 text-slate-400 text-xs italic">No saved rules.</div>
+                                )}
+                            </div>
+                        </section>
+
+                        {/* 3. Background Audio (Bottom Left) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                            <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                    <Music className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">Background Audio</h2>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Ambient noise and sounds.</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
+                                <div className="flex items-center justify-between">
                                     <div>
-                                        <div className="flex justify-between mb-2">
-                                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Waiting Patience</label>
-                                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{patience}%</span>
+                                        <h3 className="font-medium text-slate-900 dark:text-white">Office Ambience</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">Simulate a busy office background.</p>
+                                    </div>
+                                    <Switch checked={bgAmbience} onCheckedChange={setBgAmbience} />
+                                </div>
+                                {bgAmbience && (
+                                    <div className="pl-4 border-l-2 border-slate-100 dark:border-slate-800 animate-in slide-in-from-left-2 fade-in">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Volume2 className="w-4 h-4 text-slate-400" />
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">Volume</span>
                                         </div>
                                         <input
                                             type="range"
                                             min="0" max="100"
-                                            value={patience}
-                                            onChange={(e) => setPatience(e.target.value)}
-                                            className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                            value={bgVolume}
+                                            onChange={(e) => setBgVolume(e.target.value)}
+                                            className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-500"
                                         />
-                                        <p className="text-xs text-slate-400 mt-1">Higher values mean longer waits before checking if user is done.</p>
                                     </div>
+                                )}
 
+                                <div className="h-px bg-slate-100 dark:bg-slate-800" />
+
+                                <div className="flex items-center justify-between">
                                     <div>
-                                        <div className="flex justify-between mb-2">
-                                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Response Creativity</label>
-                                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{creativity}%</span>
+                                        <h3 className="font-medium text-slate-900 dark:text-white">Processing Sounds</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">"Hmm", "Let me check" etc.</p>
+                                    </div>
+                                    <Switch checked={processSounds} onCheckedChange={setProcessSounds} />
+                                </div>
+                                {processSounds && (
+                                    <div className="pl-4 border-l-2 border-slate-100 dark:border-slate-800 animate-in slide-in-from-left-2 fade-in">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Volume2 className="w-4 h-4 text-slate-400" />
+                                            <span className="text-xs text-slate-500 dark:text-slate-400">Volume</span>
                                         </div>
                                         <input
                                             type="range"
                                             min="0" max="100"
-                                            value={creativity}
-                                            onChange={(e) => setCreativity(e.target.value)}
-                                            className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                            value={processVolume}
+                                            onChange={(e) => setProcessVolume(e.target.value)}
+                                            className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-500"
                                         />
                                     </div>
+                                )}
+                            </div>
+                        </section>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Min Pause Time (s)</label>
-                                            <Input
-                                                type="number" step="0.1"
-                                                value={minPause}
-                                                onChange={(e) => setMinPause(e.target.value)}
-                                                className="dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 block">Caller Interrupt (s)</label>
-                                            <Input
-                                                type="number" step="0.1"
-                                                value={interruptTime}
-                                                onChange={(e) => setInterruptTime(e.target.value)}
-                                                className="dark:bg-slate-800 dark:border-slate-700 dark:text-white"
-                                            />
-                                        </div>
-                                    </div>
+                        {/* 4. Avoiding Confusion (Bottom Right) */}
+                        <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative flex flex-col lg:h-[380px] overflow-hidden">
+                            <div className="flex flex-col md:flex-row gap-4 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 shrink-0">
+                                <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                                    <Ear className="w-5 h-5" />
                                 </div>
-                            </section>
-
-                            {/* Background Audio */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm relative">
-                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
-                                        <Music className="w-5 h-5" />
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Avoiding Confusion</h2>
+                                        <Badge variant="secondary" className="text-[10px] ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Beta</Badge>
                                     </div>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Correct misheard words.</p>
+                                </div>
+                                <div className="md:ml-auto">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={addConfusion}
+                                        disabled={!newConfusion.original || !newConfusion.replacement}
+                                        className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                    >
+                                        <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Input Area (Clean, Grid with Arrow) */}
+                            <div className="space-y-3 mb-6 shrink-0">
+                                <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-end">
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Background Audio</h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Configure ambient noise and processing sounds.</p>
+                                        <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 block">Misheard Word</label>
+                                        <Input
+                                            placeholder="e.g. Jeff"
+                                            value={newConfusion.original}
+                                            onChange={(e) => setNewConfusion({ ...newConfusion, original: e.target.value })}
+                                            className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                                        />
                                     </div>
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-medium text-slate-900 dark:text-white">Office Ambience</h3>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">Simulate a busy office background.</p>
-                                        </div>
-                                        <Switch checked={bgAmbience} onCheckedChange={setBgAmbience} />
-                                    </div>
-                                    {bgAmbience && (
-                                        <div className="pl-4 border-l-2 border-slate-100 dark:border-slate-800">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <Volume2 className="w-4 h-4 text-slate-400" />
-                                                <span className="text-xs text-slate-500 dark:text-slate-400">Volume</span>
-                                            </div>
-                                            <input
-                                                type="range"
-                                                min="0" max="100"
-                                                value={bgVolume}
-                                                onChange={(e) => setBgVolume(e.target.value)}
-                                                className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-500"
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="h-px bg-slate-100 dark:bg-slate-800" />
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-medium text-slate-900 dark:text-white">Processing Sounds</h3>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400">"Hmm", "Let me check" thinking sounds.</p>
-                                        </div>
-                                        <Switch checked={processSounds} onCheckedChange={setProcessSounds} />
-                                    </div>
-                                    {processSounds && (
-                                        <div className="pl-4 border-l-2 border-slate-100 dark:border-slate-800">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <Volume2 className="w-4 h-4 text-slate-400" />
-                                                <span className="text-xs text-slate-500 dark:text-slate-400">Volume</span>
-                                            </div>
-                                            <input
-                                                type="range"
-                                                min="0" max="100"
-                                                value={processVolume}
-                                                onChange={(e) => setProcessVolume(e.target.value)}
-                                                className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-slate-500"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </section>
-                        </div>
-
-                        {/* Column 2: Pronunciations & Confusion */}
-                        <div className="space-y-8">
-
-                            {/* Pronunciations */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col relative">
-                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
-                                        <Mic2 className="w-5 h-5" />
-                                    </div>
+                                    <ArrowLeft className="w-4 h-4 text-slate-300 dark:text-slate-600 mb-3 rotate-180 shrink-0" />
                                     <div>
-                                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pronunciations</h2>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Teach Sophiie how to say specific words.</p>
+                                        <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1 block">Correction</label>
+                                        <Input
+                                            placeholder="e.g. Jess"
+                                            value={newConfusion.replacement}
+                                            onChange={(e) => setNewConfusion({ ...newConfusion, replacement: e.target.value })}
+                                            className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                                        />
                                     </div>
-                                    <div className="absolute top-6 right-6 md:static md:ml-auto">
-                                        <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
-                                            <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800 space-y-2">
+                                {confusions.map(item => (
+                                    <div key={item.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-medium text-sm text-slate-400 line-through decoration-slate-400 decoration-1">{item.original}</span>
+                                            <ArrowLeft className="w-3 h-3 text-slate-300 dark:text-slate-600 rotate-180" />
+                                            <span className="font-bold text-sm text-slate-900 dark:text-white">{item.replacement}</span>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 text-slate-400 hover:text-red-500"
+                                            onClick={() => setConfusions(confusions.filter(c => c.id !== item.id))}
+                                        >
+                                            <Trash2 className="w-3 h-3" />
                                         </Button>
                                     </div>
-                                </div>
+                                ))}
+                                {confusions.length === 0 && (
+                                    <div className="text-center py-4 text-slate-400 text-xs italic">No saved rules.</div>
+                                )}
+                            </div>
+                        </section>
 
-                                <div className="flex-1 space-y-3">
-                                    {pronunciations.map(item => (
-                                        <div key={item.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700 group hover:border-blue-200 dark:hover:border-blue-700 transition-colors">
-                                            <div>
-                                                <div className="font-bold text-slate-900 dark:text-white">{item.text}</div>
-                                                <div className="text-xs font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-1 py-0.5 rounded inline-block mt-1">
-                                                    /{item.phonetic}/
-                                                </div>
-                                            </div>
-                                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    ))}
-                                    {pronunciations.length === 0 && (
-                                        <div className="text-center py-8 text-slate-400 text-sm">No rules added.</div>
-                                    )}
-                                </div>
-                            </section>
-
-                            {/* Avoiding Confusion */}
-                            <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm min-h-[300px] flex flex-col relative">
-                                <div className="flex flex-col md:flex-row gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
-                                        <Ear className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Avoiding Confusion</h2>
-                                            <Badge variant="secondary" className="text-[10px] ml-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Beta</Badge>
-                                        </div>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">Correct frequently misheard words.</p>
-                                    </div>
-                                    <div className="absolute top-6 right-6 md:static md:ml-auto">
-                                        <Button size="sm" variant="outline" className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
-                                            <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-lg p-3 mb-4 flex items-start gap-2">
-                                    <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
-                                    <p className="text-xs text-blue-700 dark:text-blue-300">Use this to correct words that Sophiie frequently mishears (e.g. "Jeff" vs "Jess").</p>
-                                </div>
-
-                                <div className="flex-1 space-y-3">
-                                    {confusions.map(item => (
-                                        <div key={item.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700 group hover:border-blue-200 dark:hover:border-blue-700 transition-colors">
-                                            <div className="flex items-center gap-3">
-                                                <span className="font-medium text-slate-400 line-through decoration-slate-400 decoration-2">{item.original}</span>
-                                                <span className="text-slate-300 dark:text-slate-600">→</span>
-                                                <span className="font-bold text-slate-900 dark:text-white">{item.replacement}</span>
-                                            </div>
-                                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-
-                        </div>
                     </div>
                 </div>
             </div>

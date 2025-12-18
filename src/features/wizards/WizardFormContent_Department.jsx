@@ -14,6 +14,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { TeamMemberSelector } from './components/TeamMemberSelector';
+import { WizardTextarea } from './components/WizardSmartInputs';
 
 export default function WizardFormContentDepartment({ mode, step, formData, onChange, activeField, onSwitchMode }) {
     // --- DEPARTMENT WIZARD ---
@@ -86,24 +87,16 @@ export default function WizardFormContentDepartment({ mode, step, formData, onCh
                     </Label>
                 </div>
                 <div className="relative">
-                    <Textarea
+                    <WizardTextarea
                         placeholder="What handles does this department cover?"
-                        className={`min-h-[120px] pb-10 resize-y ${isError('departmentDescription') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
+                        className={isError('departmentDescription') ? 'border-red-300 focus-visible:ring-red-200' : ''}
                         value={formData.departmentDescription}
-                        onChange={(e) => {
-                            onChange('departmentDescription', e.target.value);
+                        onChange={(val) => {
+                            onChange('departmentDescription', val);
                             if (isError('departmentDescription')) onChange('errors', { ...formData.errors, departmentDescription: false });
                         }}
                         highlight={(activeField === 'departmentDescription')?.toString()}
                     />
-                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                            <Mic className="w-4 h-4" />
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Generate with AI">
-                            <Wand2 className="w-4 h-4" />
-                        </div>
-                    </div>
                 </div>
             </div>
 

@@ -4,7 +4,7 @@ import { ClipboardList, PhoneForwarded, Calendar, ShieldAlert, Mic, Wand2, Trash
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Badge } from '@/components/ui/badge';
 import { TransferRoutingSelector } from './components/TransferRoutingSelector';
 import QuestionRulesEditorComponent from './QuestionRulesEditor';
@@ -15,6 +15,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { WizardTextarea } from './components/WizardSmartInputs';
 
 export default function WizardFormContentProtocol({ step, formData, onChange, onSwitchMode, activeField }) {
     const [tooltipOpen, setTooltipOpen] = useState({});
@@ -178,26 +179,17 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                         </TooltipProvider>
                     </Label>
                     <div className="relative">
-                        <Textarea
-                            placeholder="Describe the context for this scenario..."
-                            className={`min-h-[100px] pb-10 resize-y ${isError('description') ? 'border-red-300 focus-visible:ring-red-200' : ''}`}
-                            value={formData.description || ''}
-                            onChange={(e) => {
-                                onChange('description', e.target.value);
-                                if (isError('description')) onChange('errors', { ...formData.errors, description: false });
-                            }}
-                        />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div
-                                className={`w-8 h-8 rounded-full ${isGenerating['description'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                title="Generate with AI"
-                                onClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
-                            >
-                                {isGenerating['description'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                            </div>
+                        <div className="relative">
+                            <WizardTextarea
+                                placeholder="Describe the context for this scenario..."
+                                className={`min-h-[100px] resize-y`}
+                                value={formData.description || ''}
+                                onChange={(val) => {
+                                    onChange('description', val);
+                                    if (isError('description')) onChange('errors', { ...formData.errors, description: false });
+                                }}
+                                onAIClick={() => !isGenerating['description'] && handleAutoGenerate('description')}
+                            />
                         </div>
                     </div>
                 </div>
@@ -225,23 +217,14 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                         </TooltipProvider>
                     </Label>
                     <div className="relative">
-                        <Textarea
-                            placeholder="e.g. I can help you with that refund request."
-                            className="min-h-[80px] pb-8 resize-y"
-                            value={formData.aiResponse || ''}
-                            onChange={(e) => onChange('aiResponse', e.target.value)}
-                        />
-                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                <Mic className="w-4 h-4" />
-                            </div>
-                            <div
-                                className={`w-8 h-8 rounded-full ${isGenerating['aiResponse'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                title="Generate with AI"
-                                onClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
-                            >
-                                {isGenerating['aiResponse'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                            </div>
+                        <div className="relative">
+                            <WizardTextarea
+                                placeholder="e.g. I can help you with that refund request."
+                                className="min-h-[80px] resize-y"
+                                value={formData.aiResponse || ''}
+                                onChange={(val) => onChange('aiResponse', val)}
+                                onAIClick={() => !isGenerating['aiResponse'] && handleAutoGenerate('aiResponse')}
+                            />
                         </div>
                     </div>
                 </div>
@@ -320,25 +303,14 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                     </TooltipProvider>
                                 </Label>
                                 <div className="relative">
-                                    <Textarea
-                                        className={`w-full rounded-lg border p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none pb-10 bg-white dark:bg-slate-800 ${formData.protocolAction === 'refuse' ? 'border-red-200' : 'border-slate-300 dark:border-slate-700'}`}
+                                    <WizardTextarea
+                                        className={`w-full bg-white dark:bg-slate-800`}
                                         rows={3}
                                         placeholder={formData.protocolAction === 'refuse' ? "e.g. I apologize, but we are unable to process that request due to company policy." : "e.g. I'll make a note of that."}
                                         value={formData.protocolScript || ''}
-                                        onChange={(e) => onChange('protocolScript', e.target.value)}
+                                        onChange={(val) => onChange('protocolScript', val)}
+                                        onAIClick={() => !isGenerating['protocolScript'] && handleAutoGenerate('protocolScript')}
                                     />
-                                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                        <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                            <Mic className="w-4 h-4" />
-                                        </div>
-                                        <div
-                                            className={`w-8 h-8 rounded-full ${isGenerating['protocolScript'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                            title="Generate with AI"
-                                            onClick={() => !isGenerating['protocolScript'] && handleAutoGenerate('protocolScript')}
-                                        >
-                                            {isGenerating['protocolScript'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         )}
@@ -375,24 +347,13 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                             <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">SMS Content</Label>
                                             <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the SMS content that will be sent to your customer</p>
                                             <div className="relative">
-                                                <Textarea
+                                                <WizardTextarea
                                                     placeholder="e.g. Thanks for calling! Here is the info you requested..."
-                                                    className="min-h-[120px] pb-10 bg-white dark:bg-slate-800"
+                                                    className="min-h-[120px] bg-white dark:bg-slate-800"
                                                     value={formData.protocolSmsMessage || ''}
-                                                    onChange={(e) => onChange('protocolSmsMessage', e.target.value)}
+                                                    onChange={(val) => onChange('protocolSmsMessage', val)}
+                                                    onAIClick={() => !isGenerating['protocolSmsMessage'] && handleAutoGenerate('protocolSmsMessage')}
                                                 />
-                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                        <Mic className="w-4 h-4" />
-                                                    </div>
-                                                    <div
-                                                        className={`w-8 h-8 rounded-full ${isGenerating['protocolSmsMessage'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                                        title="Generate with AI"
-                                                        onClick={() => !isGenerating['protocolSmsMessage'] && handleAutoGenerate('protocolSmsMessage')}
-                                                    >
-                                                        {isGenerating['protocolSmsMessage'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
 
@@ -422,10 +383,10 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                                         </div>
                                                         <div>
                                                             <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
-                                                            <Textarea
+                                                            <WizardTextarea
                                                                 placeholder="Enter SMS message content"
                                                                 value={newSmsTemplate.content}
-                                                                onChange={(e) => setNewSmsTemplate({ ...newSmsTemplate, content: e.target.value })}
+                                                                onChange={(val) => setNewSmsTemplate({ ...newSmsTemplate, content: val })}
                                                                 className="min-h-[100px] bg-white dark:bg-slate-800"
                                                             />
                                                         </div>
@@ -470,24 +431,13 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                             <Label className="mb-1 block font-semibold text-slate-900 dark:text-slate-100">Email Content</Label>
                                             <p className="text-slate-500 dark:text-slate-400 text-sm mb-3">This is the email content that will be sent to your customer</p>
                                             <div className="relative">
-                                                <Textarea
+                                                <WizardTextarea
                                                     placeholder="Hi there..."
-                                                    className="min-h-[160px] pb-10 bg-white dark:bg-slate-800"
+                                                    className="min-h-[160px] bg-white dark:bg-slate-800"
                                                     value={formData.protocolEmailBody || ''}
-                                                    onChange={(e) => onChange('protocolEmailBody', e.target.value)}
+                                                    onChange={(val) => onChange('protocolEmailBody', val)}
+                                                    onAIClick={() => !isGenerating['protocolEmailBody'] && handleAutoGenerate('protocolEmailBody')}
                                                 />
-                                                <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 flex items-center justify-center cursor-pointer transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400" title="Voice Input">
-                                                        <Mic className="w-4 h-4" />
-                                                    </div>
-                                                    <div
-                                                        className={`w-8 h-8 rounded-full ${isGenerating['protocolEmailBody'] ? 'bg-blue-100 dark:bg-blue-900 cursor-not-allowed' : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 cursor-pointer'} flex items-center justify-center transition-colors text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400`}
-                                                        title="Generate with AI"
-                                                        onClick={() => !isGenerating['protocolEmailBody'] && handleAutoGenerate('protocolEmailBody')}
-                                                    >
-                                                        {isGenerating['protocolEmailBody'] ? <Loader2 className="w-4 h-4 animate-spin text-blue-600 dark:text-blue-400" /> : <Wand2 className="w-4 h-4" />}
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
 
@@ -526,10 +476,10 @@ export default function WizardFormContentProtocol({ step, formData, onChange, on
                                                         </div>
                                                         <div>
                                                             <Label className="mb-1.5 block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">Content</Label>
-                                                            <Textarea
+                                                            <WizardTextarea
                                                                 placeholder="Enter email message content"
                                                                 value={newEmailTemplate.content}
-                                                                onChange={(e) => setNewEmailTemplate({ ...newEmailTemplate, content: e.target.value })}
+                                                                onChange={(val) => setNewEmailTemplate({ ...newEmailTemplate, content: val })}
                                                                 className="min-h-[100px] bg-white dark:bg-slate-800"
                                                             />
                                                         </div>
