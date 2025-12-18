@@ -39,16 +39,26 @@ export function WelcomeModal({ isOpen, onClose }) {
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
+            className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row min-h-[550px]">
+            <div className="bg-white dark:bg-slate-950 w-full h-full md:h-auto md:max-w-5xl rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-300 border-0 md:border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:min-h-[550px] relative">
 
-                {/* Left Column: Content & Navigation */}
-                <div className="w-full md:w-1/2 p-12 flex flex-col justify-between relative z-10 bg-white dark:bg-slate-950">
-                    <div>
+                {/* Close Button */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 z-[60] p-2 bg-white/50 dark:bg-black/50 hover:bg-white dark:hover:bg-slate-800 backdrop-blur-sm rounded-full transition-colors text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                >
+                    <X className="w-5 h-5" />
+                </button>
+
+                {/* Left Column: Content & Navigation (Bottom on Mobile due to Order) */}
+                <div className="w-full md:w-1/2 flex flex-col justify-between relative z-10 bg-white dark:bg-slate-950 order-last md:order-first h-full md:h-auto">
+
+                    {/* Scrollable Content Area */}
+                    <div className="flex-1 overflow-y-auto p-6 md:p-12 pb-24 md:pb-12">
                         {/* Step Indicator (Text) */}
-                        <div className="text-sm font-semibold tracking-wider text-blue-600 dark:text-blue-400 uppercase mb-8">
+                        <div className="text-sm font-semibold tracking-wider text-blue-600 dark:text-blue-400 uppercase mb-6 md:mb-8">
                             Step {step} of 3
                         </div>
 
@@ -56,11 +66,11 @@ export function WelcomeModal({ isOpen, onClose }) {
                         <div className="space-y-6">
                             {step === 1 && (
                                 <div className="space-y-6 animate-in slide-in-from-left-4 fade-in duration-300">
-                                    <h2 className="text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
                                         Welcome to <br />
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Sophiie AI</span>
                                     </h2>
-                                    <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                                         Your new AI receptionist is ready to transform how you handle customer communications. Available 24/7/365.
                                     </p>
                                     <div className="space-y-4 pt-4">
@@ -68,13 +78,13 @@ export function WelcomeModal({ isOpen, onClose }) {
                                             <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                                                 <Check className="w-3.5 h-3.5" />
                                             </div>
-                                            <span className="font-medium">Handles missed calls automatically</span>
+                                            <span className="font-medium text-sm md:text-base">Handles missed calls automatically</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
                                             <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                                                 <Check className="w-3.5 h-3.5" />
                                             </div>
-                                            <span className="font-medium">Answers FAQs instantly</span>
+                                            <span className="font-medium text-sm md:text-base">Answers FAQs instantly</span>
                                         </div>
                                     </div>
                                 </div>
@@ -82,13 +92,13 @@ export function WelcomeModal({ isOpen, onClose }) {
 
                             {step === 2 && (
                                 <div className="space-y-6 animate-in slide-in-from-left-4 fade-in duration-300">
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                                         Train Your Agent
                                     </h2>
-                                    <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                                         Sophiie gets smarter with every piece of information you provide.
                                     </p>
-                                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 border border-slate-100 dark:border-slate-800 space-y-4">
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 md:p-6 border border-slate-100 dark:border-slate-800 space-y-4">
                                         <div className="flex items-start gap-4">
                                             <FileText className="w-6 h-6 text-purple-500 mt-1" />
                                             <div>
@@ -109,10 +119,10 @@ export function WelcomeModal({ isOpen, onClose }) {
 
                             {step === 3 && (
                                 <div className="space-y-6 animate-in slide-in-from-left-4 fade-in duration-300">
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                                         Test & Verify
                                     </h2>
-                                    <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
+                                    <p className="text-base md:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
                                         Simulate real customer calls to see how she responds before going live.
                                     </p>
                                     <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded-xl border border-blue-100 dark:border-blue-800">
@@ -124,8 +134,8 @@ export function WelcomeModal({ isOpen, onClose }) {
                         </div>
                     </div>
 
-                    {/* Footer Navigation */}
-                    <div className="flex items-center gap-4 mt-8 pt-8 border-t border-slate-100 dark:border-slate-800/50">
+                    {/* Footer Navigation (Sticky on Mobile) */}
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 md:static md:p-0 md:mx-12 md:mb-12 md:border-none z-20 flex items-center gap-4">
                         {step > 1 && (
                             <Button variant="ghost" onClick={handleBack} className="pl-0 hover:pl-2 transition-all text-slate-500">
                                 Back
@@ -133,7 +143,7 @@ export function WelcomeModal({ isOpen, onClose }) {
                         )}
                         <Button
                             onClick={handleNext}
-                            className="ml-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 px-8 h-12 rounded-xl text-base font-semibold shadow-lg shadow-slate-200 dark:shadow-none"
+                            className="ml-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 px-8 h-12 rounded-xl text-base font-semibold shadow-lg shadow-slate-200 dark:shadow-none w-full md:w-auto"
                         >
                             {step === 3 ? "Let's Get Started" : "Continue"}
                             <ArrowRight className="w-4 h-4 ml-2" />
@@ -141,23 +151,23 @@ export function WelcomeModal({ isOpen, onClose }) {
                     </div>
                 </div>
 
-                {/* Right Column: Visuals */}
-                <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden flex items-center justify-center p-12">
+                {/* Right Column: Visuals (Top on Mobile) */}
+                <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden flex items-center justify-center p-6 md:p-12 h-48 md:h-auto shrink-0 order-first md:order-last border-b md:border-b-0 border-slate-100 dark:border-slate-800">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(#64748b 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
                     {/* Visual 1: Avatar Hero */}
                     {step === 1 && (
-                        <div className="relative animate-in zoom-in-50 duration-500">
+                        <div className="relative animate-in zoom-in-50 duration-500 scale-75 md:scale-100">
                             <div className="absolute inset-0 bg-blue-500 blur-[80px] opacity-20 animate-pulse rounded-full" />
-                            <div className="relative z-10 w-64 h-64 rounded-full p-2 border-2 border-dashed border-slate-200 dark:border-slate-700">
+                            <div className="relative z-10 w-32 h-32 md:w-64 md:h-64 rounded-full p-2 border-2 border-dashed border-slate-200 dark:border-slate-700">
                                 <img
                                     src={sophiieAvatar}
                                     alt="Sophiie"
-                                    className="w-full h-full rounded-full object-cover shadow-2xl ring-8 ring-white dark:ring-slate-800"
+                                    className="w-full h-full rounded-full object-cover shadow-2xl ring-4 md:ring-8 ring-white dark:ring-slate-800"
                                 />
-                                <div className="absolute bottom-6 right-6 bg-green-500 text-white p-3 rounded-full shadow-lg animate-bounce delay-1000">
-                                    <Sparkles className="w-6 h-6" />
+                                <div className="absolute bottom-2 right-2 md:bottom-6 md:right-6 bg-green-500 text-white p-2 md:p-3 rounded-full shadow-lg animate-bounce delay-1000">
+                                    <Sparkles className="w-4 h-4 md:w-6 md:h-6" />
                                 </div>
                             </div>
                         </div>
@@ -165,7 +175,7 @@ export function WelcomeModal({ isOpen, onClose }) {
 
                     {/* Visual 2: Dashboard/Docs */}
                     {step === 2 && (
-                        <div className="relative w-full max-w-sm animate-in slide-in-from-right-8 duration-500">
+                        <div className="relative w-full max-w-sm animate-in slide-in-from-right-8 duration-500 scale-75 md:scale-100 origin-center">
                             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 space-y-4 transform rotate-3 transition-transform hover:rotate-0 duration-500">
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600">
@@ -196,7 +206,7 @@ export function WelcomeModal({ isOpen, onClose }) {
 
                     {/* Visual 3: Phone/Chat */}
                     {step === 3 && (
-                        <div className="relative w-full max-w-xs animate-in slide-in-from-right-8 duration-500">
+                        <div className="relative w-full max-w-xs animate-in slide-in-from-right-8 duration-500 scale-75 md:scale-100 origin-center">
                             <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-2xl border-4 border-slate-100 dark:border-slate-700 overflow-hidden transform hover:scale-105 transition-transform duration-500">
                                 <div className="bg-slate-50 dark:bg-slate-900 p-6 border-b border-slate-100 dark:border-slate-800 flex items-center gap-4">
                                     <img src={sophiieAvatar} className="w-10 h-10 rounded-full" alt="" />
