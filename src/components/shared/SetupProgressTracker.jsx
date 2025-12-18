@@ -177,7 +177,7 @@ export function SetupProgressTracker({ onShowAll }) {
                     onClick={onShowAll}
                     className="h-6 px-2 text-slate-500 hover:text-slate-900 font-medium dark:text-slate-400 dark:hover:text-slate-200 hover:bg-transparent"
                 >
-                    Show All Sections <ChevronRight className="w-4 h-4 ml-1" />
+                    Show All<span className="hidden sm:inline">&nbsp;Sections</span> <ChevronRight className="w-4 h-4 ml-1" />
                 </Button>
             </div>
 

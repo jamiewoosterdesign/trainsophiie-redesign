@@ -92,7 +92,7 @@ export function DivertCallsModal({
                         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
                             <div>
                                 <DeviceSelector currentType="iPhone" />
-                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                     Divert Calls on iPhone
                                 </h2>
                                 <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
@@ -136,7 +136,7 @@ export function DivertCallsModal({
                         </div>
 
                         {/* Right Column: Visual/Troubleshooting */}
-                        <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+                        <div className="hidden md:flex w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 p-8 md:p-12 flex-col justify-center relative overflow-hidden">
                             {/* Troubleshooting Card */}
                             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 max-w-sm mx-auto relative z-10">
                                 <div className="flex items-center gap-3 mb-4 text-amber-600 dark:text-amber-500">
@@ -165,7 +165,7 @@ export function DivertCallsModal({
                             <div className="flex-1 flex flex-col min-h-0">
                                 <div>
                                     <DeviceSelector currentType="Android" />
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                         Divert Calls on Android
                                     </h2>
                                     <p className="text-base text-slate-600 dark:text-slate-400 mb-6">
@@ -212,7 +212,7 @@ export function DivertCallsModal({
                         </div>
 
                         {/* Right Column (Instructions/Tips) */}
-                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-slate-50 dark:bg-slate-900/50 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
+                        <div className="hidden md:flex w-full md:w-1/2 p-8 md:p-12 flex-col justify-center bg-slate-50 dark:bg-slate-900/50 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
                             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                                 <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Which options to set?</h3>
                                 <ul className="space-y-3">
@@ -240,7 +240,7 @@ export function DivertCallsModal({
                         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
                             <div>
                                 <DeviceSelector currentType="Landline" />
-                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
+                                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                     Divert Calls on Landline
                                 </h2>
                                 <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
@@ -269,7 +269,7 @@ export function DivertCallsModal({
                             <ModalFooter />
                         </div>
 
-                        <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden flex items-center justify-center p-12">
+                        <div className="hidden md:flex w-full md:w-1/2 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden flex-col items-center justify-center p-12">
                             <div className="text-center relative z-10">
                                 <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-xl mx-auto mb-6">
                                     <Phone className="w-10 h-10 text-purple-500" />
@@ -289,12 +289,12 @@ export function DivertCallsModal({
 
     return createPortal(
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
+            className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row min-h-[500px] h-auto md:h-auto overflow-hidden relative">
+            <div className="bg-white dark:bg-slate-950 w-full h-full md:h-auto md:max-w-4xl rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-y-auto md:overflow-hidden animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-300 border-0 md:border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:min-h-[500px] relative">
                 {/* Close Button - Top Right */}
-                <div className="absolute top-4 right-4 z-50">
+                <div className="fixed md:absolute top-4 right-4 z-50">
                     <Button
                         variant="ghost"
                         size="icon"
