@@ -81,7 +81,7 @@ export function TestSophiieButton() {
                 ) : (
                     <Button
                         onClick={() => setIsOpen(true)}
-                        className="h-11 px-5 rounded-full shadow-xl shadow-blue-500/30 bg-blue-500 hover:bg-blue-600 text-white gap-2 font-medium hover:scale-105 transition-all"
+                        className="h-11 px-5 rounded-full shadow-xl shadow-blue-500/30 bg-[#0ea5e9] hover:bg-[#0284c7] dark:bg-[#0ea5e9] dark:hover:bg-[#0284c7] text-white dark:text-white gap-2 font-medium hover:scale-105 transition-all"
                     >
                         <Sparkles className="w-4 h-4 fill-white/20" /> Test Sophiie
                     </Button>
