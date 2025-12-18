@@ -237,10 +237,10 @@ export function SetupProgressTracker({ onShowAll }) {
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
-                                            className="justify-between gap-2 shadow-lg shadow-blue-500/10"
+                                            className="justify-between gap-2 group"
                                         >
                                             <span className="flex items-center"><ArrowRightLeft className="w-4 h-4 mr-2" /> Divert Calls</span>
-                                            <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
+                                            <ChevronDown className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-64 p-2 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-xl shadow-xl" align="center">

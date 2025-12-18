@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Copy, Check, Smartphone, Phone, CheckCircle2, AlertCircle, ChevronDown } from 'lucide-react';
+import { ChevronRight, Copy, Check, Smartphone, Phone, CheckCircle2, AlertCircle, ChevronDown, X } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -39,16 +39,16 @@ export function DivertCallsModal({
 
     const isCurrentDone = divertStatus[deviceType];
 
-    const DeviceSelector = ({ currentType, colorClass, icon: Icon }) => (
+    const DeviceSelector = ({ currentType }) => (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide mb-6 hover:opacity-80 transition-opacity outline-none", colorClass)}>
-                    <Icon className="w-3.5 h-3.5" />
+                <button className="flex items-center gap-2 px-3 py-2 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors outline-none mb-6">
+                    <Smartphone className="w-4 h-4 text-slate-400" />
                     {currentType} Setup
-                    <ChevronDown className="w-3 h-3 opacity-50" />
+                    <ChevronDown className="w-3 h-3 opacity-50 ml-1" />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+            <DropdownMenuContent align="start" className="w-48 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 z-[10002]">
                 <DropdownMenuItem onClick={() => onChangeDeviceType('iphone')} className="gap-2">
                     <Smartphone className="w-4 h-4 text-slate-400" /> iPhone
                     {divertStatus.iphone && <CheckCircle2 className="w-3 h-3 text-green-500 ml-auto" />}
@@ -91,11 +91,7 @@ export function DivertCallsModal({
                         {/* Left Column: Instructions */}
                         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
                             <div>
-                                <DeviceSelector
-                                    currentType="iPhone"
-                                    colorClass="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
-                                    icon={Smartphone}
-                                />
+                                <DeviceSelector currentType="iPhone" />
                                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                     Divert Calls on iPhone
                                 </h2>
@@ -165,15 +161,10 @@ export function DivertCallsModal({
                 return (
                     <>
                         {/* Left Column: Instructions */}
-                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col bg-white dark:bg-slate-950 relative z-10">
-                            {/* Flex grow container for content */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
                             <div className="flex-1 flex flex-col min-h-0">
                                 <div>
-                                    <DeviceSelector
-                                        currentType="Android"
-                                        colorClass="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                                        icon={Smartphone}
-                                    />
+                                    <DeviceSelector currentType="Android" />
                                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                         Divert Calls on Android
                                     </h2>
@@ -182,7 +173,7 @@ export function DivertCallsModal({
                                     </p>
 
                                     {/* Scrollable Steps Container */}
-                                    <div className="space-y-0 relative border-l-2 border-slate-100 dark:border-slate-800 ml-3.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="space-y-6 max-h-[300px] overflow-y-auto pr-4 custom-scrollbar">
                                         {[
                                             { title: "Open Phone App", desc: "Open your standard dialer app." },
                                             { title: "Go to Settings", desc: "Tap the 3-dots menu (top right) > Settings." },
@@ -191,15 +182,19 @@ export function DivertCallsModal({
                                             { title: "Configure Options", desc: "You'll see busy, unanswered, and unreachable options." },
                                             { title: "Enter Number", desc: "For each option, enter the number below and 'Enable'." }
                                         ].map((step, idx) => (
-                                            <div key={idx} className="relative pl-8 pb-8 last:pb-0">
-                                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white dark:bg-slate-950 border-2 border-slate-300 dark:border-slate-600" />
-                                                <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{step.title}</h4>
-                                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{step.desc}</p>
+                                            <div key={idx} className="flex gap-4">
+                                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold shrink-0">
+                                                    {idx + 1}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-semibold text-slate-900 dark:text-white mb-1">{step.title}</h4>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400">{step.desc}</p>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="mt-8 pt-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                    <div className="mt-6 pt-4 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
                                         <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Number to Enter</p>
                                         <div className="flex items-center justify-between gap-3 group cursor-pointer" onClick={handleCopy}>
                                             <code className="text-lg font-mono text-slate-900 dark:text-white font-bold">
@@ -212,10 +207,12 @@ export function DivertCallsModal({
                                     </div>
                                 </div>
                             </div>
+
+                            <ModalFooter />
                         </div>
 
-                        {/* Right Column (Footer stuck to bottom on desktop) */}
-                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-slate-50 dark:bg-slate-900/50 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
+                        {/* Right Column (Instructions/Tips) */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-slate-50 dark:bg-slate-900/50 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800">
                             <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                                 <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Which options to set?</h3>
                                 <ul className="space-y-3">
@@ -234,8 +231,6 @@ export function DivertCallsModal({
                                     ))}
                                 </ul>
                             </div>
-
-                            <ModalFooter />
                         </div>
                     </>
                 );
@@ -244,11 +239,7 @@ export function DivertCallsModal({
                     <>
                         <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 relative z-10">
                             <div>
-                                <DeviceSelector
-                                    currentType="Landline"
-                                    colorClass="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300"
-                                    icon={Phone}
-                                />
+                                <DeviceSelector currentType="Landline" />
                                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 leading-tight">
                                     Divert Calls on Landline
                                 </h2>
@@ -301,7 +292,18 @@ export function DivertCallsModal({
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row min-h-[500px] h-auto md:h-auto overflow-hidden">
+            <div className="bg-white dark:bg-slate-950 rounded-3xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in zoom-in-95 duration-300 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row min-h-[500px] h-auto md:h-auto overflow-hidden relative">
+                {/* Close Button - Top Right */}
+                <div className="absolute top-4 right-4 z-50">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onClose}
+                        className="rounded-full bg-slate-100/50 dark:bg-slate-800/50 backdrop-blur-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors h-8 w-8"
+                    >
+                        <X className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                    </Button>
+                </div>
                 {renderContent()}
             </div>
         </div>,
