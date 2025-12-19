@@ -39,7 +39,7 @@ export function WelcomeModal({ isOpen, onClose }) {
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-900/80 backdrop-blur-sm animate-in fade-in duration-300"
+            className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 bg-brand-navy/80 backdrop-blur-sm animate-in fade-in duration-300"
             onClick={handleBackdropClick}
         >
             <div className="bg-white dark:bg-slate-950 w-full h-full md:h-auto md:max-w-5xl rounded-none md:rounded-3xl shadow-none md:shadow-2xl overflow-hidden animate-in slide-in-from-bottom-10 md:zoom-in-95 duration-300 border-0 md:border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:min-h-[550px] relative">
@@ -143,7 +143,7 @@ export function WelcomeModal({ isOpen, onClose }) {
                         )}
                         <Button
                             onClick={handleNext}
-                            className="ml-auto bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 px-8 h-12 rounded-xl text-base font-semibold shadow-lg shadow-slate-200 dark:shadow-none w-full md:w-auto"
+                            className="ml-auto bg-brand-navy dark:bg-white text-white dark:text-brand-navy hover:bg-brand-navy/90 px-8 h-12 rounded-xl text-base font-semibold shadow-lg shadow-brand-navy/20 dark:shadow-none w-full md:w-auto"
                         >
                             {step === 3 ? "Let's Get Started" : "Continue"}
                             <ArrowRight className="w-4 h-4 ml-2" />

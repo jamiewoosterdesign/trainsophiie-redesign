@@ -236,12 +236,12 @@ export default function OverviewView() {
                 scrollDirection={scrollDirection}
                 showBackButton={false}
                 icon={
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <div className="w-10 h-10 rounded-lg bg-brand-navy flex items-center justify-center text-white shadow-md shadow-brand-navy/20">
                         <SophiieLogo className="w-6 h-6" />
                     </div>
                 }
             >
-                <Button onClick={() => setIsCallModalOpen(true)} className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-md shadow-slate-900/10 font-semibold gap-2">
+                <Button onClick={() => setIsCallModalOpen(true)} className="bg-brand-navy hover:bg-brand-navy/90 text-white dark:bg-slate-100 dark:text-brand-navy dark:hover:bg-slate-200 shadow-md shadow-brand-navy/10 font-semibold gap-2">
                     <Phone className="w-4 h-4" /> Sophiie Call
                 </Button>
             </PageHeader>

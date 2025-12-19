@@ -115,7 +115,7 @@ export default function Sidebar() {
     return (
         <>
             {/* Mobile Header */}
-            <div className="md:hidden h-16 bg-slate-950 flex items-center justify-between px-4 z-50 flex-shrink-0">
+            <div className="md:hidden h-16 bg-brand-navy flex items-center justify-between px-4 z-50 flex-shrink-0">
                 <div className="flex items-center gap-3 text-white">
                     <SophiieLogo className="w-8 h-8" />
                     <span className="font-bold text-lg tracking-tight">Sophiie</span>
@@ -136,7 +136,7 @@ export default function Sidebar() {
                                 className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl mb-2"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white">
+                                    <div className="w-8 h-8 rounded-lg bg-brand-navy flex items-center justify-center text-white">
                                         <SophiieLogo className="w-5 h-5" />
                                     </div>
                                     <div className="text-left">
@@ -214,7 +214,7 @@ export default function Sidebar() {
             }
 
             {/* Tier 1 Sidebar (Desktop) */}
-            <aside className="hidden md:flex w-[72px] bg-slate-950 flex-col items-center py-6 z-30 flex-shrink-0 shadow-xl text-white">
+            <aside className="hidden md:flex w-[72px] bg-brand-navy flex-col items-center py-6 z-30 flex-shrink-0 shadow-xl text-white">
                 <div className="mb-10 text-2xl opacity-90 hover:opacity-100 cursor-pointer text-white">
                     <SophiieLogo className="w-8 h-8" />
                 </div>
@@ -227,7 +227,7 @@ export default function Sidebar() {
                     <NavIcon icon={<Book />} onClick={() => navigate('/knowledge')} />
 
                     <div className="mt-auto flex flex-col gap-6 items-center">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-900/20 relative">
+                        <div className="w-10 h-10 rounded-xl bg-brand-navy flex items-center justify-center text-white shadow-lg shadow-brand-navy/20 relative">
                             <SophiieLogo className="w-6 h-6" />
                             <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-md -ml-3" />
                         </div>

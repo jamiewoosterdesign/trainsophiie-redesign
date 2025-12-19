@@ -72,7 +72,7 @@ export function SetupProgressBanner() {
                             "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
                             isAllComplete
                                 ? "bg-green-500 dark:bg-green-600"
-                                : "bg-gradient-to-br from-blue-500 to-blue-600"
+                                : "bg-brand-navy"
                         )}>
                             {isAllComplete ? (
                                 <Trophy className="w-6 h-6 text-white" />
@@ -180,9 +180,9 @@ export function SetupProgressBanner() {
                                 </div>
 
                                 {/* Section Title - Shows on hover */}
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-900 dark:bg-slate-700 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-brand-navy dark:bg-slate-700 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
                                     {section.title}
-                                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-slate-900 dark:bg-slate-700 rotate-45"></div>
+                                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-brand-navy dark:bg-slate-700 rotate-45"></div>
                                 </div>
                             </button>
                         );

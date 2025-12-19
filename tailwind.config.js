@@ -65,6 +65,7 @@ export default {
                     900: '#0c4a6e',
                     950: '#082f49',
                 },
+                'brand-navy': '#011037',
             },
             borderRadius: {
                 lg: "var(--radius)",

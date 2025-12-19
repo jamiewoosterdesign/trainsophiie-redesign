@@ -16,7 +16,7 @@ export function TestSophiieButton() {
                         {/* Header */}
                         <div className="h-16 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 bg-white dark:bg-slate-900 shrink-0">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-slate-900 overflow-hidden border border-slate-100 dark:border-slate-700">
+                                <div className="w-9 h-9 rounded-full bg-brand-navy overflow-hidden border border-slate-100 dark:border-slate-700">
                                     <img src={sophiieProfile} alt="Sophiie" className="w-full h-full object-cover" />
                                 </div>
                                 <span className="font-semibold text-slate-700 dark:text-slate-200">Call with Sophiie</span>

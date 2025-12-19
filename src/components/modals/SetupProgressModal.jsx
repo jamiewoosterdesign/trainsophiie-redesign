@@ -151,7 +151,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
                     </button>
 
                     <div className="relative mb-4">
-                        <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full" />
+                        <div className="absolute inset-0 bg-brand-navy/20 blur-xl rounded-full" />
                         <img
                             src={sophiieProfile}
                             alt="Sophiie"
@@ -259,7 +259,7 @@ export function SetupProgressModal({ isOpen, onClose }) {
                                         </Button>
                                     </span>
                                 </TooltipTrigger>
-                                <TooltipContent side="top" className="bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-none">
+                                <TooltipContent side="top" className="bg-brand-navy text-white dark:bg-white dark:text-brand-navy border-none">
                                     <p>Please complete all Required steps to activate call diversion.</p>
                                 </TooltipContent>
                             </Tooltip>
