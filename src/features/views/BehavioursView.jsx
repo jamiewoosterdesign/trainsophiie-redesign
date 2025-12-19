@@ -138,10 +138,9 @@ export default function BehavioursView() {
                                 <div className="md:ml-auto">
                                     <Button
                                         size="sm"
-                                        variant="outline"
                                         onClick={addPronunciation}
                                         disabled={!newPronunciation.text || !newPronunciation.phonetic}
-                                        className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                        className="gap-1 h-8"
                                     >
                                         <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
                                     </Button>
@@ -277,10 +276,9 @@ export default function BehavioursView() {
                                 <div className="md:ml-auto">
                                     <Button
                                         size="sm"
-                                        variant="outline"
                                         onClick={addConfusion}
                                         disabled={!newConfusion.original || !newConfusion.replacement}
-                                        className="gap-1 h-8 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700"
+                                        className="gap-1 h-8"
                                     >
                                         <Plus className="w-3 h-3" /> <span className="hidden md:inline">Add Rule</span><span className="md:hidden">Add</span>
                                     </Button>

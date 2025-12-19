@@ -288,10 +288,9 @@ export default function RichVariableEditor({
             {previewAudio && (
                 <div className="flex justify-end">
                     <Button
-                        variant="outline"
                         size="sm"
                         onClick={previewAudio}
-                        className="gap-2 text-slate-600 dark:text-slate-300"
+                        className="gap-2"
                     >
                         <Play className="w-3.5 h-3.5" />
                         Preview Audio

@@ -181,7 +181,7 @@ export default function TransfersView() {
                 subtitle="Manage call transfer rules."
                 scrollDirection={scrollDirection}
             >
-                <Button variant="outline" onClick={openSettings} className="hidden md:flex w-full md:w-auto dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700">
+                <Button variant="secondary" onClick={openSettings} className="hidden md:flex w-full md:w-auto">
                     <Settings className="w-4 h-4 mr-2" /> Global Settings
                 </Button>
                 <Button onClick={() => openWizard('transfer', {}, (data) => handleCreateRule(data))} className="w-full md:w-auto">

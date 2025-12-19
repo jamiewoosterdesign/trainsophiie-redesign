@@ -217,7 +217,7 @@ export default function StaffView() {
             >
                 <Button
                     variant="secondary"
-                    className="w-full md:w-auto bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-700"
+                    className="w-full md:w-auto"
                     onClick={() => openWizard('department', {}, (data) => handleCreateDepartment(data))}
                 >
                     <Plus className="w-4 h-4 mr-2" /> Add Department
@@ -225,7 +225,7 @@ export default function StaffView() {
                 <Button onClick={() => openWizard('staff', {}, (data) => handleCreateStaff(data))} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" /> Add New Staff
                 </Button>
-                <Button variant="outline" size="icon" onClick={openSettings} className="hidden md:flex" title="Global Settings">
+                <Button variant="ghost" size="icon" onClick={openSettings} className="hidden md:flex" title="Global Settings">
                     <Settings className="w-4 h-4" />
                 </Button>
             </PageHeader>

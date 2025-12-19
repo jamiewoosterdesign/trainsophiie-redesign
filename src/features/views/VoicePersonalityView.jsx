@@ -299,7 +299,7 @@ export default function VoicePersonalityView() {
                             </label>
                             <div className="flex flex-col md:flex-row gap-3">
                                 <Input value="Sophiie" disabled className="bg-white dark:bg-slate-900 dark:border-slate-700 text-slate-500 dark:text-slate-400 border-slate-200" />
-                                <Button className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 w-full md:w-auto">
+                                <Button className="shrink-0 w-full md:w-auto">
                                     Upgrade to Customize
                                 </Button>
                             </div>

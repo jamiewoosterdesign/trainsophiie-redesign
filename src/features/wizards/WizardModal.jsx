@@ -712,7 +712,7 @@ export default function WizardModal({ mode, onSwitchMode, onClose, initialData }
                     {/* Footer Actions */}
                     <div className="px-4 py-4 md:px-8 md:py-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center flex-shrink-0">
                         <Button
-                            variant="outline"
+                            variant="secondary"
                             onClick={handleBack}
                             disabled={step === 1 && !returnToMode}
                             className={step === 1 && !returnToMode ? "opacity-50 cursor-not-allowed" : ""}

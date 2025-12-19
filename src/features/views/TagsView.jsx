@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { AddNewCard } from '@/components/shared/AddNewCard';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
-import { Tag, Plus, ArrowLeft, Search, Pencil, Trash2, Filter, Info, AlertCircle, Sparkles, Bot, ChevronLeft, ChevronRight, Edit2 } from 'lucide-react';
+import { Tag, Plus, ArrowLeft, Search, Pencil, Trash2, Filter, Info, AlertCircle, Sparkles, Bot, ChevronLeft, ChevronRight, Edit2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -578,12 +578,21 @@ export default function TagsView() {
                 subtitle="Manage your customer and inquiry tags."
                 scrollDirection={scrollDirection}
             >
-                <Button onClick={() => openCustomerModal(null)} className="w-full md:w-auto">
-                    <Plus className="w-4 h-4 mr-2" /> Add Customer Tag
-                </Button>
-                <Button variant="outline" onClick={() => openInquiryModal(null)} className="w-full md:w-auto">
-                    <Plus className="w-4 h-4 mr-2" /> Add Inquiry Tag
-                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="w-full md:w-auto">
+                            <Plus className="w-4 h-4 mr-2" /> Add Tags <ChevronDown className="w-4 h-4 ml-2" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openCustomerModal(null)}>
+                            Add Customer Tag
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openInquiryModal(null)}>
+                            Add Inquiry Tag
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </PageHeader>
 
             {/* Content */}
