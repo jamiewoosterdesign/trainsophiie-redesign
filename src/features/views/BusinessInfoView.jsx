@@ -263,11 +263,6 @@ export default function BusinessInfoView() {
                                     <div className="space-y-1 flex-1">
                                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                             Data Sourced from Website
-                                            {!isEditingUrl && (
-                                                <button onClick={() => setIsEditingUrl(true)} className="text-slate-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
-                                                    <Pencil className="w-3.5 h-3.5" />
-                                                </button>
-                                            )}
                                         </h3>
 
                                         {isEditingUrl ? (
@@ -289,8 +284,15 @@ export default function BusinessInfoView() {
                                                 </Button>
                                             </div>
                                         ) : (
-                                            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5 group w-fit">
                                                 Source: <span className="font-medium text-slate-700 dark:text-slate-300">{sourceUrl}</span>
+                                                <button
+                                                    onClick={() => setIsEditingUrl(true)}
+                                                    className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-600 transition-all p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                    title="Edit URL"
+                                                >
+                                                    <Pencil className="w-3.5 h-3.5" />
+                                                </button>
                                             </p>
                                         )}
                                     </div>
