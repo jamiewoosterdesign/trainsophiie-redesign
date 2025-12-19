@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info, FileText } from 'lucide-react';
+import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info, FileText, Pencil, Link, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -86,6 +86,8 @@ export default function BusinessInfoView() {
     // --- State Management ---
     const [formData, setFormData] = useState(currentProfile.businessInfo);
     const [initialData, setInitialData] = useState(currentProfile.businessInfo); // For dirty checking
+    const [sourceUrl, setSourceUrl] = useState('visionelectrical.com.au');
+    const [isEditingUrl, setIsEditingUrl] = useState(false);
 
     useEffect(() => {
         setFormData(currentProfile.businessInfo);
@@ -231,7 +233,7 @@ export default function BusinessInfoView() {
                 scrollDirection={scrollDirection}
             >
                 <Button
-                    className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full md:w-auto bg-brand-navy hover:bg-brand-navy/90 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                     disabled={!isDirty}
                     onClick={handleSave}
                 >
@@ -252,26 +254,54 @@ export default function BusinessInfoView() {
                         <VoiceSetupBanner onStartVoiceFlow={startGlobalVoiceFlow} />
 
                         {/* Data Source Banner */}
-                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 shadow-sm">
-
-                            <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <Globe className="w-5 h-5" />
+                        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
+                            <div className="p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div className="flex items-center gap-4 w-full md:w-auto">
+                                    <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl flex items-center justify-center flex-shrink-0 border border-slate-100 dark:border-slate-800">
+                                        <Globe className="w-6 h-6" />
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Data Sourced from Website</h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            We pulled these details from <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">visionelectrical.com.au</a>.
-                                        </p>
+                                    <div className="space-y-1 flex-1">
+                                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                            Data Sourced from Website
+                                            {!isEditingUrl && (
+                                                <button onClick={() => setIsEditingUrl(true)} className="text-slate-400 hover:text-blue-600 transition-colors p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
+                                                    <Pencil className="w-3.5 h-3.5" />
+                                                </button>
+                                            )}
+                                        </h3>
+
+                                        {isEditingUrl ? (
+                                            <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
+                                                <div className="relative">
+                                                    <Link className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                                                    <Input
+                                                        value={sourceUrl}
+                                                        onChange={(e) => setSourceUrl(e.target.value)}
+                                                        className="h-8 pl-8 w-64 bg-slate-50 border-slate-200 focus-visible:ring-brand-navy text-xs dark:bg-slate-800 dark:border-slate-700 dark:text-white dark:focus-visible:ring-brand-navy"
+                                                        autoFocus
+                                                    />
+                                                </div>
+                                                <Button size="sm" onClick={() => setIsEditingUrl(false)} className="h-8 px-3 bg-brand-navy text-white hover:bg-brand-navy/90 text-xs shadow-sm">
+                                                    Save
+                                                </Button>
+                                                <Button size="sm" variant="ghost" onClick={() => setIsEditingUrl(false)} className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+                                                    <X className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                                                Source: <span className="font-medium text-slate-700 dark:text-slate-300">{sourceUrl}</span>
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 w-full md:w-auto">
-                                    <Button className="flex-1 md:flex-none gap-2 h-9 text-xs bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-                                        <RefreshCw className="w-3.5 h-3.5" /> Refresh from URL
+
+                                <div className="flex items-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
+                                    <Button variant="secondary" className="flex-1 md:flex-none gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">
+                                        <Upload className="w-4 h-4" /> Upload Doc
                                     </Button>
-                                    <Button variant="outline" size="sm" className="flex-1 md:flex-none gap-2 h-9 text-xs bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700">
-                                        <Upload className="w-3.5 h-3.5" /> Upload Doc
+                                    <Button className="flex-1 md:flex-none gap-2 bg-brand-navy hover:bg-brand-navy/90 text-white shadow-md shadow-brand-navy/10 transition-all">
+                                        <RefreshCw className="w-4 h-4" /> Refresh from URL
                                     </Button>
                                 </div>
                             </div>
