@@ -340,9 +340,9 @@ export default function BusinessInfoView() {
 
                         <div className="p-6 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3">
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => setShowAnalysisWarning(false)}
-                                className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                                className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                             >
                                 Cancel
                             </Button>
