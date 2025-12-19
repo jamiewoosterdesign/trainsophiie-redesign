@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info, FileText, Pencil, Link, X } from 'lucide-react';
+import { ArrowLeft, Upload, Clock, Plus, Trash2, Globe, RefreshCw, ChevronUp, ChevronDown, Check, Instagram, Twitter, Facebook, Linkedin, Wand2, ArrowRight, Settings, Mic, MapPin, Info, FileText, Pencil, Link, X, AlertTriangle, Loader2, Sparkles, Scan, Bot, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -88,6 +88,10 @@ export default function BusinessInfoView() {
     const [initialData, setInitialData] = useState(currentProfile.businessInfo); // For dirty checking
     const [sourceUrl, setSourceUrl] = useState('visionelectrical.com.au');
     const [isEditingUrl, setIsEditingUrl] = useState(false);
+    const [showAnalysisWarning, setShowAnalysisWarning] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisMode, setAnalysisMode] = useState('auto'); // 'auto' | 'review'
+    const [showToast, setShowToast] = useState(null); // { message: string }
 
     useEffect(() => {
         setFormData(currentProfile.businessInfo);
@@ -225,8 +229,148 @@ export default function BusinessInfoView() {
     const assignedDays = formData.schedules.flatMap(s => s.days);
     const closedDays = DAYS.filter(d => !assignedDays.includes(d));
 
+    // --- Analysis Logic ---
+    const handleUrlSave = () => {
+        setIsEditingUrl(false);
+        setShowAnalysisWarning(true);
+    };
+
+    const handleRefresh = () => {
+        startAnalysis('auto'); // Or 'review', depending on desired default for refresh
+    };
+
+    const startAnalysis = (mode) => {
+        setAnalysisMode(mode);
+        setShowAnalysisWarning(false);
+        setIsAnalyzing(true);
+
+        // Simulate analysis
+        setTimeout(() => {
+            setIsAnalyzing(false);
+
+            // Mock update data
+            const newData = {
+                ...formData,
+                description: "Vision Electrical is a premier electrical service provider based in Arundel, QLD. Established in 2010, we specialise in domestic and commercial electrical solutions including solar panel installation, air conditioning, and general maintenance. We pride ourselves on quick response times and high-quality workmanship.",
+                companyName: "Vision Electrical Pty Ltd",
+                businessPhone: "0434 998 497",
+                facebook: "visionelectrical_qld",
+                instagram: "vision_electrical",
+                linkedin: "vision-electrical-services",
+                yearFounded: "2010",
+                serviceTypes: [...formData.serviceTypes, 'Solar', 'Air Conditioning']
+            };
+
+            setFormData(newData);
+            setShowToast({ message: "Website analyzed and business info updated" });
+            setTimeout(() => setShowToast(null), 3000);
+
+            if (mode === 'review') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }, 3000);
+    };
+
     return (
-        <div className="flex flex-col h-full animate-in fade-in duration-300">
+        <div className="flex flex-col h-full animate-in fade-in duration-300 relative">
+            {/* Toast Notification */}
+            {
+                showToast && (
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-[70] bg-slate-900 text-white px-3 py-3 md:py-2 rounded-xl md:rounded-full shadow-lg text-xs sm:text-sm font-medium animate-in slide-in-from-top-2 fade-in duration-300 flex items-center justify-center gap-2 w-[calc(100%-16px)] md:w-auto text-center whitespace-nowrap">
+                        <Check className="w-4 h-4 text-green-400" />
+                        {showToast.message}
+                    </div>
+                )
+            }
+
+            {/* Analysis Overlay */}
+            {isAnalyzing && (
+                <div className="absolute inset-0 z-[100] bg-white/80 dark:bg-slate-950/80 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-300">
+                    <div className="flex flex-col items-center justify-center max-w-sm text-center p-8 space-y-6">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full animate-pulse"></div>
+                            <div className="relative w-20 h-20 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden">
+                                <Scan className="w-10 h-10 text-blue-600 dark:text-blue-400 animate-[pulse_3s_ease-in-out_infinite]" />
+                                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/10 to-transparent animate-[shimmer_2s_infinite] -translate-y-full" />
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 bg-purple-100 dark:bg-purple-900/50 p-2 rounded-full border border-white dark:border-slate-800 shadow-sm animate-bounce">
+                                <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Analyzing Website...</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                                Retrieving business details, branding, and services from <span className="font-medium text-slate-700 dark:text-slate-300">{sourceUrl}</span>
+                            </p>
+                        </div>
+
+                        <div className="w-64 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 animate-[loading_2s_ease-in-out_infinite] w-1/2 rounded-full" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Warning Modal */}
+            {showAnalysisWarning && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg p-0 overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-800">
+                        <div className="p-6 pb-0 flex gap-5">
+                            <div className="hidden sm:flex w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/20 items-center justify-center flex-shrink-0 text-amber-600 dark:text-amber-500">
+                                <AlertTriangle className="w-6 h-6" />
+                            </div>
+                            <div className="flex-1 pt-1">
+                                <h3 className="font-bold text-xl text-slate-900 dark:text-white mb-2">Overwrite Business Info?</h3>
+                                <p className="text-base text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
+                                    Sourcing data from this website will <span className="font-semibold text-slate-700 dark:text-slate-200">overwrite your existing business information</span> with automated findings.
+                                </p>
+
+                                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-6 border border-slate-100 dark:border-slate-700">
+                                    <div className="flex items-start gap-3">
+                                        <Bot className="w-5 h-5 text-purple-500 mt-0.5" />
+                                        <div className="text-sm">
+                                            <p className="font-medium text-slate-900 dark:text-white mb-1">AI Data Extraction</p>
+                                            <p className="text-slate-500 dark:text-slate-400">We'll identify your address, contact details, service areas, and business description automatically.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowAnalysisWarning(false)}
+                                className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="outline"
+                                onClick={() => startAnalysis('review')}
+                                className="border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            >
+                                Manually Review
+                            </Button>
+                            <Button
+                                onClick={() => startAnalysis('auto')}
+                                className="bg-brand-navy hover:bg-brand-navy/90 text-white"
+                            >
+                                Auto Apply Changes
+                            </Button>
+                        </div>
+
+                        <button
+                            onClick={() => setShowAnalysisWarning(false)}
+                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <PageHeader
                 title="Business Information"
                 subtitle="Configure your business information"
@@ -276,7 +420,7 @@ export default function BusinessInfoView() {
                                                         autoFocus
                                                     />
                                                 </div>
-                                                <Button size="sm" onClick={() => setIsEditingUrl(false)} className="h-8 px-3 bg-brand-navy text-white hover:bg-brand-navy/90 text-xs shadow-sm">
+                                                <Button size="sm" onClick={handleUrlSave} className="h-8 px-3 bg-brand-navy text-white hover:bg-brand-navy/90 text-xs shadow-sm">
                                                     Save
                                                 </Button>
                                                 <Button size="sm" variant="ghost" onClick={() => setIsEditingUrl(false)} className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
@@ -302,7 +446,7 @@ export default function BusinessInfoView() {
                                     <Button variant="secondary" className="flex-1 md:flex-none gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-sm dark:bg-transparent dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white">
                                         <Upload className="w-4 h-4" /> Upload Doc
                                     </Button>
-                                    <Button className="flex-1 md:flex-none gap-2 bg-brand-navy hover:bg-brand-navy/90 text-white shadow-md shadow-brand-navy/10 transition-all">
+                                    <Button onClick={handleRefresh} className="flex-1 md:flex-none gap-2 bg-brand-navy hover:bg-brand-navy/90 text-white shadow-md shadow-brand-navy/10 transition-all">
                                         <RefreshCw className="w-4 h-4" /> Refresh from URL
                                     </Button>
                                 </div>
